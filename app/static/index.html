@@ -1,0 +1,2158 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zest | Cooking</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'><rect fill='%23f97316' x='60' y='140' width='136' height='60' rx='8'/><circle fill='%23f97316' cx='80' cy='100' r='30'/><circle fill='%23f97316' cx='128' cy='80' r='35'/><circle fill='%23f97316' cx='176' cy='100' r='30'/><rect fill='%23fff' x='70' y='150' width='116' height='8'/></svg>">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- SETTINGS MODAL -->
+    <div id="settingsModal" class="hidden fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4 opacity-0 transition-opacity duration-200">
+        <div id="settingsModalContent" class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col scale-95 transition-transform duration-200">
+
+            <div class="bg-gradient-to-r from-orange-500 to-red-500 p-6 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="text-white text-2xl"><i class="ph-bold ph-gear"></i></div>
+                    <h2 class="text-2xl font-black text-white">Settings</h2>
+                </div>
+                <button onclick="closeSettingsModal()" class="text-white hover:bg-white hover:bg-opacity-20 p-2 rounded-lg transition-colors">
+                    <i class="ph-bold ph-x text-2xl"></i>
+                </button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-6">
+
+                <!-- SECTION: AUTOMATIC BACKUP -->
+                <div class="mb-8">
+                    <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
+                        <i class="ph-bold ph-shield-check text-orange-500"></i>
+                        Automatic Backup
+                    </h3>
+
+                    <!-- Status of last backup -->
+                    <div id="backupLastStatus" class="hidden mb-4 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg text-sm text-gray-600 dark:text-gray-300"></div>
+
+                    <!-- Toggle activation -->
+                    <div class="flex items-center justify-between mb-4 p-4 bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl">
+                        <div>
+                            <h4 class="font-bold text-gray-800 dark:text-white">Enable automatic backup</h4>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Protect your recipes with periodic backups</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="backupEnabled" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-500"></div>
+                        </label>
+                    </div>
+
+                    <!-- Options (fade if disabled) -->
+                    <div id="backupOptions" class="space-y-3 opacity-50 pointer-events-none">
+                        <!-- Frequency -->
+                        <div class="flex items-center justify-between p-3 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg">
+                            <div class="flex items-center gap-2">
+                                <i class="ph-bold ph-clock text-gray-400"></i>
+                                <span class="text-sm text-gray-700 dark:text-gray-300">Frequency</span>
+                            </div>
+                            <select id="backupFrequency" class="text-sm bg-gray-50 dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-lg px-3 py-1.5 text-gray-700 dark:text-gray-200">
+                                <option value="12">Every 12 hours</option>
+                                <option value="24" selected>Daily</option>
+                                <option value="168">Weekly</option>
+                            </select>
+                        </div>
+
+                        <!-- Retention -->
+                        <div class="flex items-center justify-between p-3 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg">
+                            <div class="flex items-center gap-2">
+                                <i class="ph-bold ph-stack text-gray-400"></i>
+                                <span class="text-sm text-gray-700 dark:text-gray-300">Keep latest</span>
+                            </div>
+                            <select id="backupMaxKeep" class="text-sm bg-gray-50 dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-lg px-3 py-1.5 text-gray-700 dark:text-gray-200">
+                                <option value="3">3 backups</option>
+                                <option value="7" selected>7 backups</option>
+                                <option value="14">14 backups</option>
+                                <option value="30">30 backups</option>
+                            </select>
+                        </div>
+
+                        <!-- Include images -->
+                        <div class="flex items-center justify-between p-3 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg">
+                            <div class="flex items-center gap-2">
+                                <i class="ph-bold ph-image text-gray-400"></i>
+                                <span class="text-sm text-gray-700 dark:text-gray-300">Include images</span>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="backupIncludeImages" checked class="sr-only peer">
+                                <div class="w-9 h-5 bg-gray-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-orange-500"></div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Action buttons -->
+                    <div class="flex gap-2 mt-4">
+                        <button id="backupSaveBtn" onclick="saveBackupConfig()"
+                            class="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-bold py-2.5 px-4 rounded-lg transition-colors text-sm">
+                            Save configuration
+                        </button>
+                        <button id="backupNowBtn" onclick="backupNow()"
+                            class="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-bold py-2.5 px-4 rounded-lg transition-colors text-sm flex items-center justify-center gap-2">
+                            <i class="ph-bold ph-download-simple"></i> Backup now
+                        </button>
+                    </div>
+
+                    <!-- List of existing backups -->
+                    <div class="mt-4">
+                        <h4 class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">Saved backups</h4>
+                        <div id="backupList" class="space-y-1.5 max-h-40 overflow-y-auto">
+                            <p class="text-sm text-gray-400 italic">Loading...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="border-gray-200 dark:border-gray-700 mb-8">
+
+                <!-- SECTION: EXPORT -->
+                <div class="mb-8">
+                    <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
+                        <i class="ph-bold ph-upload-simple text-orange-500"></i>
+                        Export Data
+                    </h3>
+
+                    <div class="space-y-3">
+                        <!-- Export Full Database -->
+                        <button onclick="exportDatabase()" class="w-full bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl p-4 hover:border-orange-500 transition-all text-left group">
+                            <div class="flex items-start gap-4">
+                                <div class="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg group-hover:bg-blue-200 transition-colors">
+                                    <i class="ph-bold ph-database text-2xl text-blue-600 dark:text-blue-400"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="font-bold text-gray-800 dark:text-white mb-1">Complete Database + Images</h4>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">Export everything in one ZIP file: SQLite database and all images</p>
+                                    <p class="text-xs text-orange-600 dark:text-orange-400 mt-2">✓ Recommended for complete migration</p>
+                                </div>
+                            </div>
+                        </button>
+
+                        <!-- Export JSON -->
+                        <button onclick="exportJSON()" class="w-full bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl p-4 hover:border-orange-500 transition-all text-left group">
+                            <div class="flex items-start gap-4">
+                                <div class="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg group-hover:bg-green-200 transition-colors">
+                                    <i class="ph-bold ph-file-text text-2xl text-green-600 dark:text-green-400"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="font-bold text-gray-800 dark:text-white mb-1">Recipes in JSON (Portable)</h4>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">Export only recipes in JSON format. Does not include images</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">Useful for sharing or portable backup</p>
+                                </div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- SECTION: IMPORT -->
+                <div>
+                    <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
+                        <i class="ph-bold ph-download-simple text-orange-500"></i>
+                        Import Data
+                    </h3>
+
+                    <div class="space-y-3">
+                        <!-- Import Database -->
+                        <div class="w-full bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl p-4">
+                            <div class="flex items-start gap-4 mb-3">
+                                <div class="p-3 bg-red-100 dark:bg-red-900/30 rounded-lg">
+                                    <i class="ph-bold ph-database text-2xl text-red-600 dark:text-red-400"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="font-bold text-gray-800 dark:text-white mb-1">Import Complete ZIP</h4>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">Replaces entire database and images</p>
+                                    <p class="text-xs text-red-600 dark:text-red-400 mt-2">⚠️ This will delete all current data</p>
+                                </div>
+                            </div>
+                            <label class="block">
+                                <input type="file" id="importDatabaseFile" accept=".zip" class="hidden" onchange="importDatabase(this)">
+                                <span class="block w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg text-center cursor-pointer transition-colors">
+                                    Select ZIP file
+                                </span>
+                            </label>
+                        </div>
+
+                        <!-- Import JSON -->
+                        <div class="w-full bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl p-4">
+                            <div class="flex items-start gap-4 mb-3">
+                                <div class="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                                    <i class="ph-bold ph-file-text text-2xl text-purple-600 dark:text-purple-400"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="font-bold text-gray-800 dark:text-white mb-1">Import Recipes JSON</h4>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">Adds recipes from JSON to existing ones</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">Recipes will merge with current ones</p>
+                                </div>
+                            </div>
+                            <label class="block">
+                                <input type="file" id="importJSONFile" accept=".json" class="hidden" onchange="importJSON(this)">
+                                <span class="block w-full bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-lg text-center cursor-pointer transition-colors">
+                                    Select JSON file
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progress bar for operations -->
+                <div id="importProgress" class="hidden mt-6">
+                    <div class="bg-gray-200 dark:bg-gray-700 rounded-full h-4 overflow-hidden">
+                        <div id="importProgressBar" class="bg-orange-500 h-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                    <p id="importProgressText" class="text-sm text-center mt-2 text-gray-600 dark:text-gray-400">Processing...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script> tailwind.config = { darkMode: 'class' } </script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+
+        /* Sidebar transition */
+        #sidebar { transition: transform 0.3s ease-in-out; }
+
+        .card-recipe { transition: all 0.2s ease; }
+        .card-recipe:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+
+        /* Style for sidebar menu items (Thin Cards) */
+        .nav-item {
+            transition: all 0.2s ease;
+        }
+        .nav-item:hover {
+            background-color: rgba(249, 115, 22, 0.1); /* Orange tint */
+            transform: translateX(5px);
+        }
+        .nav-item.active {
+            background-color: rgba(249, 115, 22, 0.15);
+            border-right: 3px solid #f97316;
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1f2937; }
+        ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 4px; }
+
+        .editing-mode { border-color: #ef4444 !important; box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2); }
+
+        /* Favorite heart button */
+        .favorite-btn {
+            transition: all 0.2s ease;
+        }
+        .favorite-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* Sidebar collapsed/expanded states */
+        #sidebar {
+            transition: width 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+        #sidebar.sidebar-collapsed {
+            width: 64px; /* Show only thin bar */
+        }
+        #sidebar.sidebar-expanded {
+            width: 288px; /* w-72 = 18rem = 288px */
+        }
+
+        /* Hide sidebar content when collapsed */
+        #sidebar.sidebar-collapsed .sidebar-content {
+            opacity: 0;
+            pointer-events: none;
+        }
+        #sidebar.sidebar-expanded .sidebar-content {
+            opacity: 1;
+            pointer-events: auto;
+            transition: opacity 0.3s ease-in-out 0.1s;
+        }
+
+        /* Main content adjustment */
+        #mainContent {
+            transition: margin-left 0.3s ease-in-out;
+        }
+        #mainContent.content-expanded {
+            margin-left: 288px; /* w-72 = 18rem = 288px */
+        }
+        #mainContent.content-collapsed {
+            margin-left: 64px; /* Same width as collapsed sidebar */
+        }
+
+        @media (max-width: 768px) {
+            #mainContent.content-expanded,
+            #mainContent.content-collapsed {
+                margin-left: 0;
+            }
+        }
+
+        /* Floating button to open sidebar */
+        #sidebarToggleBtn {
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            z-index: 40;
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+
+        #sidebarToggleBtn.hidden-btn {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateX(-20px);
+        }
+
+        #sidebarToggleBtn.visible-btn {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateX(0);
+        }
+
+        /* Button inside collapsed sidebar */
+        #sidebar.sidebar-collapsed #collapsedToggleBtn {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        #sidebar.sidebar-expanded #collapsedToggleBtn {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* X button inside sidebar - hide when collapsed */
+        #sidebar.sidebar-collapsed .collapse-btn-inside {
+            opacity: 0;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 h-screen flex overflow-hidden">
+
+    <!-- ============================================================ -->
+    <!-- LOGIN / REGISTRATION SCREEN -->
+    <!-- ============================================================ -->
+    <div id="authScreen" class="fixed inset-0 z-[100] bg-gradient-to-br from-orange-50 via-white to-red-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-4">
+        <div class="w-full max-w-md">
+
+            <!-- Logo -->
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-orange-400 to-red-500 rounded-2xl shadow-xl mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" class="w-12 h-12">
+                        <rect fill="white" x="60" y="140" width="136" height="60" rx="8"/>
+                        <circle fill="white" cx="80" cy="100" r="30"/>
+                        <circle fill="white" cx="128" cy="80" r="35"/>
+                        <circle fill="white" cx="176" cy="100" r="30"/>
+                        <rect fill="#f97316" x="70" y="150" width="116" height="8"/>
+                    </svg>
+                </div>
+                <h1 class="text-4xl font-black text-gray-800 dark:text-white">Zest</h1>
+                <p class="text-gray-500 dark:text-gray-400 mt-1 text-sm italic">Made to be shared.</p>
+            </div>
+
+            <!-- Card -->
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+
+                <!-- Login / Register Tabs -->
+                <div class="flex border-b border-gray-200 dark:border-gray-700">
+                    <button id="tabLogin" onclick="switchAuthTab('login')"
+                        class="flex-1 py-3 text-sm font-bold text-orange-500 border-b-2 border-orange-500 transition-colors">
+                        Log In
+                    </button>
+                    <button id="tabRegister" onclick="switchAuthTab('register')"
+                        class="flex-1 py-3 text-sm font-bold text-gray-400 border-b-2 border-transparent hover:text-gray-600 transition-colors">
+                        Create Account
+                    </button>
+                </div>
+
+                <div class="p-6">
+                    <!-- Error message -->
+                    <div id="authError" class="hidden mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-red-600 dark:text-red-400 text-sm text-center">
+                    </div>
+
+                    <!-- Login Form -->
+                    <div id="formLogin">
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+                            <input type="email" id="loginEmail" placeholder="your@email.com"
+                                onkeydown="if(event.key==='Enter') doLogin()"
+                                class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 focus:ring-2 focus:ring-orange-500 outline-none text-sm">
+                        </div>
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
+                            <input type="password" id="loginPassword" placeholder="••••••••"
+                                onkeydown="if(event.key==='Enter') doLogin()"
+                                class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 focus:ring-2 focus:ring-orange-500 outline-none text-sm">
+                        </div>
+                        <div class="mb-6 flex items-center justify-between">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" id="loginRemember" class="w-4 h-4 rounded accent-orange-500">
+                                <span class="text-sm text-gray-500">Remember me</span>
+                            </label>
+                        </div>
+                        <button onclick="doLogin()" id="btnLogin"
+                            class="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-all text-sm">
+                            Log In
+                        </button>
+                    </div>
+
+                    <!-- Register Form -->
+                    <div id="formRegister" class="hidden">
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name</label>
+                            <input type="text" id="registerName" placeholder="Your name"
+                                class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 focus:ring-2 focus:ring-orange-500 outline-none text-sm">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+                            <input type="email" id="registerEmail" placeholder="your@email.com"
+                                class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 focus:ring-2 focus:ring-orange-500 outline-none text-sm">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
+                            <input type="password" id="registerPassword" placeholder="Minimum 4 characters"
+                                class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 focus:ring-2 focus:ring-orange-500 outline-none text-sm">
+                        </div>
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Confirm Password</label>
+                            <input type="password" id="registerPassword2" placeholder="Repeat password"
+                                onkeydown="if(event.key==='Enter') doRegister()"
+                                class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 focus:ring-2 focus:ring-orange-500 outline-none text-sm">
+                        </div>
+                        <button onclick="doRegister()" id="btnRegister"
+                            class="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-all text-sm">
+                            Create Account
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <p class="text-center text-xs text-gray-400 mt-6">Shared intentionally. 🍊</p>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- MAIN APP (hidden until login) -->
+    <!-- ============================================================ -->
+    <div id="appMain" class="hidden">
+
+    <!-- Overlay to close sidebar on mobile -->
+    <div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-20 hidden md:hidden" onclick="toggleSidebar()"></div>
+
+    <aside id="sidebar" class="bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 w-72 h-full flex flex-col fixed z-30 transform transition-transform duration-300 shrink-0 shadow-2xl">
+
+        <!-- Hamburger button inside sidebar (mobile only) -->
+        <div class="p-4 md:hidden flex justify-end border-b border-gray-200 dark:border-gray-700">
+            <button onclick="toggleSidebar()" class="p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700">
+                <i class="ph-bold ph-x text-2xl"></i>
+            </button>
+        </div>
+
+        <div class="sidebar-content transition-opacity duration-300">
+        <div class="p-6 border-b border-gray-100 dark:border-gray-700 flex items-center gap-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors" onclick="openProfileModal()">
+            <div id="userAvatar" class="w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center text-white font-bold text-lg shadow-lg overflow-hidden">
+                <span id="userInitial">?</span>
+            </div>
+            <div class="flex-1 min-w-0">
+                <h2 id="userName" class="font-bold text-gray-800 dark:text-white leading-tight truncate">Chef</h2>
+                <p id="userRole" class="text-xs text-gray-500 dark:text-gray-400 truncate">...</p>
+            </div>
+            <button onclick="event.stopPropagation(); toggleSidebar()" class="collapse-btn-inside hidden md:block p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                <i class="ph-bold ph-x text-xl"></i>
+            </button>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-3">
+            <p class="px-2 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Main Menu</p>
+
+            <div class="nav-item active p-3 rounded-xl cursor-pointer flex items-center gap-4 group" onclick="filterByView('all')">
+                <div class="bg-orange-100 dark:bg-orange-900/30 p-2 rounded-lg text-orange-600 dark:text-orange-400 group-hover:text-orange-700">
+                    <i class="ph-bold ph-cooking-pot text-xl"></i>
+                </div>
+                <span class="font-semibold text-sm">All Recipes</span>
+            </div>
+
+            <div id="navFavorites" class="nav-item p-3 rounded-xl cursor-pointer flex items-center gap-4 group" onclick="filterByView('favorites')">
+                <div class="bg-white border border-gray-200 dark:bg-gray-700 dark:border-gray-600 p-2 rounded-lg text-orange-500 shadow-sm">
+                    <i class="ph-fill ph-heart text-xl"></i>
+                </div>
+                <span class="font-medium text-sm text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white">Favorites</span>
+            </div>
+
+            <div id="navCookbooks" class="nav-item p-3 rounded-xl cursor-pointer flex items-center gap-4 group" onclick="showView('cookbooks')">
+                <div class="bg-white border border-gray-200 dark:bg-gray-700 dark:border-gray-600 p-2 rounded-lg text-orange-500 shadow-sm">
+                    <i class="ph-bold ph-book-open text-xl"></i>
+                </div>
+                <span class="font-medium text-sm text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white">Cookbooks</span>
+            </div>
+
+            <div id="navMemories" class="nav-item p-3 rounded-xl cursor-pointer flex items-center gap-4 group" onclick="showView('memories')">
+                <div class="bg-white border border-gray-200 dark:bg-gray-700 dark:border-gray-600 p-2 rounded-lg text-orange-500 shadow-sm">
+                    <i class="ph-bold ph-camera text-xl"></i>
+                </div>
+                <span class="font-medium text-sm text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white">Memories</span>
+            </div>
+
+            <p class="px-2 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 mt-6">Tools</p>
+
+            <div id="navWhatToCook" class="nav-item p-3 rounded-xl cursor-pointer flex items-center gap-4 group" onclick="showView('whatToCook')">
+                <div class="bg-white border border-gray-200 dark:bg-gray-700 dark:border-gray-600 p-2 rounded-lg text-orange-500 shadow-sm">
+                    <i class="ph-bold ph-basket text-xl"></i>
+                </div>
+                <span class="font-medium text-sm text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white">What to Cook?</span>
+            </div>
+
+            <div id="navCalculator" class="nav-item p-3 rounded-xl cursor-pointer flex items-center gap-4 group" onclick="showView('calculator')">
+                <div class="bg-white border border-gray-200 dark:bg-gray-700 dark:border-gray-600 p-2 rounded-lg text-orange-500 shadow-sm">
+                    <i class="ph-bold ph-calculator text-xl"></i>
+                </div>
+                <span class="font-medium text-sm text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white">Calculator</span>
+            </div>
+
+            <div id="navShoppingList" class="nav-item p-3 rounded-xl cursor-pointer flex items-center gap-4 group" onclick="showView('shoppingList')">
+                <div class="bg-white border border-gray-200 dark:bg-gray-700 dark:border-gray-600 p-2 rounded-lg text-orange-500 shadow-sm relative">
+                    <i class="ph-bold ph-shopping-cart text-xl"></i>
+                    <span id="shoppingBadge" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center"></span>
+                </div>
+                <span class="font-medium text-sm text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white">Shopping List</span>
+            </div>
+
+            <div id="navScraper" class="nav-item p-3 rounded-xl cursor-pointer flex items-center gap-4 group" onclick="showView('scraper')">
+                <div class="bg-white border border-gray-200 dark:bg-gray-700 dark:border-gray-600 p-2 rounded-lg text-orange-500 shadow-sm">
+                    <i class="ph-bold ph-globe text-xl"></i>
+                </div>
+                <span class="font-medium text-sm text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white">Import from URL</span>
+            </div>
+
+            <div class="nav-item p-3 rounded-xl cursor-pointer flex items-center gap-4 group" onclick="showView('planner')">
+                <div class="bg-white border border-gray-200 dark:bg-gray-700 dark:border-gray-600 p-2 rounded-lg text-orange-500 shadow-sm">
+                    <i class="ph-bold ph-calendar-blank text-xl"></i>
+                </div>
+                <span class="font-medium text-sm text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white">Planner</span>
+            </div>
+        </nav>
+
+        <div class="p-4 border-t border-gray-200 dark:border-gray-700 space-y-2">
+            <button onclick="openSettingsModal()" class="w-full flex items-center justify-center gap-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 transition-colors text-sm">
+                <i class="ph-bold ph-gear"></i>
+                <span>Settings</span>
+            </button>
+
+            <button onclick="openHelpModal()" class="w-full flex items-center justify-center gap-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 transition-colors text-sm">
+                <i class="ph-bold ph-question"></i>
+                <span>Help</span>
+            </button>
+
+            <button onclick="toggleTheme()" id="themeToggleBtn" class="w-full flex items-center justify-center gap-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 transition-colors text-sm">
+                <i id="themeIcon" class="ph-fill ph-moon"></i>
+                <span id="themeText">Dark Mode</span>
+            </button>
+
+            <button onclick="doLogout()" class="w-full flex items-center justify-center gap-2 p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-400 hover:text-red-500 transition-colors text-sm">
+                <i class="ph-bold ph-sign-out"></i>
+                <span>Log Out</span>
+            </button>
+        </div>
+        </div><!-- end sidebar-content -->
+
+        <!-- Toggle button visible when collapsed -->
+        <div class="absolute top-6 left-1/2 transform -translate-x-1/2 md:block hidden">
+            <button onclick="toggleSidebar()" id="collapsedToggleBtn" class="p-3 rounded-xl bg-orange-500 hover:bg-orange-600 text-white shadow-lg transition-all opacity-0 pointer-events-none">
+                <i class="ph-bold ph-caret-right text-xl"></i>
+            </button>
+        </div>
+    </aside>
+
+    <div id="mainContent" class="flex-1 flex flex-col h-full overflow-hidden relative w-full content-expanded">
+
+        <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 h-16 flex items-center justify-between px-6 shrink-0 z-20 gap-4">
+
+            <button onclick="toggleSidebar()" class="md:hidden p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none">
+                <i class="ph-bold ph-list text-2xl"></i>
+            </button>
+
+            <div class="flex-1 max-w-5xl flex gap-3">
+                <div class="relative w-52 hidden sm:block">
+                    <i class="ph-bold ph-tag absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                    <select id="categoryFilter" onchange="applyFilters()"
+                        class="w-full bg-gray-100 dark:bg-gray-700 border-none rounded-xl py-2 pl-10 pr-8 appearance-none cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors focus:ring-2 focus:ring-orange-500 outline-none text-sm font-medium truncate">
+                        <option value="">All Categories</option>
+                    </select>
+                </div>
+
+                <div class="relative w-44 hidden lg:block">
+                    <i class="ph-bold ph-hash absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                    <select id="tagFilter" onchange="applyFilters()"
+                        class="w-full bg-gray-100 dark:bg-gray-700 border-none rounded-xl py-2 pl-10 pr-8 appearance-none cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors focus:ring-2 focus:ring-orange-500 outline-none text-sm font-medium truncate">
+                        <option value="">All Tags</option>
+                        <!-- Filled dynamically -->
+                    </select>
+                </div>
+
+                <div class="relative w-52 hidden xl:block">
+                    <i class="ph-bold ph-star absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                    <select id="ratingFilter" onchange="applyFilters()"
+                        class="w-full bg-gray-100 dark:bg-gray-700 border-none rounded-xl py-2 pl-10 pr-8 appearance-none cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors focus:ring-2 focus:ring-orange-500 outline-none text-sm font-medium truncate">
+                        <option value="">All Ratings</option>
+                        <option value="5">⭐⭐⭐⭐⭐ (5 stars)</option>
+                        <option value="4">⭐⭐⭐⭐ (4+ stars)</option>
+                        <option value="3">⭐⭐⭐ (3+ stars)</option>
+                        <option value="2">⭐⭐ (2+ stars)</option>
+                        <option value="1">⭐ (1+ stars)</option>
+                    </select>
+                </div>
+
+                <div class="relative flex-1 min-w-[180px] max-w-md group">
+                    <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-orange-500"></i>
+                    <input type="text" id="searchInput" placeholder="Search by name or ingredient..." oninput="applyFilters()"
+                        class="w-full bg-gray-100 dark:bg-gray-700 border-none rounded-xl py-2 pl-10 pr-10 focus:ring-2 focus:ring-orange-500 transition-all outline-none text-sm">
+                    <button onclick="document.getElementById('searchInput').value=''; applyFilters();" title="Clear search" class="hidden group-hover:flex absolute right-3 top-1/2 -translate-y-1/2 items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+                        <i class="ph-bold ph-x text-lg"></i>
+                    </button>
+                </div>
+            </div>
+
+            <button onclick="openModal(true)" class="flex items-center gap-2 bg-gray-900 hover:bg-gray-700 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200 text-white px-4 py-2 rounded-lg font-bold transition-colors shadow-lg text-sm">
+                <i class="ph-bold ph-plus"></i>
+                <span class="hidden md:inline">New Recipe</span>
+            </button>
+        </header>
+
+        <main class="flex-1 overflow-y-auto p-6" id="mainContainer">
+
+            <!-- VIEW: RECIPES -->
+            <div id="viewRecipes">
+                <div class="flex gap-4 mb-6 overflow-x-auto pb-2">
+                    <div class="flex items-center gap-3 bg-white dark:bg-gray-800 px-5 py-3 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm min-w-[200px]">
+                        <div class="p-2 bg-orange-100 text-orange-600 rounded-lg"><i class="ph-bold ph-notebook text-xl"></i></div>
+                        <div>
+                            <p class="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Total Recipes</p>
+                            <p class="text-xl font-black text-gray-800 dark:text-white" id="statTotal">0</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3 bg-white dark:bg-gray-800 px-5 py-3 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm min-w-[200px]">
+                        <div class="p-2 bg-purple-100 text-purple-600 rounded-lg"><i class="ph-bold ph-tag text-xl"></i></div>
+                        <div>
+                            <p class="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Categories</p>
+                            <p class="text-xl font-black text-gray-800 dark:text-white" id="statFolders">0</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3 bg-white dark:bg-gray-800 px-5 py-3 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm min-w-[200px]">
+                        <div class="p-2 bg-indigo-100 text-indigo-600 rounded-lg"><i class="ph-bold ph-hash text-xl"></i></div>
+                        <div>
+                            <p class="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Tags</p>
+                            <p class="text-xl font-black text-gray-800 dark:text-white" id="statTags">0</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3 bg-white dark:bg-gray-800 px-5 py-3 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm min-w-[200px]">
+                        <div class="p-2 bg-red-100 text-red-600 rounded-lg"><i class="ph-fill ph-heart text-xl"></i></div>
+                        <div>
+                            <p class="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Favorites</p>
+                            <p class="text-xl font-black text-gray-800 dark:text-white" id="statFavorites">0</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3 bg-white dark:bg-gray-800 px-5 py-3 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm min-w-[200px]">
+                        <div class="p-2 bg-yellow-100 text-yellow-600 rounded-lg"><i class="ph-fill ph-star text-xl"></i></div>
+                        <div>
+                            <p class="text-[10px] text-gray-400 uppercase font-bold tracking-wider">5 Star Rated</p>
+                            <p class="text-xl font-black text-gray-800 dark:text-white" id="statFiveStars">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="recipeGrid" class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+                    <!-- Cards here -->
+                </div>
+            </div>
+
+            <!-- VIEW: PORTION CALCULATOR -->
+            <div id="viewCalculator" class="hidden">
+                <div class="max-w-2xl mx-auto">
+
+                    <!-- Header -->
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-xl">
+                            <i class="ph-bold ph-calculator text-2xl text-orange-500"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-black text-gray-800 dark:text-white">Portion Calculator</h2>
+                            <p class="text-sm text-gray-500">Adjust ingredient quantities for the number of servings you need</p>
+                        </div>
+                    </div>
+
+                    <!-- Recipe search -->
+                    <div class="relative mb-6">
+                        <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                            <i class="ph-bold ph-cooking-pot"></i> Select a recipe
+                        </label>
+                        <div class="relative">
+                            <i class="ph-bold ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            <input type="text" id="calcRecipeSearch"
+                                placeholder="Search recipe..."
+                                autocomplete="off"
+                                oninput="filterCalcRecipes()"
+                                onfocus="filterCalcRecipes()"
+                                onblur="hideCalcDropdown()"
+                                class="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl pl-10 pr-4 py-3 focus:ring-2 focus:ring-orange-500 outline-none text-sm">
+                            <div id="calcRecipeDropdown" class="hidden absolute z-10 w-full mt-1 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl shadow-lg max-h-72 overflow-y-auto">
+                                <!-- Filled dynamically -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Calculator content (hidden until recipe selected) -->
+                    <div id="calcContent" class="hidden">
+
+                        <!-- Info of selected recipe -->
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden mb-6">
+                            <div class="flex items-center gap-4 p-4">
+                                <img id="calcRecipeImage" src="" class="hidden w-16 h-16 rounded-xl object-cover shrink-0">
+                                <div class="flex-1">
+                                    <h3 id="calcRecipeTitle" class="font-bold text-lg text-gray-800 dark:text-white"></h3>
+                                </div>
+                            </div>
+
+                            <!-- Portion control -->
+                            <div class="flex items-center justify-between bg-orange-50 dark:bg-orange-900/20 px-6 py-4 border-t border-orange-200 dark:border-orange-800/40">
+                                <div class="flex items-center gap-2 text-sm font-bold text-gray-700 dark:text-gray-300">
+                                    <i class="ph-bold ph-users text-orange-500"></i>
+                                    <span>Servings:</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <button type="button" onclick="adjustPortions(-1)"
+                                        class="w-10 h-10 rounded-xl bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 flex items-center justify-center hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors font-bold text-lg shadow-sm">
+                                        −
+                                    </button>
+                                    <span id="calcPortionCount" class="text-3xl font-black text-orange-500 w-12 text-center">4</span>
+                                    <button type="button" onclick="adjustPortions(1)"
+                                        class="w-10 h-10 rounded-xl bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 flex items-center justify-center hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors font-bold text-lg shadow-sm">
+                                        +
+                                    </button>
+                                    <span id="calcPortionOriginal" class="text-xs text-gray-400 ml-2">(original: 4)</span>
+                                    <button type="button" onclick="resetPortions()"
+                                        class="ml-2 text-xs text-orange-500 hover:text-orange-700 underline">
+                                        Reset
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- List of calculated ingredients -->
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden mb-6">
+                            <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+                                <h4 class="font-bold text-gray-800 dark:text-white flex items-center gap-2">
+                                    <i class="ph-bold ph-list-bullets text-orange-500"></i>
+                                    Ingredients
+                                </h4>
+                            </div>
+                            <div id="calcIngredientsList" class="divide-y divide-gray-100 dark:divide-gray-700">
+                                <!-- Filled dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- Button: Add to shopping list -->
+                        <button onclick="addCalcToShoppingList()"
+                            class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-6 rounded-xl flex items-center justify-center gap-2 transition-colors shadow-sm">
+                            <i class="ph-bold ph-shopping-cart"></i>
+                            Add to Shopping List
+                        </button>
+
+                        <button onclick="resetCalculator()"
+                            class="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-500 hover:text-red-500 hover:border-red-300 font-medium py-3 px-6 rounded-xl flex items-center justify-center gap-2 transition-colors text-sm mt-2">
+                            <i class="ph-bold ph-arrow-counter-clockwise"></i>
+                            Start over
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: WHAT TO COOK? -->
+            <div id="viewWhatToCook" class="hidden">
+                <div class="max-w-3xl mx-auto">
+
+                    <!-- Header -->
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-xl">
+                            <i class="ph-bold ph-basket text-2xl text-orange-500"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-black text-gray-800 dark:text-white">What to Cook?</h2>
+                            <p class="text-sm text-gray-500">Add the ingredients you have and I'll suggest recipes</p>
+                        </div>
+                    </div>
+
+                    <!-- Ingredients input -->
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
+                        <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-3">
+                            <i class="ph-bold ph-carrot"></i> What do you have at home?
+                        </label>
+                        <div class="flex gap-2 mb-4">
+                            <div class="relative flex-1">
+                                <input type="text" id="wtcInput"
+                                    placeholder="Type an ingredient... (ex: chicken)"
+                                    autocomplete="off"
+                                    onkeydown="if(event.key==='Enter'){event.preventDefault();addWtcIngredient()}"
+                                    oninput="filterWtcSuggestions()"
+                                    onfocus="filterWtcSuggestions()"
+                                    onblur="setTimeout(()=>document.getElementById('wtcSuggestions').classList.add('hidden'),150)"
+                                    class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 focus:ring-2 focus:ring-orange-500 outline-none text-sm">
+                                <div id="wtcSuggestions" class="hidden absolute z-10 w-full mt-1 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl shadow-lg max-h-48 overflow-y-auto">
+                                    <!-- Dynamic suggestions -->
+                                </div>
+                            </div>
+                            <button type="button" onclick="addWtcIngredient()"
+                                class="px-5 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-bold transition-colors text-sm shrink-0">
+                                <i class="ph-bold ph-plus"></i> Add
+                            </button>
+                        </div>
+
+                        <!-- Pills of selected ingredients -->
+                        <div id="wtcSelectedPills" class="flex flex-wrap gap-2 min-h-[40px]">
+                            <span class="text-xs text-gray-400 py-2">Add ingredients to see suggestions...</span>
+                        </div>
+                    </div>
+
+                    <!-- Results -->
+                    <div id="wtcResults" class="hidden">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-bold text-gray-800 dark:text-white flex items-center gap-2">
+                                <i class="ph-bold ph-sparkle text-orange-500"></i>
+                                Recipes you can make
+                            </h3>
+                            <span id="wtcResultCount" class="text-sm text-gray-500"></span>
+                        </div>
+                        <div id="wtcResultsList" class="space-y-3">
+                            <!-- Dynamic results -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: SHOPPING LIST -->
+            <div id="viewShoppingList" class="hidden">
+                <div class="max-w-2xl mx-auto">
+
+                    <!-- Header -->
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="flex items-center gap-3">
+                            <div class="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-xl">
+                                <i class="ph-bold ph-shopping-cart text-2xl text-orange-500"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-2xl font-black text-gray-800 dark:text-white">Shopping List</h2>
+                                <p id="shopListSubtitle" class="text-sm text-gray-500">Add ingredients from What to Cook? or the Calculator</p>
+                            </div>
+                        </div>
+                        <button onclick="clearShoppingList()" id="btnClearShopList" class="hidden text-sm text-red-500 hover:text-red-700 font-medium flex items-center gap-1 transition-colors">
+                            <i class="ph-bold ph-trash"></i> Clear list
+                        </button>
+                    </div>
+
+                    <!-- Empty list -->
+                    <div id="shopListEmpty" class="text-center py-16">
+                        <i class="ph-bold ph-shopping-cart text-6xl text-gray-300 dark:text-gray-600 mb-4"></i>
+                        <p class="text-lg text-gray-400 mb-2">Your list is empty</p>
+                        <p class="text-sm text-gray-400">Use <strong>What to Cook?</strong> or the <strong>Calculator</strong> to add ingredients</p>
+                    </div>
+
+                    <!-- List with items -->
+                    <div id="shopListContent" class="hidden space-y-4">
+                        <!-- Filled dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: IMPORT FROM URL (SCRAPER) -->
+            <div id="viewScraper" class="hidden">
+                <div class="max-w-3xl mx-auto">
+
+                    <!-- Header -->
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-xl">
+                            <i class="ph-bold ph-globe text-2xl text-orange-500"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-black text-gray-800 dark:text-white">Import Recipe from Internet</h2>
+                            <p class="text-sm text-gray-500">Paste the URL of any recipe and we'll import it for you</p>
+                        </div>
+                    </div>
+
+                    <!-- URL Input -->
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm mb-6">
+                        <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                            <i class="ph-bold ph-link"></i> Recipe URL
+                        </label>
+                        <div class="flex gap-3">
+                            <div class="relative flex-1">
+                                <i class="ph-bold ph-globe absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                <input type="url" id="scraperUrlInput"
+                                    placeholder="https://www.example.com/amazing-recipe"
+                                    onkeydown="if(event.key==='Enter') scrapeFromUrl()"
+                                    class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl pl-10 pr-10 py-3 focus:ring-2 focus:ring-orange-500 outline-none text-sm">
+                                <button onclick="document.getElementById('scraperUrlInput').value=''; document.getElementById('scraperUrlInput').focus();" title="Clear URL" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors hidden group-hover:block" id="scraperClearBtn" style="display: none;">
+                                    <i class="ph-bold ph-x text-lg"></i>
+                                </button>
+                            </div>
+                            <button onclick="scrapeFromUrl()" id="scraperBtn"
+                                class="px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-bold transition-colors text-sm flex items-center gap-2 shadow-sm whitespace-nowrap">
+                                <i class="ph-bold ph-magnifying-glass"></i>
+                                Find Recipe
+                            </button>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-2">Works with AllRecipes, Free Recipes, BBC Good Food, Cookpad, blogs and more</p>
+                    </div>
+
+                    <!-- Loading state -->
+                    <div id="scraperLoading" class="hidden">
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-12 text-center shadow-sm">
+                            <div class="inline-flex items-center justify-center w-16 h-16 bg-orange-100 dark:bg-orange-900/30 rounded-full mb-4 animate-pulse">
+                                <i class="ph-bold ph-globe text-3xl text-orange-500"></i>
+                            </div>
+                            <p class="text-gray-600 dark:text-gray-400 font-medium">Analyzing the page...</p>
+                            <p class="text-xs text-gray-400 mt-1">This may take a few seconds</p>
+                        </div>
+                    </div>
+
+                    <!-- Error state -->
+                    <div id="scraperError" class="hidden">
+                        <div class="bg-red-50 dark:bg-red-900/20 rounded-2xl border border-red-200 dark:border-red-800 p-6">
+                            <div class="flex items-start gap-3">
+                                <i class="ph-bold ph-warning-circle text-2xl text-red-500 mt-0.5"></i>
+                                <div>
+                                    <h3 class="font-bold text-red-700 dark:text-red-400">Could not import</h3>
+                                    <p id="scraperErrorText" class="text-sm text-red-600 dark:text-red-300 mt-1"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Preview (scraped recipe) -->
+                    <div id="scraperPreview" class="hidden">
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
+
+                            <!-- Preview header -->
+                            <div class="bg-gradient-to-r from-blue-500 to-cyan-500 p-4 flex items-center justify-between">
+                                <div class="flex items-center gap-2 text-white">
+                                    <i class="ph-bold ph-check-circle text-xl"></i>
+                                    <span class="font-bold text-sm">Recipe found — check the data before importing</span>
+                                </div>
+                                <span id="scraperMethod" class="text-xs bg-white bg-opacity-20 text-white px-2 py-1 rounded-lg"></span>
+                            </div>
+
+                            <!-- Image preview -->
+                            <div id="scraperImageContainer" class="hidden relative">
+                                <img id="scraperPreviewImage" src="" class="w-full h-48 object-cover" alt="">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                            </div>
+
+                            <div class="p-6 space-y-5">
+
+                                <!-- Title -->
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Title</label>
+                                    <input type="text" id="scraperTitle"
+                                        class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-2.5 text-sm font-bold focus:ring-2 focus:ring-orange-500 outline-none">
+                                </div>
+
+                                <!-- Description -->
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Description</label>
+                                    <textarea id="scraperDescription" rows="2"
+                                        class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-orange-500 outline-none resize-none"></textarea>
+                                </div>
+
+                                <!-- Meta: Servings, Prep, Cook -->
+                                <div class="grid grid-cols-3 gap-4">
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Servings</label>
+                                        <input type="number" id="scraperServings" min="1" max="100"
+                                            class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-3 py-2.5 text-sm text-center focus:ring-2 focus:ring-orange-500 outline-none">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Prep (min)</label>
+                                        <input type="number" id="scraperPrepTime" min="0"
+                                            class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-3 py-2.5 text-sm text-center focus:ring-2 focus:ring-orange-500 outline-none">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Cook (min)</label>
+                                        <input type="number" id="scraperCookTime" min="0"
+                                            class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-3 py-2.5 text-sm text-center focus:ring-2 focus:ring-orange-500 outline-none">
+                                    </div>
+                                </div>
+
+                                <!-- Ingredients -->
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">
+                                        Ingredients <span id="scraperIngCount" class="text-orange-500"></span>
+                                    </label>
+                                    <div id="scraperIngredientsList" class="bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600 divide-y divide-gray-200 dark:divide-gray-600 max-h-60 overflow-y-auto">
+                                        <!-- Filled dynamically -->
+                                    </div>
+                                </div>
+
+                                <!-- Steps -->
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">
+                                        Steps <span id="scraperStepCount" class="text-orange-500"></span>
+                                    </label>
+                                    <div id="scraperStepsList" class="space-y-2 max-h-60 overflow-y-auto">
+                                        <!-- Filled dynamically -->
+                                    </div>
+                                </div>
+
+                                <!-- Source URL display -->
+                                <div class="flex items-center gap-2 text-xs text-gray-400 bg-gray-50 dark:bg-gray-700/50 rounded-xl px-4 py-3 border border-gray-200 dark:border-gray-600">
+                                    <i class="ph-bold ph-link"></i>
+                                    <span>Source:</span>
+                                    <a id="scraperSourceLink" href="#" target="_blank" class="text-blue-500 hover:underline truncate"></a>
+                                </div>
+
+                                <!-- Import button -->
+                                <button onclick="importScrapedRecipe()" id="scraperImportBtn"
+                                    class="w-full py-3.5 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white rounded-xl font-bold transition-all text-sm flex items-center justify-center gap-2 shadow-lg">
+                                    <i class="ph-bold ph-download-simple"></i>
+                                    Import to My Recipes
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Success state -->
+                    <div id="scraperSuccess" class="hidden">
+                        <div class="bg-green-50 dark:bg-green-900/20 rounded-2xl border border-green-200 dark:border-green-800 p-8 text-center">
+                            <div class="inline-flex items-center justify-center w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full mb-4">
+                                <i class="ph-bold ph-check-circle text-3xl text-green-500"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-green-700 dark:text-green-400 mb-1">Recipe imported!</h3>
+                            <p class="text-sm text-green-600 dark:text-green-300 mb-4">The recipe was saved to your recipes and in the "Imported from Internet" category</p>
+                            <div class="flex gap-3 justify-center">
+                                <button onclick="resetScraper()" class="px-5 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl text-sm font-medium hover:border-green-400 transition-colors">
+                                    Import another
+                                </button>
+                                <button onclick="filterByView('all')" class="px-5 py-2.5 bg-green-500 hover:bg-green-600 text-white rounded-xl text-sm font-bold transition-colors">
+                                    View my recipes
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- VIEW: MEMORIES -->
+            <div id="viewMemories" class="hidden">
+                <div class="max-w-5xl mx-auto">
+
+                    <!-- Header -->
+                    <div class="flex items-center justify-between mb-8">
+                        <div>
+                            <h1 class="text-3xl font-black text-gray-800 dark:text-white flex items-center gap-3">
+                                <i class="ph-bold ph-camera text-orange-500"></i> Memories
+                            </h1>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">The moments around the table</p>
+                        </div>
+                        <button onclick="openMemoryModal()" class="bg-orange-500 hover:bg-orange-600 text-white px-5 py-3 rounded-xl font-bold flex items-center gap-2 transition-colors shadow-lg shadow-orange-500/25">
+                            <i class="ph-bold ph-plus text-lg"></i>
+                            <span>New Memory</span>
+                        </button>
+                    </div>
+
+                    <!-- Grid of memories -->
+                    <div id="memoriesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+                    <!-- Empty state -->
+                    <div id="memoriesEmpty" class="hidden text-center py-20">
+                        <div class="inline-flex items-center justify-center w-24 h-24 rounded-full bg-orange-100 dark:bg-orange-900/30 mb-6">
+                            <i class="ph-bold ph-camera text-5xl text-orange-400"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-700 dark:text-gray-300 mb-2">No memories yet</h3>
+                        <p class="text-gray-400 max-w-md mx-auto mb-6">Each recipe has a story. Save the special moments you lived cooking or sharing food.</p>
+                        <button onclick="openMemoryModal()" class="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-xl font-bold inline-flex items-center gap-2 transition-colors">
+                            <i class="ph-bold ph-plus"></i> Create your first memory
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: MEMORY DETAIL -->
+            <div id="viewMemoryDetail" class="hidden">
+                <div id="memoryDetailContent" class="max-w-4xl mx-auto"></div>
+            </div>
+
+            <!-- VIEW: COOKBOOKS -->
+            <div id="viewCookbooks" class="hidden">
+                <div class="max-w-5xl mx-auto">
+
+                    <!-- Header -->
+                    <div class="flex items-center justify-between mb-8">
+                        <div class="flex items-center gap-3">
+                            <div class="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-xl">
+                                <i class="ph-bold ph-book-open text-2xl text-orange-500"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-2xl font-black text-gray-800 dark:text-white">My Cookbooks</h2>
+                                <p class="text-sm text-gray-500">Collections of recipes to share</p>
+                            </div>
+                        </div>
+                        <button onclick="openCookbookModal()"
+                            class="px-5 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-bold transition-colors text-sm flex items-center gap-2 shadow-sm">
+                            <i class="ph-bold ph-plus"></i> New Cookbook
+                        </button>
+                    </div>
+
+                    <!-- Grid of cookbooks -->
+                    <div id="cookbooksGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Filled dynamically -->
+                    </div>
+
+                    <!-- Empty -->
+                    <div id="cookbooksEmpty" class="hidden text-center py-20">
+                        <i class="ph-bold ph-book-open text-6xl text-gray-300 dark:text-gray-600 mb-4"></i>
+                        <p class="text-xl text-gray-400 mb-2">You don't have any cookbooks yet</p>
+                        <p class="text-sm text-gray-400 mb-6">Create your first cookbook to organize and share your recipes</p>
+                        <button onclick="openCookbookModal()"
+                            class="px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-bold transition-colors text-sm inline-flex items-center gap-2">
+                            <i class="ph-bold ph-plus"></i> Create my first cookbook
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: COOKBOOK DETAIL -->
+            <div id="viewCookbookDetail" class="hidden">
+                <div class="max-w-5xl mx-auto">
+
+                    <!-- Back button -->
+                    <button onclick="showView('cookbooks')" class="flex items-center gap-2 text-gray-500 hover:text-orange-500 text-sm font-medium mb-4 transition-colors">
+                        <i class="ph-bold ph-arrow-left"></i> Back to Cookbooks
+                    </button>
+
+                    <!-- Cover + Info -->
+                    <div id="cbDetailHeader" class="mb-8">
+                        <!-- Filled dynamically -->
+                    </div>
+
+                    <!-- Personal note -->
+                    <div id="cbDetailNote" class="hidden"></div>
+
+                    <!-- Actions -->
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="font-bold text-gray-800 dark:text-white flex items-center gap-2">
+                            <i class="ph-bold ph-cooking-pot text-orange-500"></i>
+                            <span id="cbDetailRecipeCount">0 recipes</span>
+                        </h3>
+                        <div class="flex gap-2">
+                            <button onclick="editCurrentCookbook()" class="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl text-sm font-medium hover:border-orange-400 transition-colors flex items-center gap-1">
+                                <i class="ph-bold ph-pencil-simple"></i> Edit
+                            </button>
+                            <button onclick="shareCurrentCookbook()" class="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-xl text-sm font-bold transition-colors flex items-center gap-1">
+                                <i class="ph-bold ph-share-network"></i> Share
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Grid of recipes in cookbook -->
+                    <div id="cbDetailGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <!-- Filled dynamically -->
+                    </div>
+
+                    <!-- Empty -->
+                    <div id="cbDetailEmpty" class="hidden text-center py-16">
+                        <i class="ph-bold ph-cooking-pot text-5xl text-gray-300 dark:text-gray-600 mb-3"></i>
+                        <p class="text-gray-400 mb-2">This cookbook has no recipes</p>
+                        <button onclick="editCurrentCookbook()" class="text-orange-500 hover:text-orange-600 font-medium text-sm">
+                            <i class="ph-bold ph-plus"></i> Add recipes
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: RECIPE DETAIL (Reading View) -->
+            <div id="viewRecipeDetail" class="hidden">
+                <div id="recipeDetailContent" class="max-w-4xl mx-auto"></div>
+            </div>
+
+            <!-- VIEW: PLANNER (Coming Soon) -->
+            <div id="viewPlanner" class="hidden">
+                <div class="max-w-2xl mx-auto text-center py-20">
+                    <div class="inline-flex items-center justify-center w-24 h-24 bg-orange-100 dark:bg-orange-900/30 rounded-full mb-6">
+                        <i class="ph-bold ph-calendar-blank text-5xl text-orange-500"></i>
+                    </div>
+                    <h2 class="text-3xl font-black text-gray-800 dark:text-white mb-3">Menu Planner</h2>
+                    <p class="text-lg text-gray-500 dark:text-gray-400 mb-2">Coming Soon</p>
+                    <p class="text-sm text-gray-400 dark:text-gray-500 max-w-md mx-auto">
+                        Soon you'll be able to organize your week with a menu planner.
+                        Drag recipes, generate automatic shopping lists and never again ask yourself "what am I cooking today?".
+                    </p>
+                    <div class="mt-8 inline-flex items-center gap-2 px-4 py-2 bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 rounded-full text-sm font-medium">
+                        <i class="ph-bold ph-hammer"></i>
+                        In Development
+                    </div>
+                </div>
+            </div>
+
+            <!-- viewHelp removed — Help is now a modal (helpModal) -->
+
+        </main>
+    </div>
+
+    <!-- OVERLAY: COOKING MODE (Fullscreen) -->
+    <div id="cookingModeOverlay" class="hidden fixed inset-0 bg-gray-900 z-[80] flex flex-col">
+        <!-- Header -->
+        <div class="flex items-center justify-between px-6 py-4 bg-gray-800">
+            <div class="flex items-center gap-3">
+                <span class="text-orange-400 font-bold text-lg truncate" id="cookingRecipeTitle"></span>
+            </div>
+            <div class="flex items-center gap-3">
+                <button onclick="toggleCookingIngredients()" class="text-gray-400 hover:text-white transition-colors p-2 rounded-lg hover:bg-gray-700" title="View ingredients">
+                    <i class="ph-bold ph-list text-xl"></i>
+                </button>
+                <button onclick="closeCookingMode()" class="text-gray-400 hover:text-white transition-colors p-2 rounded-lg hover:bg-gray-700" title="Exit">
+                    <i class="ph-bold ph-x text-2xl"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Progress bar -->
+        <div class="h-1 bg-gray-700">
+            <div id="cookingProgress" class="h-full bg-orange-500 transition-all duration-300" style="width: 0%"></div>
+        </div>
+        <!-- Content area -->
+        <div class="flex-1 flex relative overflow-hidden">
+            <!-- Step display -->
+            <div class="flex-1 flex flex-col items-center justify-center px-8 md:px-16">
+                <div class="text-gray-500 text-sm mb-4 font-bold tracking-wider uppercase" id="cookingStepLabel"></div>
+                <div class="text-white text-2xl md:text-4xl font-medium text-center leading-relaxed max-w-3xl" id="cookingStepText"></div>
+                <!-- Timer -->
+                <div id="cookingTimer" class="hidden mt-8">
+                    <button onclick="startCookingTimer()" id="cookingTimerBtn" class="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 transition-colors">
+                        <i class="ph-bold ph-timer text-xl"></i>
+                        <span id="cookingTimerLabel">Start timer</span>
+                    </button>
+                </div>
+            </div>
+            <!-- Ingredients panel (toggle) -->
+            <div id="cookingIngredientsPanel" class="hidden absolute right-0 top-0 bottom-0 w-80 bg-gray-800 border-l border-gray-700 overflow-y-auto p-6">
+                <h3 class="text-orange-400 font-bold mb-4 flex items-center gap-2">
+                    <i class="ph-bold ph-list"></i> Ingredients
+                </h3>
+                <div id="cookingIngredientsList" class="space-y-2"></div>
+            </div>
+        </div>
+        <!-- Navigation -->
+        <div class="flex items-center justify-between px-6 py-5 bg-gray-800">
+            <button onclick="cookingPrevStep()" id="cookingBtnPrev" class="bg-gray-700 hover:bg-gray-600 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 transition-colors">
+                <i class="ph-bold ph-arrow-left"></i> Previous
+            </button>
+            <div class="flex gap-1.5" id="cookingDots"></div>
+            <button onclick="cookingNextStep()" id="cookingBtnNext" class="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 transition-colors">
+                Next <i class="ph-bold ph-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- HELP MODAL -->
+    <div id="helpModal" class="hidden fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4 opacity-0 transition-opacity duration-200">
+        <div id="helpModalContent" class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col scale-95 transition-transform duration-200">
+
+            <div class="bg-gradient-to-r from-orange-500 to-red-500 p-6 flex justify-between items-center shrink-0">
+                <div class="flex items-center gap-3">
+                    <div class="text-white text-2xl"><i class="ph-bold ph-book-open-text"></i></div>
+                    <div>
+                        <h2 class="text-2xl font-black text-white">Help</h2>
+                        <p class="text-orange-100 text-sm">Everything you need to know about Zest</p>
+                    </div>
+                </div>
+                <button onclick="closeHelpModal()" class="text-white hover:bg-white hover:bg-opacity-20 p-2 rounded-lg transition-colors">
+                    <i class="ph-bold ph-x text-2xl"></i>
+                </button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-6">
+                <!-- Quick nav grid -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-8">
+                    <button onclick="document.getElementById('helpSecRecipes').scrollIntoView({behavior:'smooth'})" class="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl p-4 hover:border-orange-300 dark:hover:border-orange-600 transition-colors text-left">
+                        <i class="ph-bold ph-cooking-pot text-orange-500 text-xl mb-2 block"></i>
+                        <p class="text-sm font-bold text-gray-700 dark:text-gray-300">Recipes</p>
+                    </button>
+                    <button onclick="document.getElementById('helpSecMemories').scrollIntoView({behavior:'smooth'})" class="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl p-4 hover:border-orange-300 dark:hover:border-orange-600 transition-colors text-left">
+                        <i class="ph-bold ph-camera text-orange-500 text-xl mb-2 block"></i>
+                        <p class="text-sm font-bold text-gray-700 dark:text-gray-300">Memories</p>
+                    </button>
+                    <button onclick="document.getElementById('helpSecScraper').scrollIntoView({behavior:'smooth'})" class="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl p-4 hover:border-orange-300 dark:hover:border-orange-600 transition-colors text-left">
+                        <i class="ph-bold ph-globe text-orange-500 text-xl mb-2 block"></i>
+                        <p class="text-sm font-bold text-gray-700 dark:text-gray-300">Import URLs</p>
+                    </button>
+                    <button onclick="document.getElementById('helpSecCookbooks').scrollIntoView({behavior:'smooth'})" class="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl p-4 hover:border-orange-300 dark:hover:border-orange-600 transition-colors text-left">
+                        <i class="ph-bold ph-book-open text-orange-500 text-xl mb-2 block"></i>
+                        <p class="text-sm font-bold text-gray-700 dark:text-gray-300">Cookbooks</p>
+                    </button>
+                    <button onclick="document.getElementById('helpSecWhatToCook').scrollIntoView({behavior:'smooth'})" class="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl p-4 hover:border-orange-300 dark:hover:border-orange-600 transition-colors text-left">
+                        <i class="ph-bold ph-magnifying-glass text-orange-500 text-xl mb-2 block"></i>
+                        <p class="text-sm font-bold text-gray-700 dark:text-gray-300">What to Cook?</p>
+                    </button>
+                    <button onclick="document.getElementById('helpSecBackups').scrollIntoView({behavior:'smooth'})" class="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl p-4 hover:border-orange-300 dark:hover:border-orange-600 transition-colors text-left">
+                        <i class="ph-bold ph-cloud-arrow-down text-orange-500 text-xl mb-2 block"></i>
+                        <p class="text-sm font-bold text-gray-700 dark:text-gray-300">Backups</p>
+                    </button>
+                </div>
+
+                <!-- Content sections -->
+                <div class="space-y-8 text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+                    <section id="helpSecRecipes">
+                        <h3 class="text-lg font-black text-gray-800 dark:text-white mb-3 flex items-center gap-2"><i class="ph-bold ph-cooking-pot text-orange-500"></i> Recipes</h3>
+                        <p class="mb-2">Click <strong>+ New Recipe</strong> to create a recipe from scratch. Fill in the title, description, prep/cook times, servings, and upload a hero photo (up to 4 photos total).</p>
+                        <p class="mb-2"><strong>Ingredients</strong> have structured fields: quantity, unit, name, and an optional note. This powers the portion calculator and shopping list.</p>
+                        <p class="mb-2"><strong>Steps</strong> are added one per line. Simply type or paste each step on a new line describing one part of the cooking process.</p>
+                        <p class="mb-2"><strong>Rating:</strong> Click the stars (1-5) on any recipe card. <strong>Favorites:</strong> Click the heart icon to bookmark recipes.</p>
+                        <p>Use <strong>Categories</strong> for broad groups (Mexican, Desserts, Soups) and <strong>Tags</strong> for cross-cutting labels (Spicy, Kid-friendly, Date night). Tags have custom colors.</p>
+                    </section>
+                    <hr class="border-gray-200 dark:border-gray-700">
+                    <section id="helpSecScraper">
+                        <h3 class="text-lg font-black text-gray-800 dark:text-white mb-3 flex items-center gap-2"><i class="ph-bold ph-globe text-orange-500"></i> Importing Recipes from URLs</h3>
+                        <p class="mb-2">Click <strong>"Import from URL"</strong> in the sidebar, paste any cooking website URL, and click <strong>Scrape</strong>.</p>
+                        <p class="mb-2">Zest uses a 4-tier engine: first it tries the <em>recipe-scrapers</em> library (400+ sites), then JSON-LD structured data, then Microdata attributes, and finally intelligent CSS heuristics.</p>
+                        <p>Review the preview, edit anything you want, then click <strong>Save</strong>. Imported recipes get an automatic "Imported from Internet" category.</p>
+                    </section>
+                    <hr class="border-gray-200 dark:border-gray-700">
+                    <section id="helpSecMemories">
+                        <h3 class="text-lg font-black text-gray-800 dark:text-white mb-3 flex items-center gap-2"><i class="ph-bold ph-camera text-orange-500"></i> Memories</h3>
+                        <p class="mb-2">Memories are what makes Zest different. A Memory connects photos, dates, locations, and stories to a recipe — turning your collection into a culinary diary.</p>
+                        <p class="mb-2">Click <strong>Memories</strong> in the sidebar, then <strong>+ New Memory</strong>. Add a title, upload up to 10 photos, write the story, and optionally link it to a recipe.</p>
+                        <p class="mb-2"><strong>Auto-detection:</strong> JPEG photos with EXIF data will auto-fill the date and GPS location. Coordinates are converted to place names automatically.</p>
+                        <p><strong>Moment Cards:</strong> Open any memory with photos, click <strong>Share</strong>, and choose a template (Story, Square, or Landscape) to generate a beautiful image for social media.</p>
+                    </section>
+                    <hr class="border-gray-200 dark:border-gray-700">
+                    <section id="helpSecWhatToCook">
+                        <h3 class="text-lg font-black text-gray-800 dark:text-white mb-3 flex items-center gap-2"><i class="ph-bold ph-magnifying-glass text-orange-500"></i> What to Cook?</h3>
+                        <p class="mb-2">Tell Zest what ingredients you have, and it finds matching recipes ranked by match percentage.</p>
+                        <p class="mb-2">Type ingredient names — suggestions appear from your recipe database. Results show which ingredients you have (green) and which are missing (red).</p>
+                        <p>You can adjust portions right from the results, and add missing ingredients to your shopping list with one click.</p>
+                    </section>
+                    <hr class="border-gray-200 dark:border-gray-700">
+                    <section id="helpSecCookbooks">
+                        <h3 class="text-lg font-black text-gray-800 dark:text-white mb-3 flex items-center gap-2"><i class="ph-bold ph-book-open text-orange-500"></i> Cookbooks & Sharing</h3>
+                        <p class="mb-2"><strong>Cookbooks</strong> are curated recipe collections. Add a name, description, author's note, and up to 2 cover photos with drag-to-reposition.</p>
+                        <p class="mb-2"><strong>Sharing:</strong> Click <strong>Share</strong> on any cookbook to generate a public link. Anyone with the link can view the cookbook — no account needed. You can revoke the link at any time.</p>
+                        <p><strong>PDF Export:</strong> Click the PDF button on any cookbook to download a professionally formatted PDF with cover page and recipe cards.</p>
+                    </section>
+                    <hr class="border-gray-200 dark:border-gray-700">
+                    <section id="helpSecShopping">
+                        <h3 class="text-lg font-black text-gray-800 dark:text-white mb-3 flex items-center gap-2"><i class="ph-bold ph-shopping-cart text-orange-500"></i> Shopping List & Calculator</h3>
+                        <p class="mb-2"><strong>Shopping List:</strong> Add ingredients from any recipe or from "What to Cook?" results. When adding from multiple recipes, Zest combines quantities automatically (200g + 100g = 300g).</p>
+                        <p><strong>Portion Calculator:</strong> On any recipe detail, use +/- to adjust servings. All quantities recalculate proportionally, with beautiful fractions (1/2, 1/3, 1/4).</p>
+                    </section>
+                    <hr class="border-gray-200 dark:border-gray-700">
+                    <section id="helpSecBackups">
+                        <h3 class="text-lg font-black text-gray-800 dark:text-white mb-3 flex items-center gap-2"><i class="ph-bold ph-cloud-arrow-down text-orange-500"></i> Backups & Data</h3>
+                        <p class="mb-2">Go to <strong>Settings → Backups</strong> to enable automatic backups. Choose frequency (12h / 24h / 7 days) and how many to keep.</p>
+                        <p class="mb-2"><strong>Manual export:</strong> "Export Full Backup" creates a ZIP with the database + all images. "Export JSON" exports recipes in a portable format.</p>
+                        <p class="mb-2"><strong>Import:</strong> Upload a backup ZIP to restore your instance, or import a JSON file to add recipes (duplicates are skipped).</p>
+                        <p><strong>Health check:</strong> Visit <code class="bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded text-xs">/api/health</code> for monitoring tools like Uptime Kuma. It verifies that your instance is running and responding correctly.</p>
+                    </section>
+                    <hr class="border-gray-200 dark:border-gray-700">
+                    <section>
+                        <h3 class="text-lg font-black text-gray-800 dark:text-white mb-3 flex items-center gap-2"><i class="ph-bold ph-lightbulb text-orange-500"></i> Tips</h3>
+                        <p class="mb-2">Press <strong>Esc</strong> to close any modal or overlay.</p>
+                        <p class="mb-2">Click the <strong>moon/sun icon</strong> in the sidebar to toggle dark mode.</p>
+                        <p class="mb-2"><strong>iPhone photos</strong> (HEIC/HEIF) are supported out of the box — no conversion needed.</p>
+                        <p>Images are automatically optimized on upload (resized to max 1920px, JPEG quality 85).</p>
+                    </section>
+                </div>
+
+                <div class="mt-10 text-center text-xs text-gray-400 dark:text-gray-500">
+                    <p>Zest — Because recipes deserve memories.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL -->
+    <div id="recipeModal" class="hidden fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4 opacity-0 transition-opacity duration-200">
+        <div id="modalContent" class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col scale-95 transition-transform duration-200">
+
+            <div class="bg-gradient-to-r from-orange-500 to-red-500 p-6 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div id="modalTitleIcon" class="text-white text-2xl"><i class="ph-duotone ph-lock-key"></i></div>
+                    <h2 class="text-2xl font-black text-white" id="modalTitle">Read Mode</h2>
+                </div>
+                <button onclick="closeModal()" class="text-white hover:bg-white hover:bg-opacity-20 p-2 rounded-lg transition-colors">
+                    <i class="ph-bold ph-x text-2xl"></i>
+                </button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-6">
+                <form id="recipeForm" class="space-y-6">
+                    <input type="hidden" id="recipeId">
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                        <div class="lg:col-span-2 space-y-6">
+
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Title</label>
+                                <input type="text" id="inputTitle" required
+                                    class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 focus:ring-2 focus:ring-orange-500 outline-none transition-all text-lg font-semibold">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                                    <i class="ph-bold ph-folder"></i> Categories
+                                </label>
+
+                                <!-- Selected categories -->
+                                <div id="selectedCategoriesContainer" class="flex flex-wrap gap-2 mb-2 min-h-[36px] p-2 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <span class="text-xs text-gray-400">Select or create categories...</span>
+                                </div>
+
+                                <!-- Search input with dropdown -->
+                                <div class="relative" id="categorySearchWrapper">
+                                    <i class="ph-bold ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                                    <input
+                                        type="text"
+                                        id="categorySearchInput"
+                                        placeholder="Search or create category..."
+                                        autocomplete="off"
+                                        oninput="filterCategoryDropdown()"
+                                        onfocus="showCategoryDropdown()"
+                                        class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg pl-9 pr-3 py-2 text-sm focus:ring-2 focus:ring-orange-500 outline-none">
+                                    <div id="categoryDropdown" class="hidden absolute z-10 w-full mt-1 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                                        <!-- Filled dynamically -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tags -->
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                                    <i class="ph-bold ph-tag"></i> Tags
+                                </label>
+
+                                <!-- Selected tags -->
+                                <div id="selectedTagsContainer" class="flex flex-wrap gap-2 mb-3 min-h-[40px] p-2 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <span class="text-xs text-gray-400">Select or create tags...</span>
+                                </div>
+
+                                <!-- List of available tags -->
+                                <div class="mb-3">
+                                    <p class="text-xs text-gray-500 mb-2">Available tags (click to add):</p>
+                                    <div id="availableTagsContainer" class="flex flex-wrap gap-2">
+                                        <!-- Filled dynamically -->
+                                    </div>
+                                </div>
+
+                                <!-- Create new tag -->
+                                <div class="border-t border-gray-200 dark:border-gray-600 pt-3">
+                                    <p class="text-xs text-gray-500 mb-2">Create new tag:</p>
+                                    <div class="flex gap-2">
+                                        <input
+                                            type="text"
+                                            id="newTagInput"
+                                            placeholder="Tag name..."
+                                            class="flex-1 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-500 outline-none">
+                                        <select
+                                            id="newTagColor"
+                                            class="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-500 outline-none cursor-pointer">
+                                            <option value="#ef4444" style="color: #ef4444">🔴 Red</option>
+                                            <option value="#f97316" selected style="color: #f97316">🟠 Orange</option>
+                                            <option value="#eab308" style="color: #eab308">🟡 Yellow</option>
+                                            <option value="#22c55e" style="color: #22c55e">🟢 Green</option>
+                                            <option value="#3b82f6" style="color: #3b82f6">🔵 Blue</option>
+                                            <option value="#a855f7" style="color: #a855f7">🟣 Purple</option>
+                                            <option value="#ec4899" style="color: #ec4899">🩷 Pink</option>
+                                        </select>
+                                        <button
+                                            type="button"
+                                            onclick="createNewTag()"
+                                            class="bg-purple-500 hover:bg-purple-600 text-white text-sm font-bold px-4 py-2 rounded-lg transition-colors whitespace-nowrap">
+                                            + Tag
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Rating with stars -->
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                                    <i class="ph-bold ph-star"></i> Rating
+                                </label>
+                                <div class="flex items-center gap-2">
+                                    <div id="ratingStars" class="flex gap-1">
+                                        <button type="button" onclick="setRating(1)" disabled class="rating-star text-3xl text-gray-300 transition-colors cursor-not-allowed">
+                                            <i class="ph-fill ph-star"></i>
+                                        </button>
+                                        <button type="button" onclick="setRating(2)" disabled class="rating-star text-3xl text-gray-300 transition-colors cursor-not-allowed">
+                                            <i class="ph-fill ph-star"></i>
+                                        </button>
+                                        <button type="button" onclick="setRating(3)" disabled class="rating-star text-3xl text-gray-300 transition-colors cursor-not-allowed">
+                                            <i class="ph-fill ph-star"></i>
+                                        </button>
+                                        <button type="button" onclick="setRating(4)" disabled class="rating-star text-3xl text-gray-300 transition-colors cursor-not-allowed">
+                                            <i class="ph-fill ph-star"></i>
+                                        </button>
+                                        <button type="button" onclick="setRating(5)" disabled class="rating-star text-3xl text-gray-300 transition-colors cursor-not-allowed">
+                                            <i class="ph-fill ph-star"></i>
+                                        </button>
+                                    </div>
+                                    <input type="hidden" id="inputRating" value="0">
+                                    <span id="ratingText" class="text-sm text-gray-500 dark:text-gray-400">No rating</span>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                                        <i class="ph-bold ph-knife"></i> Prep (min)
+                                    </label>
+                                    <input type="number" id="inputTime" value="0" min="0"
+                                        oninput="updateTotalTime()"
+                                        class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 focus:ring-2 focus:ring-orange-500 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                                        <i class="ph-bold ph-fire"></i> Cook (min)
+                                    </label>
+                                    <input type="number" id="inputCookTime" value="0" min="0"
+                                        oninput="updateTotalTime()"
+                                        class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 focus:ring-2 focus:ring-orange-500 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                                        <i class="ph-bold ph-clock"></i> Total
+                                    </label>
+                                    <div id="totalTimeDisplay" class="w-full bg-gray-100 dark:bg-gray-600 border border-gray-200 dark:border-gray-500 rounded-xl px-4 py-3 text-sm font-bold text-orange-600 dark:text-orange-400 text-center">
+                                        0 min
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                                        <i class="ph-bold ph-users"></i> Servings
+                                    </label>
+                                    <input type="number" id="inputServings" placeholder="e.g. 4"
+                                        class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 focus:ring-2 focus:ring-orange-500 outline-none">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                                    <i class="ph-bold ph-list-bullets"></i> Ingredients
+                                </label>
+
+                                <!-- Read mode: formatted list -->
+                                <div id="ingredientsReadView" class="bg-gray-50 dark:bg-gray-700 rounded-xl border border-gray-200 dark:border-gray-600 divide-y divide-gray-200 dark:divide-gray-600 max-h-72 overflow-y-auto">
+                                    <!-- Filled dynamically -->
+                                </div>
+
+                                <!-- Edit mode: structured inputs -->
+                                <div id="ingredientsEditView" class="hidden">
+                                    <div id="ingredientRows" class="space-y-2 mb-3 max-h-72 overflow-y-auto pr-1">
+                                        <!-- Dynamic rows -->
+                                    </div>
+                                    <button type="button" onclick="addIngredientRow()"
+                                        class="w-full py-2.5 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl text-sm text-gray-500 hover:border-orange-400 hover:text-orange-500 transition-colors flex items-center justify-center gap-2">
+                                        <i class="ph-bold ph-plus"></i> Add ingredient
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                                    <i class="ph-bold ph-steps"></i> Steps
+                                </label>
+                                <textarea id="inputSteps" rows="10" placeholder="One step per line..."
+                                    class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 focus:ring-2 focus:ring-orange-500 outline-none resize-none"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="space-y-6">
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Image</label>
+                                <div class="relative aspect-square bg-gray-100 dark:bg-gray-700 rounded-xl overflow-hidden border-2 border-dashed border-gray-300 dark:border-gray-600">
+                                    <img id="imagePreview" src="" class="w-full h-full object-cover hidden">
+                                    <div id="imagePlaceholder" class="absolute inset-0 flex flex-col items-center justify-center text-gray-400">
+                                        <i class="ph-bold ph-image text-6xl mb-2"></i>
+                                        <p class="text-sm">No image</p>
+                                    </div>
+
+                                    <div id="uploadOverlay" class="hidden absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+                                        <label class="cursor-pointer bg-white text-gray-900 px-4 py-2 rounded-lg font-bold hover:bg-gray-100 transition-colors flex items-center gap-2">
+                                            <i class="ph-bold ph-upload"></i>
+                                            Upload Image
+                                            <input type="file" accept="image/*" onchange="handleFileUpload(this)" class="hidden">
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="urlInputContainer" class="hidden">
+                                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Image URL</label>
+                                <input type="url" id="inputImage" placeholder="https://..." oninput="updateImagePreview()"
+                                    class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-2 focus:ring-2 focus:ring-orange-500 outline-none text-sm">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Source URL indicator (for imported recipes) -->
+                <div id="recipeSourceInfo" class="hidden px-6 py-3 bg-blue-50 dark:bg-blue-900/20 border-t border-blue-100 dark:border-blue-800 flex items-center gap-2 text-sm">
+                    <i class="ph-bold ph-globe text-blue-500"></i>
+                    <span class="text-blue-600 dark:text-blue-400 font-medium">Imported from:</span>
+                    <a id="recipeSourceUrl" href="#" target="_blank" class="text-blue-500 hover:underline truncate"></a>
+                </div>
+            </div>
+
+            <div class="bg-gray-50 dark:bg-gray-900 p-6 flex flex-col sm:flex-row gap-3 border-t border-gray-200 dark:border-gray-700">
+                <button id="btnEdit" onclick="enableEditMode()"
+                    class="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-xl transition-colors flex items-center justify-center gap-2">
+                    <i class="ph-bold ph-pencil-simple"></i>
+                    Edit
+                </button>
+
+                <button id="btnSave" onclick="saveRecipe()"
+                    class="hidden flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-xl transition-colors flex items-center justify-center gap-2">
+                    <i class="ph-bold ph-floppy-disk"></i>
+                    Save
+                </button>
+
+                <button id="btnDelete" onclick="confirmDelete()"
+                    class="hidden bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-6 rounded-xl transition-colors flex items-center justify-center gap-2">
+                    <i class="ph-bold ph-trash"></i>
+                    Delete
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- SHARE MODAL -->
+    <div id="shareModal" class="hidden fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4 opacity-0 transition-opacity duration-200">
+        <div id="shareModalContent" class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col scale-95 transition-transform duration-200">
+
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-orange-500 to-red-500 p-6 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="text-white text-2xl"><i class="ph-bold ph-share-network"></i></div>
+                    <h2 class="text-2xl font-black text-white">Share</h2>
+                </div>
+                <button onclick="closeShareModal()" class="text-white hover:bg-white hover:bg-opacity-20 p-2 rounded-lg transition-colors">
+                    <i class="ph-bold ph-x text-2xl"></i>
+                </button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-6 space-y-6">
+
+                <!-- Cookbook name -->
+                <div class="text-center">
+                    <h3 id="shareCbName" class="text-lg font-bold text-gray-800 dark:text-white"></h3>
+                    <p class="text-xs text-gray-400 mt-1">Choose how you want to share</p>
+                </div>
+
+                <!-- Option 1: Public Link -->
+                <div class="border border-gray-200 dark:border-gray-700 rounded-xl p-4">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                            <i class="ph-bold ph-link text-blue-500 text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm text-gray-800 dark:text-white">Public Link</h4>
+                            <p class="text-xs text-gray-400">Anyone with the link can view the recipes</p>
+                        </div>
+                    </div>
+
+                    <!-- Existing link or generate -->
+                    <div id="shareLinkSection">
+                        <div id="shareLinkEmpty" class="hidden">
+                            <button onclick="generateShareLink()" id="btnGenerateLink"
+                                class="w-full py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-bold text-sm transition-colors flex items-center justify-center gap-2">
+                                <i class="ph-bold ph-link"></i> Generate Link
+                            </button>
+                        </div>
+                        <div id="shareLinkExists" class="hidden space-y-2">
+                            <div class="flex gap-2">
+                                <input type="text" id="shareLinkUrl" readonly
+                                    class="flex-1 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-xs font-mono text-gray-600 dark:text-gray-300">
+                                <button onclick="copyShareLink()" id="btnCopyLink"
+                                    class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-xs font-bold transition-colors flex items-center gap-1">
+                                    <i class="ph-bold ph-copy"></i> Copy
+                                </button>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <a id="shareLinkAnchor" href="#" target="_blank" class="text-xs text-blue-500 hover:underline flex items-center gap-1">
+                                    <i class="ph-bold ph-arrow-square-out"></i> Open preview
+                                </a>
+                                <button onclick="deleteShareLink()" class="text-xs text-red-400 hover:text-red-600 flex items-center gap-1 transition-colors">
+                                    <i class="ph-bold ph-trash"></i> Delete link
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Option 2: PDF -->
+                <div class="border border-gray-200 dark:border-gray-700 rounded-xl p-4">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg">
+                            <i class="ph-bold ph-file-pdf text-red-500 text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm text-gray-800 dark:text-white">Export PDF</h4>
+                            <p class="text-xs text-gray-400">Download a PDF ready to print or send</p>
+                        </div>
+                    </div>
+                    <button onclick="downloadCookbookPDF()" id="btnDownloadPDF"
+                        class="w-full py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl font-bold text-sm transition-colors flex items-center justify-center gap-2">
+                        <i class="ph-bold ph-download"></i> Download PDF
+                    </button>
+                </div>
+
+                <!-- Feedback -->
+                <div id="shareFeedback" class="hidden p-3 rounded-xl text-sm text-center"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- COOKBOOK MODAL -->
+    <div id="cookbookModal" class="hidden fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4 opacity-0 transition-opacity duration-200">
+        <div id="cookbookModalContent" class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col scale-95 transition-transform duration-200">
+
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-orange-500 to-red-500 p-6 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="text-white text-2xl"><i class="ph-bold ph-book-open"></i></div>
+                    <h2 id="cookbookModalTitle" class="text-2xl font-black text-white">New Cookbook</h2>
+                </div>
+                <button onclick="closeCookbookModal()" class="text-white hover:bg-white hover:bg-opacity-20 p-2 rounded-lg transition-colors">
+                    <i class="ph-bold ph-x text-2xl"></i>
+                </button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-6 space-y-6">
+
+                <!-- Cover -->
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">
+                        <i class="ph-bold ph-image text-orange-500"></i> Cover
+                    </label>
+                    <p class="text-[11px] text-gray-400 mb-3">Recommended: 1200 × 400 px, horizontal format. Drag image to adjust framing.</p>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <!-- Photo 1 -->
+                        <div class="relative">
+                            <div id="cbCover1Box" class="relative h-36 bg-gray-100 dark:bg-gray-700 rounded-xl overflow-hidden flex items-center justify-center cursor-pointer group border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-orange-400 transition-colors"
+                                 onclick="if(!document.getElementById('cbCover1Img').src || document.getElementById('cbCover1Img').classList.contains('hidden')) document.getElementById('cbCover1Upload').click()">
+                                <div id="cbCover1Placeholder" class="text-center text-gray-400 pointer-events-none">
+                                    <i class="ph-bold ph-image text-3xl mb-1"></i>
+                                    <p class="text-[11px]">Photo 1</p>
+                                </div>
+                                <img id="cbCover1Img" class="hidden absolute inset-0 w-full h-full object-cover select-none" src="" draggable="false"
+                                     style="object-position: 50% 50%;">
+                            </div>
+                            <input type="file" id="cbCover1Upload" accept="image/*" class="hidden" onchange="uploadCbCover(1, this)">
+                            <button id="cbCover1Remove" onclick="removeCbCover(1)" class="hidden absolute top-1.5 right-1.5 w-7 h-7 bg-black/50 hover:bg-red-500 text-white rounded-lg flex items-center justify-center text-xs transition-colors z-10">
+                                <i class="ph-bold ph-x"></i>
+                            </button>
+                            <button id="cbCover1Change" onclick="document.getElementById('cbCover1Upload').click()" class="hidden absolute top-1.5 left-1.5 w-7 h-7 bg-black/50 hover:bg-orange-500 text-white rounded-lg flex items-center justify-center text-xs transition-colors z-10">
+                                <i class="ph-bold ph-swap"></i>
+                            </button>
+                        </div>
+
+                        <!-- Photo 2 -->
+                        <div class="relative">
+                            <div id="cbCover2Box" class="relative h-36 bg-gray-100 dark:bg-gray-700 rounded-xl overflow-hidden flex items-center justify-center cursor-pointer group border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-orange-400 transition-colors"
+                                 onclick="if(!document.getElementById('cbCover2Img').src || document.getElementById('cbCover2Img').classList.contains('hidden')) document.getElementById('cbCover2Upload').click()">
+                                <div id="cbCover2Placeholder" class="text-center text-gray-400 pointer-events-none">
+                                    <i class="ph-bold ph-image text-3xl mb-1"></i>
+                                    <p class="text-[11px]">Photo 2 (optional)</p>
+                                </div>
+                                <img id="cbCover2Img" class="hidden absolute inset-0 w-full h-full object-cover select-none" src="" draggable="false"
+                                     style="object-position: 50% 50%;">
+                            </div>
+                            <input type="file" id="cbCover2Upload" accept="image/*" class="hidden" onchange="uploadCbCover(2, this)">
+                            <button id="cbCover2Remove" onclick="removeCbCover(2)" class="hidden absolute top-1.5 right-1.5 w-7 h-7 bg-black/50 hover:bg-red-500 text-white rounded-lg flex items-center justify-center text-xs transition-colors z-10">
+                                <i class="ph-bold ph-x"></i>
+                            </button>
+                            <button id="cbCover2Change" onclick="document.getElementById('cbCover2Upload').click()" class="hidden absolute top-1.5 left-1.5 w-7 h-7 bg-black/50 hover:bg-orange-500 text-white rounded-lg flex items-center justify-center text-xs transition-colors z-10">
+                                <i class="ph-bold ph-swap"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Hidden state -->
+                    <input type="hidden" id="cbCoverUrl1" value="">
+                    <input type="hidden" id="cbCoverUrl2" value="">
+                    <input type="hidden" id="cbCoverPos1" value="50% 50%">
+                    <input type="hidden" id="cbCoverPos2" value="50% 50%">
+                </div>
+
+                <!-- Name -->
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                        <i class="ph-bold ph-text-aa text-orange-500"></i> Cookbook Name
+                    </label>
+                    <input type="text" id="cbName" placeholder="Ex: Sundays with Family, Grandma Carmen's Recipes..."
+                        class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 focus:ring-2 focus:ring-orange-500 outline-none text-sm">
+                </div>
+
+                <!-- Description / Story -->
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                        <i class="ph-bold ph-heart text-orange-500"></i> Story / Description
+                    </label>
+                    <textarea id="cbDescription" rows="2" placeholder="What makes this cookbook special? Tell its story..."
+                        class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 focus:ring-2 focus:ring-orange-500 outline-none text-sm resize-none"></textarea>
+                </div>
+
+                <!-- Personal note -->
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">
+                        <i class="ph-bold ph-note-pencil text-orange-500"></i> Personal note
+                    </label>
+                    <p class="text-[11px] text-gray-400 mb-2">Appears in the PDF. Ex: "These are the recipes we always return to when the week calms down."</p>
+                    <textarea id="cbNote" rows="2" placeholder="A note from your kitchen..."
+                        class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 focus:ring-2 focus:ring-orange-500 outline-none text-sm resize-none"></textarea>
+                </div>
+
+                <!-- Select recipes -->
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                        <i class="ph-bold ph-cooking-pot text-orange-500"></i> Recipes
+                        <span id="cbSelectedCount" class="text-orange-500 font-normal">(0 selected)</span>
+                    </label>
+                    <div class="mb-3">
+                        <input type="text" id="cbRecipeSearch" placeholder="Search recipes..." oninput="filterCookbookRecipes()"
+                            class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-orange-500 outline-none text-sm">
+                    </div>
+                    <div id="cbRecipeList" class="max-h-64 overflow-y-auto space-y-1 border border-gray-200 dark:border-gray-700 rounded-xl p-2">
+                        <!-- Filled dynamically -->
+                    </div>
+                </div>
+
+                <!-- Feedback -->
+                <div id="cbFeedback" class="hidden p-3 rounded-xl text-sm text-center"></div>
+            </div>
+
+            <!-- Footer -->
+            <div class="p-6 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
+                <button id="btnDeleteCookbook" onclick="deleteCurrentCookbook()" class="hidden text-sm text-red-500 hover:text-red-700 font-medium flex items-center gap-1">
+                    <i class="ph-bold ph-trash"></i> Delete
+                </button>
+                <div class="flex-1"></div>
+                <div class="flex gap-3">
+                    <button onclick="closeCookbookModal()" class="px-5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                        Cancel
+                    </button>
+                    <button onclick="saveCookbook()" id="btnSaveCookbook"
+                        class="px-6 py-2.5 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-bold text-sm transition-colors">
+                        Save
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROFILE MODAL -->
+    <div id="profileModal" class="hidden fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4 opacity-0 transition-opacity duration-200">
+        <div id="profileModalContent" class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col scale-95 transition-transform duration-200">
+
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-orange-500 to-red-500 p-6 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="text-white text-2xl"><i class="ph-bold ph-user-circle"></i></div>
+                    <h2 class="text-2xl font-black text-white">My Profile</h2>
+                </div>
+                <button onclick="closeProfileModal()" class="text-white hover:bg-white hover:bg-opacity-20 p-2 rounded-lg transition-colors">
+                    <i class="ph-bold ph-x text-2xl"></i>
+                </button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-6 space-y-6">
+
+                <!-- Avatar + Name -->
+                <div class="flex items-center gap-5">
+                    <div class="relative group">
+                        <div id="profileAvatar" class="w-20 h-20 rounded-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center text-white font-bold text-3xl shadow-lg overflow-hidden">
+                            <span id="profileInitial">?</span>
+                        </div>
+                        <label class="absolute inset-0 rounded-full bg-black bg-opacity-0 group-hover:bg-opacity-40 flex items-center justify-center cursor-pointer transition-all">
+                            <i class="ph-bold ph-camera text-white text-xl opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                            <input type="file" accept="image/*" class="hidden" onchange="uploadProfileAvatar(this)">
+                        </label>
+                    </div>
+                    <div>
+                        <h3 id="profileDisplayName" class="text-xl font-bold text-gray-800 dark:text-white">Chef</h3>
+                        <p id="profileDisplayEmail" class="text-sm text-gray-500">admin@zest.local</p>
+                    </div>
+                </div>
+
+                <!-- Section: Information -->
+                <div>
+                    <h4 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">
+                        <i class="ph-bold ph-identification-card text-orange-500"></i> Information
+                    </h4>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name</label>
+                            <input type="text" id="profileName" placeholder="Your name"
+                                class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 focus:ring-2 focus:ring-orange-500 outline-none text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+                            <input type="email" id="profileEmail" placeholder="your@email.com"
+                                class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 focus:ring-2 focus:ring-orange-500 outline-none text-sm">
+                        </div>
+                        <button onclick="saveProfile()" id="btnSaveProfile"
+                            class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-xl transition-colors text-sm">
+                            Save Changes
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Divider -->
+                <hr class="border-gray-200 dark:border-gray-700">
+
+                <!-- Section: Change Password -->
+                <div>
+                    <h4 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">
+                        <i class="ph-bold ph-lock text-orange-500"></i> Change Password
+                    </h4>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Current password</label>
+                            <input type="password" id="profileCurrentPwd" placeholder="••••••••"
+                                class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 focus:ring-2 focus:ring-orange-500 outline-none text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">New password</label>
+                            <input type="password" id="profileNewPwd" placeholder="Minimum 4 characters"
+                                class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 focus:ring-2 focus:ring-orange-500 outline-none text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Confirm new password</label>
+                            <input type="password" id="profileNewPwd2" placeholder="Repeat new password"
+                                class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 focus:ring-2 focus:ring-orange-500 outline-none text-sm">
+                        </div>
+                        <button onclick="changePassword()" id="btnChangePassword"
+                            class="w-full bg-gray-800 dark:bg-gray-600 hover:bg-gray-900 dark:hover:bg-gray-500 text-white font-bold py-3 px-6 rounded-xl transition-colors text-sm">
+                            <i class="ph-bold ph-lock"></i> Change Password
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Feedback -->
+                <div id="profileFeedback" class="hidden p-3 rounded-xl text-sm text-center"></div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: CREATE/EDIT MEMORY -->
+    <div id="memoryModal" class="hidden fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4 opacity-0 transition-opacity duration-200">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-xl max-h-[90vh] overflow-hidden flex flex-col scale-95 transition-transform duration-200">
+
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-orange-500 to-amber-500 p-6 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="text-white text-2xl"><i class="ph-bold ph-camera"></i></div>
+                    <h2 id="memoryModalTitle" class="text-2xl font-black text-white">New Memory</h2>
+                </div>
+                <button onclick="closeMemoryModal()" class="text-white hover:bg-white hover:bg-opacity-20 p-2 rounded-lg transition-colors">
+                    <i class="ph-bold ph-x text-2xl"></i>
+                </button>
+            </div>
+
+            <!-- Form -->
+            <div class="flex-1 overflow-y-auto p-6 space-y-4">
+                <!-- Photos (top so it's first) -->
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                        <i class="ph-bold ph-images text-orange-500"></i> Photos
+                    </label>
+                    <div id="memoryPhotosContainer"></div>
+                </div>
+
+                <!-- Title -->
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Memory title *</label>
+                    <input type="text" id="memoryTitle" placeholder="Ex: Christmas at Grandma's"
+                        class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 focus:ring-2 focus:ring-orange-500 outline-none text-sm">
+                </div>
+
+                <!-- Event date -->
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Date of moment</label>
+                    <input type="date" id="memoryEventDate"
+                        class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 focus:ring-2 focus:ring-orange-500 outline-none text-sm">
+                </div>
+
+                <!-- Linked recipe -->
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Linked recipe</label>
+                    <div class="flex gap-2 items-center">
+                        <select id="memoryRecipeId"
+                            class="flex-1 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 focus:ring-2 focus:ring-orange-500 outline-none text-sm">
+                            <option value="">No linked recipe</option>
+                        </select>
+                        <button onclick="document.getElementById('memoryRecipeId').value=''; document.getElementById('memoryRecipeId').dispatchEvent(new Event('change'));" title="Remove linked recipe" class="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-gray-100 dark:bg-gray-700 hover:bg-red-100 dark:hover:bg-red-900/30 text-gray-600 dark:text-gray-400 hover:text-red-600 rounded-lg transition-colors">
+                            <i class="ph-bold ph-x text-lg"></i>
+                        </button>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-1">Optional: connect this memory to a recipe</p>
+                </div>
+
+                <!-- Location -->
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Place</label>
+                    <div class="relative">
+                        <i class="ph-bold ph-map-pin absolute left-3 top-3.5 text-gray-400"></i>
+                        <input type="text" id="memoryLocation" placeholder="Ex: Grandma's house, Mexico City"
+                            class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl pl-9 pr-4 py-3 focus:ring-2 focus:ring-orange-500 outline-none text-sm">
+                    </div>
+                    <p class="text-xs text-gray-400 mt-1">Automatically detected from photos if they have GPS</p>
+                </div>
+
+                <!-- Description / Story -->
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">The story</label>
+                    <textarea id="memoryDescription" rows="4" placeholder="Tell what happened, how it felt, who you were with..."
+                        class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 focus:ring-2 focus:ring-orange-500 outline-none text-sm resize-none"></textarea>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="p-4 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
+                <button onclick="closeMemoryModal()" class="px-5 py-2.5 rounded-xl text-sm font-bold text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    Cancel
+                </button>
+                <button onclick="saveMemory()" class="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2.5 rounded-xl text-sm font-bold transition-colors flex items-center gap-2">
+                    <i class="ph-bold ph-check"></i> Save
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: SHARE MOMENT CARD -->
+    <div id="shareCardModal" class="hidden fixed inset-0 bg-black bg-opacity-70 z-[55] flex items-center justify-center p-4 opacity-0 transition-opacity duration-200">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col scale-95 transition-transform duration-200">
+
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-orange-500 to-amber-500 p-5 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="text-white text-2xl"><i class="ph-bold ph-share-network"></i></div>
+                    <h2 class="text-xl font-black text-white">Share moment</h2>
+                </div>
+                <button onclick="closeShareCardModal()" class="text-white hover:bg-white hover:bg-opacity-20 p-2 rounded-lg transition-colors">
+                    <i class="ph-bold ph-x text-2xl"></i>
+                </button>
+            </div>
+
+            <!-- Content -->
+            <div class="flex-1 overflow-y-auto p-6">
+                <!-- Template selector -->
+                <div class="flex gap-2 mb-5 justify-center">
+                    <button id="cardBtn-story" onclick="selectCardTemplate('story')" class="px-4 py-2 rounded-xl text-sm font-bold bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 transition-colors">
+                        <i class="ph-bold ph-device-mobile"></i> Story
+                    </button>
+                    <button id="cardBtn-square" onclick="selectCardTemplate('square')" class="px-4 py-2 rounded-xl text-sm font-bold bg-orange-500 text-white shadow-md">
+                        <i class="ph-bold ph-square"></i> Square
+                    </button>
+                    <button id="cardBtn-landscape" onclick="selectCardTemplate('landscape')" class="px-4 py-2 rounded-xl text-sm font-bold bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 transition-colors">
+                        <i class="ph-bold ph-rectangle"></i> Landscape
+                    </button>
+                </div>
+
+                <!-- Card options -->
+                <div id="cardOptionsRow" class="flex items-center justify-between mb-4 px-1">
+                    <div id="cardPhotoSelector" class="hidden flex items-center gap-2">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Photo:</span>
+                        <div id="cardPhotoThumbs" class="flex gap-1.5"></div>
+                    </div>
+                    <label class="flex items-center gap-2 cursor-pointer ml-auto">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Hide location</span>
+                        <input type="checkbox" id="cardHideLocation" onchange="onCardOptionChange()" class="w-4 h-4 accent-orange-500 rounded">
+                    </label>
+                </div>
+
+                <!-- Preview -->
+                <div class="flex justify-center mb-4">
+                    <div class="relative bg-gray-100 dark:bg-gray-700 rounded-xl overflow-hidden" style="min-height: 200px; max-height: 400px;">
+                        <div id="cardLoading" class="flex flex-col items-center justify-center p-12">
+                            <i class="ph-bold ph-spinner animate-spin text-3xl text-orange-400"></i>
+                            <p class="text-sm text-gray-400 mt-2">Generating card...</p>
+                        </div>
+                        <img id="cardPreview" class="hidden max-w-full max-h-[380px] object-contain rounded-xl" alt="Card preview">
+                    </div>
+                </div>
+
+                <p class="text-xs text-gray-400 text-center mb-4">
+                    Story (1080×1920) · Square (1080×1080) · Landscape (1200×630)
+                </p>
+            </div>
+
+            <!-- Public link section -->
+            <div class="px-4 pt-3 pb-1">
+                <div id="memoryShareLinkSection">
+                    <div id="memoryShareLinkEmpty">
+                        <button onclick="generateMemoryShareLink()" class="w-full bg-orange-500 hover:bg-orange-600 text-white py-2.5 rounded-xl font-bold text-sm transition-colors flex items-center justify-center gap-2">
+                            <i class="ph-bold ph-link"></i> Generate public link
+                        </button>
+                    </div>
+                    <div id="memoryShareLinkExists" class="hidden">
+                        <div class="flex gap-2">
+                            <input id="memoryShareLinkUrl" readonly class="flex-1 text-sm bg-gray-100 dark:bg-gray-700 rounded-lg px-3 py-2 text-gray-600 dark:text-gray-300">
+                            <button onclick="copyMemoryShareLink()" class="bg-orange-500 hover:bg-orange-600 text-white px-3 py-2 rounded-lg text-sm font-bold transition-colors">
+                                <i class="ph-bold ph-copy"></i>
+                            </button>
+                            <button onclick="deleteMemoryShareLink()" class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-lg text-sm font-bold transition-colors" title="Delete link">
+                                <i class="ph-bold ph-trash"></i>
+                            </button>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-1.5 text-center">Anyone with this link can see the full moment</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer with buttons -->
+            <div class="p-4 border-t border-gray-200 dark:border-gray-700">
+                <div class="flex justify-center gap-3 mb-3 flex-wrap">
+                    <button onclick="shareToWhatsApp()" class="w-10 h-10 rounded-full bg-green-500 hover:bg-green-600 text-white flex items-center justify-center transition-colors" title="WhatsApp">
+                        <i class="ph-bold ph-whatsapp-logo text-lg"></i>
+                    </button>
+                    <button onclick="shareToTelegram()" class="w-10 h-10 rounded-full bg-blue-500 hover:bg-blue-600 text-white flex items-center justify-center transition-colors" title="Telegram">
+                        <i class="ph-bold ph-telegram-logo text-lg"></i>
+                    </button>
+                    <button onclick="shareToTwitter()" class="w-10 h-10 rounded-full bg-gray-800 hover:bg-gray-900 text-white flex items-center justify-center transition-colors" title="X / Twitter">
+                        <i class="ph-bold ph-x-logo text-lg"></i>
+                    </button>
+                    <button onclick="shareToFacebook()" class="w-10 h-10 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center transition-colors" title="Facebook">
+                        <i class="ph-bold ph-facebook-logo text-lg"></i>
+                    </button>
+                    <button onclick="copyCardImage()" class="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 text-gray-600 dark:text-gray-300 flex items-center justify-center transition-colors" title="Copy image">
+                        <i class="ph-bold ph-copy text-lg"></i>
+                    </button>
+                </div>
+                <div class="flex justify-center gap-3">
+                    <button onclick="downloadCard()" class="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 px-5 py-2.5 rounded-xl text-sm font-bold transition-colors flex items-center gap-2">
+                        <i class="ph-bold ph-download-simple"></i> Download
+                    </button>
+                    <button onclick="shareCard()" class="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-6 py-2.5 rounded-xl text-sm font-bold transition-all shadow-md hover:shadow-lg flex items-center gap-2">
+                        <i class="ph-bold ph-share-network"></i> Share
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: ONBOARDING (First Login) -->
+    <div id="onboardingModal" class="hidden fixed inset-0 bg-black bg-opacity-70 z-[60] flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden">
+            <div id="onboardingContent"></div>
+        </div>
+    </div>
+
+    </div> <!-- close #appMain -->
+
+    <script type="module" src="/static/js/app.js"></script>
+</body>
+</html>

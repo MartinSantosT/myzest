@@ -1,0 +1,15 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+python-slugify
+python-multipart
+reportlab
+recipe-scrapers
+beautifulsoup4
+requests
+Pillow
+pillow-heif
+bcrypt
+slowapi
+pytest
+httpx

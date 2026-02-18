@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyZest — The Recipe Manager That Actually Cares About Your Memories</title>
+    <meta name="description" content="A self-hosted culinary diary. Recipes + memories + beautiful shareable cards, all on your own hardware. No cloud, no subscriptions.">
+    <link rel="canonical" href="https://myzest.app">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.0.3/src/bold/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.0.3/src/fill/style.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-text { background: linear-gradient(135deg, #f97316, #ef4444); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .feature-card { transition: transform 0.3s, box-shadow 0.3s; }
+        .feature-card:hover { transform: translateY(-6px); box-shadow: 0 20px 60px rgba(249, 115, 22, 0.15); }
+        .fade-up { opacity: 0; transform: translateY(30px); transition: opacity 0.8s, transform 0.8s; }
+        .fade-up.visible { opacity: 1; transform: translateY(0); }
+        .glow { box-shadow: 0 0 80px rgba(249, 115, 22, 0.2); }
+        .comparison-row:nth-child(even) { background: rgba(249, 115, 22, 0.03); }
+        html { scroll-behavior: smooth; }
+        .hero-bg {
+            background: radial-gradient(ellipse at 30% 0%, rgba(249,115,22,0.08) 0%, transparent 50%),
+                        radial-gradient(ellipse at 70% 100%, rgba(239,68,68,0.06) 0%, transparent 50%);
+        }
+    </style>
+</head>
+<body class="bg-white text-gray-800">
+
+    <!-- Nav -->
+    <nav class="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-lg z-50 border-b border-gray-100">
+        <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+            <a href="#" class="flex items-center gap-2 font-black text-xl">
+                <span class="text-2xl">🍊</span> Zest
+            </a>
+            <div class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-500">
+                <a href="#features" class="hover:text-orange-500 transition-colors">Features</a>
+                <a href="#memories" class="hover:text-orange-500 transition-colors">Memories</a>
+                <a href="#compare" class="hover:text-orange-500 transition-colors">Compare</a>
+                <a href="#quickstart" class="hover:text-orange-500 transition-colors">Install</a>
+            </div>
+            <div class="flex items-center gap-3">
+                <a href="https://demo.myzest.app" target="_blank" class="hidden sm:inline-flex text-orange-500 hover:text-orange-600 px-4 py-2 rounded-xl text-sm font-bold transition-colors border border-orange-200 hover:border-orange-300">
+                    Try Demo
+                </a>
+                <a href="#quickstart" class="bg-gray-900 hover:bg-orange-500 text-white px-5 py-2 rounded-xl text-sm font-bold transition-colors">
+                    Get Started
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero-bg pt-32 pb-20 px-6">
+        <div class="max-w-4xl mx-auto text-center">
+            <div class="inline-flex items-center gap-2 bg-orange-50 text-orange-600 px-4 py-1.5 rounded-full text-sm font-medium mb-8">
+                <i class="ph-fill ph-heart"></i> Open Source &middot; Self-Hosted &middot; Free Forever
+            </div>
+            <h1 class="text-5xl md:text-7xl font-black leading-tight mb-6">
+                Recipes deserve<br><span class="gradient-text">memories.</span>
+            </h1>
+            <p class="text-xl text-gray-500 max-w-2xl mx-auto mb-10 leading-relaxed">
+                Other apps store ingredients and steps. Zest stores the Christmas dinner with your family, the first cake your kid helped bake, the date night recipe that became a tradition.
+            </p>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a href="#quickstart" class="bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-2xl text-lg font-bold transition-colors shadow-lg shadow-orange-500/25 flex items-center gap-2">
+                    <i class="ph-bold ph-terminal"></i> docker compose up
+                </a>
+                <a href="https://demo.myzest.app" target="_blank" class="bg-white hover:bg-orange-50 text-orange-500 border-2 border-orange-200 hover:border-orange-400 px-8 py-4 rounded-2xl text-lg font-bold transition-colors flex items-center gap-2">
+                    <i class="ph-bold ph-play"></i> Try the demo
+                </a>
+            </div>
+            <p class="text-sm text-gray-400 mt-6">No cloud. No subscriptions. No telemetry. Your data stays yours.</p>
+        </div>
+    </section>
+
+    <!-- What makes it different -->
+    <section class="py-20 px-6 bg-gray-50" id="memories">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-16 fade-up">
+                <h2 class="text-4xl md:text-5xl font-black mb-4">Not just a recipe manager.</h2>
+                <p class="text-xl text-gray-500 max-w-2xl mx-auto">Every recipe has a story. Zest is the only app that lets you tell it.</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8 fade-up">
+                <div class="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm">
+                    <div class="w-14 h-14 bg-orange-100 rounded-2xl flex items-center justify-center mb-5">
+                        <i class="ph-bold ph-camera text-2xl text-orange-500"></i>
+                    </div>
+                    <h3 class="text-xl font-black mb-2">Memories</h3>
+                    <p class="text-gray-500 leading-relaxed">Attach photos, dates, locations, and stories to any recipe. Your recipe collection becomes a culinary diary that grows more valuable over time.</p>
+                </div>
+                <div class="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm">
+                    <div class="w-14 h-14 bg-amber-100 rounded-2xl flex items-center justify-center mb-5">
+                        <i class="ph-bold ph-share-network text-2xl text-amber-500"></i>
+                    </div>
+                    <h3 class="text-xl font-black mb-2">Moment Cards</h3>
+                    <p class="text-gray-500 leading-relaxed">Generate gorgeous shareable images from your memories. Perfect for Instagram Stories, WhatsApp, or anywhere you want to share a moment with soul.</p>
+                </div>
+                <div class="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm">
+                    <div class="w-14 h-14 bg-red-100 rounded-2xl flex items-center justify-center mb-5">
+                        <i class="ph-bold ph-book-open text-2xl text-red-500"></i>
+                    </div>
+                    <h3 class="text-xl font-black mb-2">Cookbooks</h3>
+                    <p class="text-gray-500 leading-relaxed">Curate recipe collections with custom covers and personal notes. Share via link or export as beautiful PDFs — perfect for gifting.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="py-20 px-6" id="features">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-16 fade-up">
+                <h2 class="text-4xl md:text-5xl font-black mb-4">Everything you'd expect,<br>and things you wouldn't.</h2>
+            </div>
+
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 fade-up">
+                <div class="feature-card bg-white rounded-2xl p-6 border border-gray-100">
+                    <i class="ph-bold ph-globe text-2xl text-orange-500 mb-3"></i>
+                    <h4 class="font-bold mb-1">4-Tier Recipe Scraper</h4>
+                    <p class="text-sm text-gray-500">Paste any URL. Zest tries 4 extraction methods. It <em>will</em> find the recipe.</p>
+                </div>
+                <div class="feature-card bg-white rounded-2xl p-6 border border-gray-100">
+                    <i class="ph-bold ph-magnifying-glass text-2xl text-orange-500 mb-3"></i>
+                    <h4 class="font-bold mb-1">"What to Cook?"</h4>
+                    <p class="text-sm text-gray-500">Tell Zest what ingredients you have. It tells you what you can make, ranked by match.</p>
+                </div>
+                <div class="feature-card bg-white rounded-2xl p-6 border border-gray-100">
+                    <i class="ph-bold ph-shopping-cart text-2xl text-orange-500 mb-3"></i>
+                    <h4 class="font-bold mb-1">Smart Shopping List</h4>
+                    <p class="text-sm text-gray-500">Add ingredients from multiple recipes. Zest combines and scales them automatically.</p>
+                </div>
+                <div class="feature-card bg-white rounded-2xl p-6 border border-gray-100">
+                    <i class="ph-bold ph-scales text-2xl text-orange-500 mb-3"></i>
+                    <h4 class="font-bold mb-1">Portion Calculator</h4>
+                    <p class="text-sm text-gray-500">Scale any recipe from 1 to 100 servings. Beautiful fractions: ½, ⅓, ¼.</p>
+                </div>
+                <div class="feature-card bg-white rounded-2xl p-6 border border-gray-100">
+                    <i class="ph-bold ph-file-pdf text-2xl text-orange-500 mb-3"></i>
+                    <h4 class="font-bold mb-1">PDF Export</h4>
+                    <p class="text-sm text-gray-500">Professional cookbook PDFs with cover page and proper typography. Made for printing.</p>
+                </div>
+                <div class="feature-card bg-white rounded-2xl p-6 border border-gray-100">
+                    <i class="ph-bold ph-cloud-arrow-down text-2xl text-orange-500 mb-3"></i>
+                    <h4 class="font-bold mb-1">Auto Backups</h4>
+                    <p class="text-sm text-gray-500">Scheduled database + image backups. Manual export/import. Full disaster recovery.</p>
+                </div>
+                <div class="feature-card bg-white rounded-2xl p-6 border border-gray-100">
+                    <i class="ph-bold ph-cooking-pot text-2xl text-orange-500 mb-3"></i>
+                    <h4 class="font-bold mb-1">Cooking Mode</h4>
+                    <p class="text-sm text-gray-500">Full-screen step-by-step with auto-detected timers and Wake Lock. Your screen stays on while you cook.</p>
+                </div>
+                <div class="feature-card bg-white rounded-2xl p-6 border border-gray-100">
+                    <i class="ph-bold ph-moon text-2xl text-orange-500 mb-3"></i>
+                    <h4 class="font-bold mb-1">Dark Mode</h4>
+                    <p class="text-sm text-gray-500">Full dark theme for late-night recipe browsing. Respects your preference.</p>
+                </div>
+                <div class="feature-card bg-white rounded-2xl p-6 border border-gray-100">
+                    <i class="ph-bold ph-device-mobile text-2xl text-orange-500 mb-3"></i>
+                    <h4 class="font-bold mb-1">Fully Responsive</h4>
+                    <p class="text-sm text-gray-500">Works beautifully on phone, tablet, and desktop. No native app needed.</p>
+                </div>
+                <div class="feature-card bg-white rounded-2xl p-6 border border-gray-100">
+                    <i class="ph-bold ph-lock text-2xl text-orange-500 mb-3"></i>
+                    <h4 class="font-bold mb-1">Secure by Default</h4>
+                    <p class="text-sm text-gray-500">JWT auth, bcrypt passwords, rate limiting. Your data never leaves your server.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- The Loop -->
+    <section class="py-20 px-6 bg-gradient-to-br from-gray-900 to-gray-800 text-white">
+        <div class="max-w-4xl mx-auto text-center fade-up">
+            <h2 class="text-4xl md:text-5xl font-black mb-6">The moment loop.</h2>
+            <p class="text-lg text-gray-400 mb-12 max-w-2xl mx-auto">Every recipe manager stops at "save". Zest goes further.</p>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                <div>
+                    <div class="w-16 h-16 bg-orange-500/20 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                        <i class="ph-bold ph-cooking-pot text-3xl text-orange-400"></i>
+                    </div>
+                    <p class="font-bold text-sm">Cook</p>
+                    <p class="text-xs text-gray-500 mt-1">Make something amazing</p>
+                </div>
+                <div>
+                    <div class="w-16 h-16 bg-orange-500/20 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                        <i class="ph-bold ph-camera text-3xl text-orange-400"></i>
+                    </div>
+                    <p class="font-bold text-sm">Capture</p>
+                    <p class="text-xs text-gray-500 mt-1">Save the moment in Zest</p>
+                </div>
+                <div>
+                    <div class="w-16 h-16 bg-orange-500/20 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                        <i class="ph-bold ph-image text-3xl text-orange-400"></i>
+                    </div>
+                    <p class="font-bold text-sm">Create</p>
+                    <p class="text-xs text-gray-500 mt-1">Generate a Moment Card</p>
+                </div>
+                <div>
+                    <div class="w-16 h-16 bg-orange-500/20 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                        <i class="ph-bold ph-share-network text-3xl text-orange-400"></i>
+                    </div>
+                    <p class="font-bold text-sm">Share</p>
+                    <p class="text-xs text-gray-500 mt-1">Not just a photo — a story</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Comparison -->
+    <section class="py-20 px-6" id="compare">
+        <div class="max-w-4xl mx-auto fade-up">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl md:text-5xl font-black mb-4">Honest comparison.</h2>
+                <p class="text-gray-500">We're not the biggest. We're the most personal.</p>
+            </div>
+
+            <div class="overflow-x-auto rounded-2xl border border-gray-200">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="bg-gray-50">
+                            <th class="text-left p-4 font-bold text-gray-700">Feature</th>
+                            <th class="p-4 font-black text-orange-500">Zest 🍊</th>
+                            <th class="p-4 font-bold text-gray-500">Mealie</th>
+                            <th class="p-4 font-bold text-gray-500">Tandoor</th>
+                            <th class="p-4 font-bold text-gray-500">Paprika</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="comparison-row border-t border-gray-100">
+                            <td class="p-4 font-medium">Single container (no Postgres)</td>
+                            <td class="p-4 text-center text-green-500 font-bold">✓</td>
+                            <td class="p-4 text-center text-red-400">✗</td>
+                            <td class="p-4 text-center text-red-400">✗</td>
+                            <td class="p-4 text-center text-gray-300">—</td>
+                        </tr>
+                        <tr class="comparison-row border-t border-gray-100">
+                            <td class="p-4 font-medium">Memories / food diary</td>
+                            <td class="p-4 text-center text-green-500 font-bold">✓</td>
+                            <td class="p-4 text-center text-red-400">✗</td>
+                            <td class="p-4 text-center text-red-400">✗</td>
+                            <td class="p-4 text-center text-red-400">✗</td>
+                        </tr>
+                        <tr class="comparison-row border-t border-gray-100">
+                            <td class="p-4 font-medium">Shareable moment cards</td>
+                            <td class="p-4 text-center text-green-500 font-bold">✓</td>
+                            <td class="p-4 text-center text-red-400">✗</td>
+                            <td class="p-4 text-center text-red-400">✗</td>
+                            <td class="p-4 text-center text-red-400">✗</td>
+                        </tr>
+                        <tr class="comparison-row border-t border-gray-100">
+                            <td class="p-4 font-medium">"What to cook?" search</td>
+                            <td class="p-4 text-center text-green-500 font-bold">✓</td>
+                            <td class="p-4 text-center text-red-400">✗</td>
+                            <td class="p-4 text-center text-red-400">✗</td>
+                            <td class="p-4 text-center text-red-400">✗</td>
+                        </tr>
+                        <tr class="comparison-row border-t border-gray-100">
+                            <td class="p-4 font-medium">Cooking mode (timers + Wake Lock)</td>
+                            <td class="p-4 text-center text-green-500 font-bold">✓</td>
+                            <td class="p-4 text-center text-red-400">✗</td>
+                            <td class="p-4 text-center text-red-400">✗</td>
+                            <td class="p-4 text-center text-red-400">✗</td>
+                        </tr>
+                        <tr class="comparison-row border-t border-gray-100">
+                            <td class="p-4 font-medium">URL recipe scraping</td>
+                            <td class="p-4 text-center text-green-500 font-bold">✓ 4-tier</td>
+                            <td class="p-4 text-center text-green-500">✓</td>
+                            <td class="p-4 text-center text-green-500">✓</td>
+                            <td class="p-4 text-center text-green-500">✓</td>
+                        </tr>
+                        <tr class="comparison-row border-t border-gray-100">
+                            <td class="p-4 font-medium">Shopping list</td>
+                            <td class="p-4 text-center text-green-500 font-bold">✓</td>
+                            <td class="p-4 text-center text-green-500">✓</td>
+                            <td class="p-4 text-center text-green-500">✓</td>
+                            <td class="p-4 text-center text-green-500">✓</td>
+                        </tr>
+                        <tr class="comparison-row border-t border-gray-100">
+                            <td class="p-4 font-medium">iPhone HEIC photos</td>
+                            <td class="p-4 text-center text-green-500 font-bold">✓</td>
+                            <td class="p-4 text-center text-red-400">✗</td>
+                            <td class="p-4 text-center text-red-400">✗</td>
+                            <td class="p-4 text-center text-red-400">✗</td>
+                        </tr>
+                        <tr class="comparison-row border-t border-gray-100">
+                            <td class="p-4 font-medium">Meal planner</td>
+                            <td class="p-4 text-center text-gray-300">coming soon</td>
+                            <td class="p-4 text-center text-green-500">✓</td>
+                            <td class="p-4 text-center text-green-500">✓</td>
+                            <td class="p-4 text-center text-green-500">✓</td>
+                        </tr>
+                        <tr class="comparison-row border-t border-gray-100">
+                            <td class="p-4 font-medium">Multi-user</td>
+                            <td class="p-4 text-center text-gray-300">coming soon</td>
+                            <td class="p-4 text-center text-green-500">✓</td>
+                            <td class="p-4 text-center text-green-500">✓</td>
+                            <td class="p-4 text-center text-red-400">✗</td>
+                        </tr>
+                        <tr class="comparison-row border-t border-gray-100">
+                            <td class="p-4 font-medium">Zero build tools</td>
+                            <td class="p-4 text-center text-green-500 font-bold">✓</td>
+                            <td class="p-4 text-center text-red-400">✗</td>
+                            <td class="p-4 text-center text-red-400">✗</td>
+                            <td class="p-4 text-center text-gray-300">—</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quickstart -->
+    <section class="py-20 px-6 bg-gray-50" id="quickstart">
+        <div class="max-w-3xl mx-auto fade-up">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl md:text-5xl font-black mb-4">Running in 30 seconds.</h2>
+                <p class="text-gray-500">Seriously. One command.</p>
+            </div>
+
+            <div class="bg-gray-900 rounded-3xl p-8 text-white glow">
+                <div class="flex items-center gap-2 mb-6">
+                    <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                    <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                    <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                    <span class="text-gray-500 text-xs ml-2 font-mono">terminal</span>
+                </div>
+                <pre class="font-mono text-sm leading-loose"><code><span class="text-gray-500">$</span> <span class="text-green-400">git clone</span> https://github.com/YOUR_USERNAME/zest.git
+<span class="text-gray-500">$</span> <span class="text-green-400">cd</span> zest
+<span class="text-gray-500">$</span> <span class="text-green-400">cp</span> .env.example .env
+<span class="text-gray-500">$</span> <span class="text-green-400">docker compose up</span> -d
+
+<span class="text-orange-400">🍊 Zest is running at http://localhost:8000</span></code></pre>
+            </div>
+
+            <div class="grid sm:grid-cols-3 gap-6 mt-10 text-center">
+                <div>
+                    <div class="text-3xl font-black text-orange-500">~200 MB</div>
+                    <p class="text-sm text-gray-500 mt-1">Docker image size</p>
+                </div>
+                <div>
+                    <div class="text-3xl font-black text-orange-500">SQLite</div>
+                    <p class="text-sm text-gray-500 mt-1">No external database</p>
+                </div>
+                <div>
+                    <div class="text-3xl font-black text-orange-500">0</div>
+                    <p class="text-sm text-gray-500 mt-1">External services needed</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Philosophy -->
+    <section class="py-20 px-6">
+        <div class="max-w-3xl mx-auto text-center fade-up">
+            <div class="text-6xl mb-6">🍊</div>
+            <h2 class="text-3xl md:text-4xl font-black mb-6 leading-tight">
+                "We don't save recipes.<br>We save the moments<br>around the table."
+            </h2>
+            <p class="text-gray-500 text-lg leading-relaxed max-w-xl mx-auto mb-10">
+                Food is more than ingredients and steps. It's culture, family, memory. Zest was built with this simple truth: the recipe is the anchor, but the moment is the treasure.
+            </p>
+            <a href="#quickstart" class="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-2xl text-lg font-bold transition-colors shadow-lg shadow-orange-500/25">
+                <i class="ph-bold ph-terminal"></i> Start your food diary
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-200 py-10 px-6">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-2 font-bold">
+                <span class="text-xl">🍊</span> Zest
+                <span class="text-gray-300 mx-2">|</span>
+                <span class="text-sm text-gray-400 font-normal">Open Source &middot; MIT License</span>
+            </div>
+            <div class="flex items-center gap-6 text-sm text-gray-400">
+                <a href="https://github.com/YOUR_USERNAME/zest" class="hover:text-orange-500 transition-colors flex items-center gap-1">
+                    <i class="ph-bold ph-github-logo"></i> GitHub
+                </a>
+                <a href="https://demo.myzest.app" target="_blank" class="hover:text-orange-500 transition-colors">Live Demo</a>
+                <a href="manual.html" class="hover:text-orange-500 transition-colors">Documentation</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scroll animation -->
+    <script>
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+myzest.app {
+	root * /srv/landing
+	file_server
+
+	# Security headers
+	header {
+		X-Frame-Options "DENY"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+	}
+}
+
+demo.myzest.app {
+	reverse_proxy zest_demo:8000
+
+	# Security headers
+	header {
+		X-Frame-Options "SAMEORIGIN"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+	}
+}

@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  zest:
+    build: .
+    container_name: zest
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+      - ./app/static/uploads:/app/app/static/uploads
+    environment:
+      - PYTHONUNBUFFERED=1
+      - ZEST_SECRET_KEY=${ZEST_SECRET_KEY:-zest-change-this-secret-in-production}

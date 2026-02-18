@@ -1,0 +1,45 @@
+# ==========================================
+# ZEST — .gitignore
+# ==========================================
+
+# --- Database ---
+data/zest.db
+data/zest.db-journal
+data/zest.db-wal
+data/zest.db-shm
+data/zest.db.*
+data/backups/
+data/*.json
+
+# --- User uploads ---
+app/static/uploads/*
+!app/static/uploads/.gitkeep
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+*.egg
+dist/
+build/
+.eggs/
+*.whl
+venv/
+.venv/
+env/
+
+# --- IDE / Editor ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# --- Docker local data ---
+docker-data/
+
+# --- Environment ---
+.env

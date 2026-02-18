@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zest — Shared Moment</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.0.3/src/regular/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.0.3/src/bold/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.0.3/src/fill/style.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background: #fafaf8; }
+        .font-display { font-family: 'Playfair Display', serif; }
+        .fade-up { opacity: 0; transform: translateY(30px); animation: fadeUp 0.7s ease-out forwards; }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+        .fade-in-slow { opacity: 0; animation: fadeInSlow 1s ease-out 0.3s forwards; }
+        @keyframes fadeInSlow { to { opacity: 1; } }
+        .photo-slide { transition: opacity 0.8s ease-in-out; }
+        .hero-gradient { background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 40%, rgba(0,0,0,0.1) 70%, transparent 100%); }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <!-- Loading -->
+    <div id="loadingView" class="min-h-screen flex items-center justify-center">
+        <div class="text-center">
+            <div class="text-5xl mb-4" style="animation: pulse 2s ease-in-out infinite;">🍊</div>
+            <p class="text-gray-400 text-sm tracking-wide">Loading moment...</p>
+        </div>
+    </div>
+    <style>@keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.15)} }</style>
+
+    <!-- Error -->
+    <div id="errorView" class="hidden min-h-screen flex items-center justify-center px-6">
+        <div class="text-center max-w-sm">
+            <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-gray-100 flex items-center justify-center">
+                <i class="ph-bold ph-heart-break text-3xl text-gray-400"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-3">Moment not found</h2>
+            <p class="text-gray-400 text-sm leading-relaxed">This link may have expired or been removed by its author.</p>
+        </div>
+    </div>
+
+    <!-- Content -->
+    <div id="contentView" class="hidden">
+
+        <!-- Hero Section -->
+        <div id="heroSection" class="relative">
+            <!-- With photos -->
+            <div id="heroWithPhoto" class="hidden px-4 md:px-8 pt-6">
+                <div class="relative max-w-4xl mx-auto rounded-2xl overflow-hidden shadow-xl" style="height: 28rem;">
+                    <img id="heroImg1" class="photo-slide absolute inset-0 w-full h-full object-cover" src="">
+                    <img id="heroImg2" class="photo-slide absolute inset-0 w-full h-full object-cover opacity-0" src="">
+                    <div class="hero-gradient absolute inset-0"></div>
+
+                    <!-- Photo nav arrows -->
+                    <button id="photoPrev" onclick="navPhoto(-1)" class="hidden absolute left-5 top-1/2 -translate-y-1/2 w-11 h-11 bg-white/15 hover:bg-white/30 text-white rounded-full flex items-center justify-center backdrop-blur-md transition-all z-10 border border-white/20">
+                        <i class="ph-bold ph-caret-left text-lg"></i>
+                    </button>
+                    <button id="photoNext" onclick="navPhoto(1)" class="hidden absolute right-5 top-1/2 -translate-y-1/2 w-11 h-11 bg-white/15 hover:bg-white/30 text-white rounded-full flex items-center justify-center backdrop-blur-md transition-all z-10 border border-white/20">
+                        <i class="ph-bold ph-caret-right text-lg"></i>
+                    </button>
+                    <div id="photoDots" class="hidden absolute bottom-24 left-1/2 -translate-x-1/2 flex gap-2 z-10"></div>
+
+                    <!-- Title overlay -->
+                    <div class="absolute bottom-0 left-0 right-0 p-8 md:p-12">
+                        <div class="max-w-3xl">
+                            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/15 backdrop-blur-md border border-white/20 text-white/90 text-xs font-semibold tracking-wide mb-4">
+                                <i class="ph-bold ph-heart"></i> MOMENT
+                            </div>
+                            <h1 id="titleWithPhoto" class="font-display text-3xl md:text-5xl text-white mb-2 leading-tight drop-shadow-lg"></h1>
+                            <div id="metaWithPhoto" class="flex flex-wrap items-center gap-3 text-sm text-white/70"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Without photos -->
+            <div id="heroNoPhoto" class="hidden relative overflow-hidden" style="padding-top: 5rem; padding-bottom: 4rem; background-image: radial-gradient(circle at 20% 50%, rgba(251,146,60,0.08) 0%, transparent 50%), radial-gradient(circle at 80% 50%, rgba(251,146,60,0.06) 0%, transparent 50%);">
+                <div class="max-w-3xl mx-auto text-center px-6 relative z-10">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-50 border border-orange-100 text-orange-600 text-xs font-semibold tracking-wide mb-6">
+                        <i class="ph-bold ph-heart"></i> MOMENT
+                    </div>
+                    <h1 id="titleNoPhoto" class="font-display text-3xl md:text-5xl text-gray-900 mb-4 leading-tight"></h1>
+                    <div id="metaNoPhoto" class="flex items-center justify-center gap-3 text-sm text-gray-400"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content body -->
+        <div class="max-w-3xl mx-auto px-6 fade-up" style="padding-top: 2.5rem; padding-bottom: 3rem;">
+
+            <!-- Description / Story -->
+            <div id="storySection" class="hidden mb-8">
+                <div class="relative bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-gray-100" style="border-left: 4px solid #f97316;">
+                    <i class="ph-fill ph-quotes text-2xl absolute top-4 right-5" style="color: #fed7aa;"></i>
+                    <p id="storyText" class="text-gray-700 leading-relaxed whitespace-pre-line"></p>
+                </div>
+            </div>
+
+            <!-- Linked Recipe -->
+            <div id="recipeSection" class="hidden mb-8">
+                <h3 class="font-bold text-sm text-gray-500 uppercase tracking-wide mb-3 flex items-center gap-2">
+                    <i class="ph-bold ph-cooking-pot" style="color: #f97316;"></i> The Recipe
+                </h3>
+                <div id="recipeCard" class="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 cursor-pointer transition-all hover:shadow-md hover:-translate-y-1" style="transition: transform 0.3s, box-shadow 0.3s;">
+                </div>
+            </div>
+
+            <!-- Photo Gallery (if more than 1 photo) -->
+            <div id="gallerySection" class="hidden mb-8">
+                <h3 class="font-bold text-sm text-gray-500 uppercase tracking-wide mb-3 flex items-center gap-2">
+                    <i class="ph-bold ph-images" style="color: #f97316;"></i> Photos
+                </h3>
+                <div id="galleryGrid" class="grid grid-cols-2 md:grid-cols-3 gap-3"></div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="border-t border-gray-200" style="background: linear-gradient(to bottom, #fafaf8, #f5f3ef);">
+            <div class="max-w-6xl mx-auto px-8 py-10 flex flex-col items-center">
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="text-2xl">🍊</span>
+                    <span class="font-bold text-lg" style="color: #f97316;">Zest</span>
+                </div>
+                <p class="text-sm text-gray-400 tracking-wide">Shared Intentionally</p>
+                <p id="footerAuthor" class="text-xs text-gray-300 mt-2"></p>
+            </div>
+        </footer>
+    </div>
+
+<script>
+    const token = window.location.pathname.split('/shared/memory/')[1]?.split('/')[0]?.split('?')[0];
+    const API_BASE = window.location.origin;
+    let photoSlide = 0;
+    let photoUrls = [];
+    let autoSlideTimer = null;
+
+    async function init() {
+        if (!token) return showError();
+        try {
+            const res = await fetch(`${API_BASE}/api/shared/memory/${token}`);
+            if (!res.ok) return showError();
+            const data = await res.json();
+            renderPage(data);
+        } catch (e) {
+            console.error(e);
+            showError();
+        }
+    }
+
+    function showError() {
+        document.getElementById('loadingView').classList.add('hidden');
+        document.getElementById('errorView').classList.remove('hidden');
+    }
+
+    function renderPage(data) {
+        const m = data.memory;
+        const ownerName = data.owner_name || 'Someone';
+
+        document.title = `${m.title} — Zest`;
+
+        // Meta HTML
+        const metaParts = [];
+        if (m.event_date) {
+            metaParts.push(`<span class="flex items-center gap-1.5"><i class="ph-bold ph-calendar"></i> ${formatDate(m.event_date)}</span>`);
+        }
+        if (m.location) {
+            metaParts.push(`<span class="flex items-center gap-1.5"><i class="ph-bold ph-map-pin"></i> ${escHtml(m.location)}</span>`);
+        }
+        metaParts.push(`<span class="flex items-center gap-1.5"><i class="ph-bold ph-user"></i> ${escHtml(ownerName)}</span>`);
+        const metaHtml = metaParts.join('<span class="opacity-50">·</span>');
+
+        // Photos
+        const photos = m.photos || [];
+        photoUrls = photos.map(p => `${API_BASE}${p.image_url}`);
+
+        if (photoUrls.length > 0) {
+            document.getElementById('heroWithPhoto').classList.remove('hidden');
+            document.getElementById('titleWithPhoto').textContent = m.title;
+            document.getElementById('metaWithPhoto').innerHTML = metaHtml;
+
+            document.getElementById('heroImg1').src = photoUrls[0];
+
+            if (photoUrls.length > 1) {
+                document.getElementById('heroImg2').src = photoUrls[1];
+                document.getElementById('photoPrev').classList.remove('hidden');
+                document.getElementById('photoNext').classList.remove('hidden');
+                const dots = document.getElementById('photoDots');
+                dots.classList.remove('hidden');
+                dots.innerHTML = photoUrls.map((_, i) =>
+                    `<div class="pDot w-2 h-2 rounded-full ${i === 0 ? 'bg-white' : 'bg-white/40'} transition-all cursor-pointer" onclick="goToPhoto(${i})"></div>`
+                ).join('');
+                autoSlideTimer = setInterval(() => navPhoto(1), 5000);
+            }
+
+            // Gallery section for multiple photos
+            if (photoUrls.length > 1) {
+                document.getElementById('gallerySection').classList.remove('hidden');
+                document.getElementById('galleryGrid').innerHTML = photoUrls.map((url, i) =>
+                    `<div class="rounded-xl overflow-hidden shadow-sm cursor-pointer hover:shadow-md transition-shadow" onclick="goToPhoto(${i}); window.scrollTo({top:0,behavior:'smooth'})">
+                        <img src="${url}" class="w-full h-40 object-cover" loading="lazy">
+                    </div>`
+                ).join('');
+            }
+        } else {
+            document.getElementById('heroNoPhoto').classList.remove('hidden');
+            document.getElementById('titleNoPhoto').textContent = m.title;
+            document.getElementById('metaNoPhoto').innerHTML = metaHtml;
+        }
+
+        // Story / Description
+        if (m.description) {
+            document.getElementById('storySection').classList.remove('hidden');
+            document.getElementById('storyText').textContent = m.description;
+        }
+
+        // Linked Recipe
+        if (data.recipe) {
+            const r = data.recipe;
+            document.getElementById('recipeSection').classList.remove('hidden');
+            const totalTime = (r.prep_time || 0) + (r.cook_time || 0);
+            document.getElementById('recipeCard').innerHTML = `
+                <div class="flex flex-col sm:flex-row">
+                    ${r.image_url
+                        ? `<div class="sm:w-48 h-48 sm:h-auto overflow-hidden flex-shrink-0">
+                            <img src="${API_BASE}${r.image_url}" class="w-full h-full object-cover" alt="${escHtml(r.title)}">
+                           </div>`
+                        : ''
+                    }
+                    <div class="p-5 flex-1">
+                        <h4 class="font-bold text-lg text-gray-800 mb-1">${escHtml(r.title)}</h4>
+                        ${r.description ? `<p class="text-sm text-gray-500 mb-3 line-clamp-2">${escHtml(r.description)}</p>` : ''}
+                        <div class="flex flex-wrap items-center gap-3 text-xs text-gray-400">
+                            ${totalTime ? `<span class="flex items-center gap-1"><i class="ph-bold ph-clock"></i> ${fmtTime(totalTime)}</span>` : ''}
+                            ${r.servings ? `<span class="flex items-center gap-1"><i class="ph-bold ph-users"></i> ${r.servings} servings</span>` : ''}
+                            ${r.rating ? `<span class="flex items-center gap-1"><i class="ph-fill ph-star" style="color:#fbbf24"></i> ${r.rating}/5</span>` : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Footer
+        document.getElementById('footerAuthor').textContent = `Moment by ${ownerName}`;
+
+        // Show
+        document.getElementById('loadingView').classList.add('hidden');
+        document.getElementById('contentView').classList.remove('hidden');
+    }
+
+    function navPhoto(dir) {
+        if (photoUrls.length < 2) return;
+        photoSlide = (photoSlide + dir + photoUrls.length) % photoUrls.length;
+        const img1 = document.getElementById('heroImg1');
+        const img2 = document.getElementById('heroImg2');
+        if (photoSlide % 2 === 0) {
+            img1.src = photoUrls[photoSlide];
+            img1.style.opacity = '1';
+            img2.style.opacity = '0';
+        } else {
+            img2.src = photoUrls[photoSlide];
+            img2.style.opacity = '1';
+            img1.style.opacity = '0';
+        }
+        document.querySelectorAll('.pDot').forEach((d, i) => {
+            d.className = `pDot w-2 h-2 rounded-full ${i === photoSlide ? 'bg-white' : 'bg-white/40'} transition-all cursor-pointer`;
+        });
+        if (autoSlideTimer) { clearInterval(autoSlideTimer); autoSlideTimer = setInterval(() => navPhoto(1), 5000); }
+    }
+
+    function goToPhoto(idx) {
+        photoSlide = idx;
+        const img1 = document.getElementById('heroImg1');
+        const img2 = document.getElementById('heroImg2');
+        if (idx % 2 === 0) {
+            img1.src = photoUrls[idx]; img1.style.opacity = '1'; img2.style.opacity = '0';
+        } else {
+            img2.src = photoUrls[idx]; img2.style.opacity = '1'; img1.style.opacity = '0';
+        }
+        document.querySelectorAll('.pDot').forEach((d, i) => {
+            d.className = `pDot w-2 h-2 rounded-full ${i === idx ? 'bg-white' : 'bg-white/40'} transition-all cursor-pointer`;
+        });
+        if (autoSlideTimer) { clearInterval(autoSlideTimer); autoSlideTimer = setInterval(() => navPhoto(1), 5000); }
+    }
+
+    function formatDate(dateStr) {
+        if (!dateStr) return '';
+        try {
+            const d = new Date(dateStr + 'T00:00:00');
+            const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+            return `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+        } catch { return dateStr; }
+    }
+
+    function fmtTime(mins) {
+        if (!mins) return '';
+        if (mins >= 60) return Math.floor(mins/60) + 'h ' + (mins%60 > 0 ? mins%60 + ' min' : '');
+        return mins + ' min';
+    }
+
+    function escHtml(str) {
+        if (!str) return '';
+        return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    init();
+</script>
+</body>
+</html>

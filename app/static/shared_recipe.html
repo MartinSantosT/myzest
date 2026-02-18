@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zest — Shared Recipe</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.0.3/src/regular/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.0.3/src/bold/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.0.3/src/fill/style.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .fade-in { animation: fadeIn 0.6s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+    <!-- Loading -->
+    <div id="loadingView" class="min-h-screen flex items-center justify-center">
+        <div class="text-center">
+            <div class="text-5xl mb-4 animate-pulse">🍊</div>
+            <p class="text-gray-400 text-sm">Loading recipe...</p>
+        </div>
+    </div>
+
+    <!-- Error -->
+    <div id="errorView" class="hidden min-h-screen flex items-center justify-center">
+        <div class="text-center">
+            <div class="text-6xl mb-4">😔</div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">Recipe not found</h2>
+            <p class="text-gray-500">This link may have expired or been deleted.</p>
+        </div>
+    </div>
+
+    <!-- Content -->
+    <div id="contentView" class="hidden">
+        <!-- Hero -->
+        <div id="heroSection" class="relative">
+            <div id="heroWithImage" class="hidden px-4 md:px-8 pt-6">
+                <div class="relative max-w-4xl mx-auto rounded-2xl overflow-hidden shadow-lg" style="max-height: 22rem;">
+                    <img id="heroImg" class="w-full object-cover" style="max-height: 22rem;">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                    <div class="absolute bottom-6 left-6 right-6">
+                        <h1 id="heroTitle" class="text-3xl md:text-4xl font-black text-white drop-shadow-lg"></h1>
+                    </div>
+                </div>
+            </div>
+            <div id="heroNoImage" class="hidden bg-gradient-to-br from-orange-50 via-white to-red-50 pt-12 pb-8 px-6">
+                <div class="max-w-3xl mx-auto">
+                    <h1 id="titleNoImage" class="text-3xl md:text-4xl font-black text-gray-800"></h1>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="max-w-4xl mx-auto px-6 py-8 fade-in">
+
+            <!-- Meta -->
+            <div id="metaSection" class="flex flex-wrap gap-4 mb-6 text-sm text-gray-600"></div>
+
+            <!-- Categories & Tags -->
+            <div id="badgesSection" class="flex flex-wrap gap-2 mb-8"></div>
+
+            <!-- Grid: Ingredients + Steps -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+
+                <!-- Ingredients -->
+                <div class="lg:col-span-1">
+                    <div class="bg-orange-50 rounded-2xl p-5 border border-orange-200 sticky top-4">
+                        <h2 class="font-bold text-lg text-gray-800 mb-4 flex items-center gap-2">
+                            <i class="ph-bold ph-list" style="color: #f97316;"></i> Ingredients
+                            <span id="ingCount" class="text-xs text-gray-400 font-normal"></span>
+                        </h2>
+                        <div id="ingredientsList" class="divide-y divide-orange-200"></div>
+                    </div>
+                </div>
+
+                <!-- Steps -->
+                <div class="lg:col-span-2">
+                    <h2 class="font-bold text-lg text-gray-800 mb-4 flex items-center gap-2">
+                        <i class="ph-bold ph-list-numbers" style="color: #f97316;"></i> Instructions
+                        <span id="stepsCount" class="text-xs text-gray-400 font-normal"></span>
+                    </h2>
+                    <div id="stepsList"></div>
+                </div>
+            </div>
+
+            <!-- Source -->
+            <div id="sourceSection" class="hidden mb-8">
+                <div class="p-4 bg-blue-50 rounded-xl border border-blue-200">
+                    <a id="sourceLink" href="#" target="_blank" rel="noopener" class="text-blue-600 text-sm hover:underline flex items-center gap-2">
+                        <i class="ph-bold ph-globe"></i> View original recipe
+                    </a>
+                </div>
+            </div>
+
+            <!-- Footer branding -->
+            <div class="text-center py-8 border-t border-gray-200">
+                <p class="text-sm text-gray-400">
+                    Shared Intentionally · <span style="color: #f97316; font-weight: 700;">Zest</span>
+                </p>
+                <p class="text-xs text-gray-300 mt-1" id="authorLine"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const token = window.location.pathname.split('/').pop();
+        const API_BASE = window.location.origin;
+
+        async function loadRecipe() {
+            try {
+                const res = await fetch(`${API_BASE}/api/shared/recipe/${token}`);
+                if (!res.ok) throw new Error('Not found');
+
+                const data = await res.json();
+                const r = data.recipe;
+
+                // Hero
+                if (r.image_url) {
+                    document.getElementById('heroImg').src = r.image_url;
+                    document.getElementById('heroTitle').textContent = r.title;
+                    document.getElementById('heroWithImage').classList.remove('hidden');
+                } else {
+                    document.getElementById('titleNoImage').textContent = r.title;
+                    document.getElementById('heroNoImage').classList.remove('hidden');
+                }
+
+                // Title for page
+                document.title = `${r.title} — Zest`;
+
+                // Meta
+                const totalTime = (r.prep_time || 0) + (r.cook_time || 0);
+                const meta = [];
+                if (totalTime) meta.push(`<span class="flex items-center gap-1.5"><i class="ph-bold ph-clock" style="color:#f97316"></i> ${fmtTime(totalTime)}</span>`);
+                if (r.servings) meta.push(`<span class="flex items-center gap-1.5"><i class="ph-bold ph-users" style="color:#f97316"></i> ${r.servings} servings</span>`);
+                if (r.prep_time) meta.push(`<span class="flex items-center gap-1.5"><i class="ph-bold ph-knife" style="color:#f97316"></i> Prep: ${fmtTime(r.prep_time)}</span>`);
+                if (r.cook_time) meta.push(`<span class="flex items-center gap-1.5"><i class="ph-bold ph-fire" style="color:#f97316"></i> Cook: ${fmtTime(r.cook_time)}</span>`);
+                document.getElementById('metaSection').innerHTML = meta.join('');
+
+                // Rating + Categories + Tags
+                const badges = [];
+                if (r.rating > 0) {
+                    badges.push(Array(5).fill(0).map((_, i) =>
+                        `<i class="ph-fill ph-star text-lg" style="color: ${i < r.rating ? '#f97316' : '#d1d5db'}"></i>`
+                    ).join(''));
+                }
+                (r.categories || []).forEach(c => {
+                    badges.push(`<span class="text-xs px-3 py-1.5 rounded-lg font-medium" style="background: #fff7ed; color: #ea580c;">${c.name}</span>`);
+                });
+                (r.tags || []).forEach(t => {
+                    badges.push(`<span class="text-xs px-3 py-1.5 rounded-full font-medium" style="background: ${t.color}20; color: ${t.color}; border: 1px solid ${t.color}40;">#${t.name}</span>`);
+                });
+                document.getElementById('badgesSection').innerHTML = badges.join(' ');
+
+                // Ingredients
+                const ings = r.ingredients || [];
+                document.getElementById('ingCount').textContent = ings.length ? `(${ings.length})` : '';
+                document.getElementById('ingredientsList').innerHTML = ings.map(ing => {
+                    const qty = ing.quantity ? fmtQty(ing.quantity) : '';
+                    const unit = ing.unit || '';
+                    const name = ing.name || ing.text || '';
+                    const note = ing.note ? `<span class="text-gray-400 text-sm ml-1">(${ing.note})</span>` : '';
+                    return `<div class="py-2.5 px-1 text-sm">
+                        ${qty ? `<strong class="text-gray-700">${qty}</strong> ` : ''}
+                        ${unit ? `<span class="text-gray-500 text-xs">${unit}</span> ` : ''}
+                        <span class="text-gray-800">${name}</span>${note}
+                    </div>`;
+                }).join('');
+
+                // Steps
+                const steps = r.steps || [];
+                document.getElementById('stepsCount').textContent = steps.length ? `(${steps.length} steps)` : '';
+                document.getElementById('stepsList').innerHTML = steps.map((s, i) => `
+                    <div class="flex gap-4 py-4 ${i < steps.length - 1 ? 'border-b border-gray-100' : ''}">
+                        <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm text-white" style="background: #f97316; flex-shrink: 0; min-width: 2rem; min-height: 2rem;">${i + 1}</div>
+                        <p class="text-gray-700 leading-relaxed pt-1">${s.text}</p>
+                    </div>
+                `).join('');
+
+                // Source
+                if (r.source_url) {
+                    document.getElementById('sourceLink').href = r.source_url;
+                    document.getElementById('sourceSection').classList.remove('hidden');
+                }
+
+                // Author
+                document.getElementById('authorLine').textContent = `Shared by ${data.owner_name}`;
+
+                // Show
+                document.getElementById('loadingView').classList.add('hidden');
+                document.getElementById('contentView').classList.remove('hidden');
+
+            } catch (e) {
+                document.getElementById('loadingView').classList.add('hidden');
+                document.getElementById('errorView').classList.remove('hidden');
+            }
+        }
+
+        function fmtTime(mins) {
+            if (!mins) return '';
+            if (mins >= 60) return Math.floor(mins/60) + 'h ' + (mins%60 > 0 ? mins%60 + 'min' : '');
+            return mins + ' min';
+        }
+
+        function fmtQty(q) {
+            if (Number.isInteger(q)) return String(q);
+            const frac = q % 1;
+            const whole = Math.floor(q);
+            const fractions = {0.25:'¼', 0.33:'⅓', 0.5:'½', 0.67:'⅔', 0.75:'¾'};
+            for (const [val, sym] of Object.entries(fractions)) {
+                if (Math.abs(frac - parseFloat(val)) < 0.05) return whole > 0 ? whole+' '+sym : sym;
+            }
+            return String(parseFloat(q.toFixed(2)));
+        }
+
+        loadRecipe();
+    </script>
+</body>
+</html>

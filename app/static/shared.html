@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zest — Shared Cookbook</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.0.3/src/regular/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.0.3/src/bold/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.0.3/src/fill/style.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&display=swap');
+
+        body { font-family: 'Inter', sans-serif; background: #fafaf8; }
+        .font-display { font-family: 'Playfair Display', serif; }
+
+        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+        /* Recipe cards */
+        .recipe-card {
+            transition: transform 0.3s cubic-bezier(.2,.8,.3,1), box-shadow 0.3s ease;
+            border-radius: 20px;
+        }
+        .recipe-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+        }
+        .recipe-card img {
+            transition: transform 0.4s ease;
+        }
+        .recipe-card:hover img {
+            transform: scale(1.05);
+        }
+
+        /* Animations */
+        .fade-up {
+            opacity: 0; transform: translateY(30px);
+            animation: fadeUp 0.7s ease-out forwards;
+        }
+        @keyframes fadeUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in-slow {
+            opacity: 0;
+            animation: fadeInSlow 1s ease-out 0.3s forwards;
+        }
+        @keyframes fadeInSlow { to { opacity: 1; } }
+
+        /* Cover slideshow */
+        .cover-slide { transition: opacity 0.8s ease-in-out; }
+
+        /* Hero gradient overlay */
+        .hero-gradient {
+            background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 40%, rgba(0,0,0,0.1) 70%, transparent 100%);
+        }
+
+        /* Modal */
+        .modal-backdrop {
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        .modal-enter {
+            animation: modalSlideUp 0.35s cubic-bezier(.2,.8,.3,1) forwards;
+        }
+        @keyframes modalSlideUp {
+            from { opacity: 0; transform: translateY(40px) scale(0.97); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* Ingredient checkbox */
+        .ing-check:checked + .ing-label { text-decoration: line-through; color: #9ca3af; }
+
+        /* No-cover hero pattern */
+        .pattern-bg {
+            background-image: radial-gradient(circle at 20% 50%, rgba(251,146,60,0.08) 0%, transparent 50%),
+                              radial-gradient(circle at 80% 50%, rgba(251,146,60,0.06) 0%, transparent 50%);
+        }
+
+        /* Step number pulse on hover */
+        .step-num:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 0 4px rgba(249,115,22,0.15);
+        }
+        .step-num { transition: transform 0.2s, box-shadow 0.2s; }
+
+        /* Scrollbar */
+        .modal-scroll::-webkit-scrollbar { width: 6px; }
+        .modal-scroll::-webkit-scrollbar-track { background: transparent; }
+        .modal-scroll::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 10px; }
+        .modal-scroll::-webkit-scrollbar-thumb:hover { background: #d1d5db; }
+
+        /* Tag hover */
+        .tag-badge { transition: transform 0.15s; }
+        .tag-badge:hover { transform: scale(1.05); }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <!-- Loading -->
+    <div id="loadingView" class="min-h-screen flex items-center justify-center">
+        <div class="text-center">
+            <div class="text-5xl mb-4" style="animation: pulse 2s ease-in-out infinite;">🍊</div>
+            <p class="text-gray-400 text-sm tracking-wide">Loading cookbook...</p>
+        </div>
+    </div>
+    <style>@keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.15)} }</style>
+
+    <!-- Error -->
+    <div id="errorView" class="hidden min-h-screen flex items-center justify-center px-6">
+        <div class="text-center max-w-sm">
+            <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-gray-100 flex items-center justify-center">
+                <i class="ph-bold ph-link-break text-3xl text-gray-400"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-3">Cookbook not found</h2>
+            <p class="text-gray-400 text-sm leading-relaxed">This link may have expired or been removed by its author.</p>
+        </div>
+    </div>
+
+    <!-- Content -->
+    <div id="contentView" class="hidden">
+
+        <!-- Cover Hero -->
+        <div id="heroSection" class="relative">
+            <!-- Without cover -->
+            <div id="heroNoCover" class="hidden pattern-bg relative overflow-hidden" style="padding-top: 5rem; padding-bottom: 4rem;">
+                <div class="max-w-3xl mx-auto text-center px-6 relative z-10">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-50 border border-orange-100 text-orange-600 text-xs font-semibold tracking-wide mb-6">
+                        <i class="ph-bold ph-cooking-pot"></i> COOKBOOK
+                    </div>
+                    <h1 id="titleNoCover" class="font-display text-4xl md:text-6xl text-gray-900 mb-4 leading-tight"></h1>
+                    <p id="descNoCover" class="text-gray-500 max-w-lg mx-auto text-base leading-relaxed"></p>
+                    <div id="metaNoCover" class="mt-6 flex items-center justify-center gap-3 text-sm text-gray-400"></div>
+                </div>
+            </div>
+
+            <!-- With cover -->
+            <div id="heroWithCover" class="hidden px-4 md:px-8 pt-6">
+                <div class="relative max-w-5xl mx-auto rounded-2xl overflow-hidden shadow-xl" style="height: 26rem;">
+                    <img id="coverImg1" class="cover-slide absolute inset-0 w-full h-full object-cover" src="">
+                    <img id="coverImg2" class="cover-slide absolute inset-0 w-full h-full object-cover opacity-0" src="">
+                    <div class="hero-gradient absolute inset-0"></div>
+
+                    <!-- Arrows -->
+                    <button id="coverPrev" onclick="navCover(-1)" class="hidden absolute left-5 top-1/2 -translate-y-1/2 w-11 h-11 bg-white/15 hover:bg-white/30 text-white rounded-full flex items-center justify-center backdrop-blur-md transition-all z-10 border border-white/20">
+                        <i class="ph-bold ph-caret-left text-lg"></i>
+                    </button>
+                    <button id="coverNext" onclick="navCover(1)" class="hidden absolute right-5 top-1/2 -translate-y-1/2 w-11 h-11 bg-white/15 hover:bg-white/30 text-white rounded-full flex items-center justify-center backdrop-blur-md transition-all z-10 border border-white/20">
+                        <i class="ph-bold ph-caret-right text-xl"></i>
+                    </button>
+                    <div id="coverDots" class="hidden absolute bottom-28 left-1/2 -translate-x-1/2 flex gap-2 z-10"></div>
+
+                    <!-- Title overlay -->
+                    <div class="absolute bottom-0 left-0 right-0 p-8 md:p-12">
+                        <div class="max-w-3xl mx-auto">
+                            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/15 backdrop-blur-md border border-white/20 text-white/90 text-xs font-semibold tracking-wide mb-4">
+                                <i class="ph-bold ph-cooking-pot"></i> COOKBOOK
+                            </div>
+                            <h1 id="titleWithCover" class="font-display text-4xl md:text-6xl text-white mb-3 leading-tight drop-shadow-lg"></h1>
+                            <p id="descWithCover" class="text-white/75 text-sm md:text-base max-w-lg leading-relaxed"></p>
+                            <div id="metaWithCover" class="mt-4 flex items-center gap-4 text-sm text-white/60"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Author note -->
+        <div id="noteSection" class="hidden"></div>
+
+        <!-- Recipes Grid -->
+        <div class="max-w-6xl mx-auto px-4 md:px-8" style="padding-top: 2.5rem; padding-bottom: 4rem;">
+            <!-- Section header -->
+            <div class="flex items-center justify-between mb-8 px-2">
+                <h2 id="gridTitle" class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                    <i class="ph-bold ph-book-open-text" style="color:#f97316"></i> <span id="recipeCountLabel"></span>
+                </h2>
+            </div>
+            <div id="recipeGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7">
+                <!-- filled dynamically -->
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="border-t border-gray-200" style="background: linear-gradient(to bottom, #fafaf8, #f5f3ef);">
+            <div class="max-w-6xl mx-auto px-8 py-10 flex flex-col items-center">
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="text-2xl">🍊</span>
+                    <span class="font-bold text-lg" style="color: #f97316;">Zest</span>
+                </div>
+                <p class="text-sm text-gray-400 tracking-wide">Shared Intentionally</p>
+                <p id="footerAuthor" class="text-xs text-gray-300 mt-2"></p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Recipe Detail Modal -->
+    <div id="recipeModal" class="hidden fixed inset-0 modal-backdrop z-50 flex items-end md:items-center justify-center p-0 md:p-6" onclick="if(event.target===this)closeRecipe()">
+        <div class="modal-enter bg-white w-full md:max-w-2xl md:rounded-2xl shadow-2xl overflow-hidden flex flex-col" style="max-height: 95vh; border-radius: 20px 20px 0 0;">
+            <!-- Drag handle (mobile) -->
+            <div class="md:hidden pt-3 pb-1 flex justify-center">
+                <div class="w-10 h-1 rounded-full bg-gray-300"></div>
+            </div>
+            <div id="recipeModalContent" class="flex-1 overflow-y-auto modal-scroll">
+                <!-- filled dynamically -->
+            </div>
+        </div>
+    </div>
+
+<script>
+    const token = window.location.pathname.split('/shared/')[1]?.split('/')[0]?.split('?')[0];
+    const API_BASE = window.location.origin;
+    let coverSlide = 0;
+    let coverCount = 0;
+    let autoSlideTimer = null;
+
+    async function init() {
+        if (!token) return showError();
+
+        try {
+            const [infoRes, recipesRes] = await Promise.all([
+                fetch(`${API_BASE}/share/${token}/info`),
+                fetch(`${API_BASE}/share/${token}/recipes`)
+            ]);
+
+            if (!infoRes.ok || !recipesRes.ok) return showError();
+
+            const info = await infoRes.json();
+            const recipes = await recipesRes.json();
+
+            renderPage(info, recipes);
+        } catch (e) {
+            console.error(e);
+            showError();
+        }
+    }
+
+    function showError() {
+        document.getElementById('loadingView').classList.add('hidden');
+        document.getElementById('errorView').classList.remove('hidden');
+    }
+
+    function renderPage(info, recipes) {
+        document.title = `${info.cookbook_name || 'Cookbook'} — Zest`;
+
+        const name = info.cookbook_name || 'Cookbook';
+        const desc = info.cookbook_description || '';
+        const note = info.cookbook_note || '';
+        const ownerName = info.owner_name || 'Anonymous';
+
+        // Meta HTML
+        const metaHtml = `
+            <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white" style="background: #f97316;">${ownerName.charAt(0).toUpperCase()}</div>
+                <span class="font-medium text-sm">${ownerName}</span>
+            </div>
+            <span class="text-gray-300">·</span>
+            <span>${recipes.length} recipe${recipes.length !== 1 ? 's' : ''}</span>
+        `;
+
+        // Cover logic
+        const covers = [];
+        if (info.cover_image_url) covers.push({ url: info.cover_image_url, pos: info.cover_position_1 || '50% 50%' });
+        if (info.cover_image_url_2) covers.push({ url: info.cover_image_url_2, pos: info.cover_position_2 || '50% 50%' });
+        coverCount = covers.length;
+
+        if (covers.length > 0) {
+            document.getElementById('heroWithCover').classList.remove('hidden');
+            document.getElementById('titleWithCover').textContent = name;
+            document.getElementById('descWithCover').textContent = desc;
+            document.getElementById('metaWithCover').innerHTML = metaHtml;
+
+            const img1 = document.getElementById('coverImg1');
+            img1.src = `${API_BASE}${covers[0].url}`;
+            img1.style.objectPosition = covers[0].pos;
+
+            if (covers.length > 1) {
+                const img2 = document.getElementById('coverImg2');
+                img2.src = `${API_BASE}${covers[1].url}`;
+                img2.style.objectPosition = covers[1].pos;
+                document.getElementById('coverPrev').classList.remove('hidden');
+                document.getElementById('coverNext').classList.remove('hidden');
+                const dots = document.getElementById('coverDots');
+                dots.classList.remove('hidden');
+                dots.innerHTML = covers.map((_, i) => `<div class="cDot w-2 h-2 rounded-full ${i===0?'bg-white':'bg-white/40'} transition-all cursor-pointer" onclick="goToCover(${i})"></div>`).join('');
+
+                // Auto-slideshow
+                autoSlideTimer = setInterval(() => navCover(1), 5000);
+            }
+        } else {
+            document.getElementById('heroNoCover').classList.remove('hidden');
+            document.getElementById('titleNoCover').textContent = name;
+            document.getElementById('descNoCover').textContent = desc;
+            document.getElementById('metaNoCover').innerHTML = metaHtml;
+        }
+
+        // Author note
+        if (note) {
+            const noteSection = document.getElementById('noteSection');
+            noteSection.classList.remove('hidden');
+            noteSection.innerHTML = `
+                <div class="max-w-6xl mx-auto px-4 md:px-8 pt-8">
+                    <div class="relative bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-gray-100" style="border-left: 4px solid #f97316;">
+                        <i class="ph-fill ph-quotes text-2xl absolute top-4 right-5" style="color: #fed7aa;"></i>
+                        <h3 class="font-bold text-gray-700 mb-2 flex items-center gap-2 text-sm">
+                            <i class="ph-bold ph-pen-nib" style="color: #f97316;"></i> Note from ${ownerName}
+                        </h3>
+                        <p class="text-gray-600 text-sm leading-relaxed whitespace-pre-line">${escHtml(note)}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Recipe count label
+        document.getElementById('recipeCountLabel').textContent = `${recipes.length} Recipe${recipes.length !== 1 ? 's' : ''}`;
+
+        // Recipes grid
+        const grid = document.getElementById('recipeGrid');
+        grid.innerHTML = recipes.map((r, i) => {
+            const totalTime = (r.prep_time || 0) + (r.cook_time || 0);
+            return `
+            <div class="recipe-card bg-white overflow-hidden shadow-sm border border-gray-100 cursor-pointer fade-up"
+                 style="animation-delay: ${i * 0.06}s"
+                 onclick='openRecipe(${JSON.stringify(r).replace(/'/g, "&#39;")})'>
+                <div class="relative overflow-hidden" style="height: 200px;">
+                    ${r.image_url
+                        ? `<img src="${API_BASE}${r.image_url}" class="w-full h-full object-cover" loading="lazy" alt="${escHtml(r.title)}">`
+                        : `<div class="w-full h-full flex items-center justify-center" style="background: linear-gradient(135deg, #fff7ed 0%, #fef2f2 100%);">
+                            <i class="ph-bold ph-cooking-pot text-5xl" style="color: #fdba74;"></i>
+                           </div>`
+                    }
+                    ${r.rating ? `
+                        <div class="absolute top-3 right-3 flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/40 backdrop-blur-md text-white text-xs font-semibold">
+                            <i class="ph-fill ph-star" style="color: #fbbf24;"></i> ${r.rating}
+                        </div>
+                    ` : ''}
+                </div>
+                <div class="p-5">
+                    <h3 class="font-bold text-gray-800 mb-1.5 text-base leading-snug">${escHtml(r.title)}</h3>
+                    ${r.description ? `<p class="text-xs text-gray-400 line-clamp-2 mb-3 leading-relaxed">${escHtml(r.description)}</p>` : '<div class="mb-3"></div>'}
+                    <div class="flex items-center gap-3 text-xs text-gray-400">
+                        ${totalTime ? `<span class="flex items-center gap-1.5"><i class="ph-bold ph-clock"></i> ${fmtTime(totalTime)}</span>` : ''}
+                        ${r.servings ? `<span class="flex items-center gap-1.5"><i class="ph-bold ph-users"></i> ${r.servings}</span>` : ''}
+                        ${(r.ingredients || []).length ? `<span class="flex items-center gap-1.5"><i class="ph-bold ph-list"></i> ${r.ingredients.length} ing.</span>` : ''}
+                    </div>
+                </div>
+            </div>
+        `}).join('');
+
+        // Footer author
+        document.getElementById('footerAuthor').textContent = `Cookbook by ${ownerName}`;
+
+        // Show
+        document.getElementById('loadingView').classList.add('hidden');
+        document.getElementById('contentView').classList.remove('hidden');
+    }
+
+    function navCover(dir) {
+        if (coverCount < 2) return;
+        coverSlide = (coverSlide + dir + coverCount) % coverCount;
+        document.getElementById('coverImg1').style.opacity = coverSlide === 0 ? '1' : '0';
+        document.getElementById('coverImg2').style.opacity = coverSlide === 1 ? '1' : '0';
+        document.querySelectorAll('.cDot').forEach((d, i) => {
+            d.className = `cDot w-2 h-2 rounded-full ${i === coverSlide ? 'bg-white' : 'bg-white/40'} transition-all cursor-pointer`;
+        });
+        // Reset auto-slide timer
+        if (autoSlideTimer) { clearInterval(autoSlideTimer); autoSlideTimer = setInterval(() => navCover(1), 5000); }
+    }
+
+    function goToCover(idx) {
+        coverSlide = idx;
+        document.getElementById('coverImg1').style.opacity = idx === 0 ? '1' : '0';
+        document.getElementById('coverImg2').style.opacity = idx === 1 ? '1' : '0';
+        document.querySelectorAll('.cDot').forEach((d, i) => {
+            d.className = `cDot w-2 h-2 rounded-full ${i === idx ? 'bg-white' : 'bg-white/40'} transition-all cursor-pointer`;
+        });
+        if (autoSlideTimer) { clearInterval(autoSlideTimer); autoSlideTimer = setInterval(() => navCover(1), 5000); }
+    }
+
+    function openRecipe(r) {
+        const modal = document.getElementById('recipeModal');
+        const content = document.getElementById('recipeModalContent');
+
+        const totalTime = (r.prep_time || 0) + (r.cook_time || 0);
+
+        const ingredientsHtml = (r.ingredients || [])
+            .sort((a, b) => (a.order_index || 0) - (b.order_index || 0))
+            .map((ing, idx) => {
+                let text = ing.text || '';
+                if (!text && ing.name) {
+                    const parts = [];
+                    if (ing.quantity) parts.push(fmtQty(ing.quantity));
+                    if (ing.unit) parts.push(ing.unit);
+                    parts.push(ing.name);
+                    if (ing.note) parts.push(`(${ing.note})`);
+                    text = parts.join(' ');
+                }
+                return text ? `
+                    <label class="flex items-start gap-3 py-2.5 cursor-pointer group">
+                        <input type="checkbox" class="ing-check mt-1 w-4 h-4 rounded border-gray-300 text-orange-500 focus:ring-orange-400 focus:ring-offset-0 cursor-pointer">
+                        <span class="ing-label text-sm text-gray-700 group-hover:text-gray-900 transition-colors">${escHtml(text)}</span>
+                    </label>
+                ` : '';
+            }).join('');
+
+        const stepsHtml = (r.steps || [])
+            .sort((a, b) => (a.order_index || 0) - (b.order_index || 0))
+            .map((s, i) => `
+                <div class="flex gap-4 py-4">
+                    <div class="step-num w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white cursor-default" style="background: #f97316; flex-shrink: 0; min-width: 2rem; min-height: 2rem;">${i + 1}</div>
+                    <p class="text-gray-700 text-sm leading-relaxed pt-1">${escHtml(s.text || '')}</p>
+                </div>
+            `).join('');
+
+        // Categories + tags
+        const badges = [];
+        (r.categories || []).forEach(c => {
+            badges.push(`<span class="tag-badge text-xs px-3 py-1.5 rounded-lg font-medium" style="background: #fff7ed; color: #ea580c;">${escHtml(c.name)}</span>`);
+        });
+        (r.tags || []).forEach(t => {
+            badges.push(`<span class="tag-badge text-xs px-3 py-1.5 rounded-full font-medium" style="background: ${t.color}15; color: ${t.color}; border: 1px solid ${t.color}30;">#${escHtml(t.name)}</span>`);
+        });
+
+        content.innerHTML = `
+            ${r.image_url
+                ? `<div class="relative">
+                    <img src="${API_BASE}${r.image_url}" class="w-full object-cover" style="height: 240px;" alt="${escHtml(r.title)}">
+                    <div class="absolute inset-0" style="background: linear-gradient(to top, rgba(0,0,0,0.3) 0%, transparent 50%);"></div>
+                    <button onclick="closeRecipe()" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-black/30 hover:bg-black/50 text-white flex items-center justify-center backdrop-blur-md transition-colors border border-white/20">
+                        <i class="ph-bold ph-x text-sm"></i>
+                    </button>
+                   </div>`
+                : `<div class="flex justify-end p-4 pb-0">
+                    <button onclick="closeRecipe()" class="w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 flex items-center justify-center transition-colors">
+                        <i class="ph-bold ph-x text-sm"></i>
+                    </button>
+                   </div>`
+            }
+            <div class="p-6 md:p-8">
+                <h2 class="font-display text-2xl md:text-3xl text-gray-900 mb-3">${escHtml(r.title)}</h2>
+
+                <!-- Meta pills -->
+                <div class="flex flex-wrap items-center gap-2 mb-4">
+                    ${totalTime ? `<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-100 text-gray-600 text-xs font-medium"><i class="ph-bold ph-clock"></i> ${fmtTime(totalTime)}</span>` : ''}
+                    ${r.servings ? `<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-100 text-gray-600 text-xs font-medium"><i class="ph-bold ph-users"></i> ${r.servings} servings</span>` : ''}
+                    ${r.prep_time ? `<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-100 text-gray-600 text-xs font-medium"><i class="ph-bold ph-knife"></i> Prep ${fmtTime(r.prep_time)}</span>` : ''}
+                    ${r.cook_time ? `<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-100 text-gray-600 text-xs font-medium"><i class="ph-bold ph-fire"></i> Cook ${fmtTime(r.cook_time)}</span>` : ''}
+                    ${r.rating ? `<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium" style="background: #fffbeb; color: #d97706;"><i class="ph-fill ph-star"></i> ${r.rating}/5</span>` : ''}
+                </div>
+
+                ${badges.length ? `<div class="flex flex-wrap gap-2 mb-5">${badges.join('')}</div>` : ''}
+
+                ${r.description ? `<p class="text-gray-500 text-sm leading-relaxed mb-6">${escHtml(r.description)}</p>` : ''}
+
+                ${ingredientsHtml ? `
+                    <div class="rounded-2xl p-5 mb-6" style="background: #fffaf5; border: 1px solid #fed7aa;">
+                        <h3 class="font-bold text-sm text-gray-800 mb-3 flex items-center gap-2">
+                            <i class="ph-bold ph-basket" style="color: #f97316;"></i> Ingredients
+                            <span class="text-xs font-normal text-gray-400">(${(r.ingredients||[]).length})</span>
+                        </h3>
+                        <div class="divide-y divide-orange-100">${ingredientsHtml}</div>
+                    </div>
+                ` : ''}
+
+                ${stepsHtml ? `
+                    <div class="mb-6">
+                        <h3 class="font-bold text-sm text-gray-800 mb-4 flex items-center gap-2">
+                            <i class="ph-bold ph-list-numbers" style="color: #f97316;"></i> Preparation
+                            <span class="text-xs font-normal text-gray-400">(${(r.steps||[]).length} steps)</span>
+                        </h3>
+                        <div class="divide-y divide-gray-100">${stepsHtml}</div>
+                    </div>
+                ` : ''}
+
+                ${r.notes ? `
+                    <div class="rounded-xl p-4 bg-gray-50 border border-gray-100 mb-6">
+                        <p class="text-sm text-gray-500 italic flex items-start gap-2">
+                            <i class="ph-bold ph-note-pencil mt-0.5 flex-shrink-0" style="color: #f97316;"></i>
+                            ${escHtml(r.notes)}
+                        </p>
+                    </div>
+                ` : ''}
+
+                ${r.source_url ? `
+                    <a href="${r.source_url}" target="_blank" rel="noopener" class="inline-flex items-center gap-2 text-sm font-medium hover:underline mb-4" style="color: #2563eb;">
+                        <i class="ph-bold ph-globe"></i> View original recipe
+                    </a>
+                ` : ''}
+
+                <!-- Branding -->
+                <div class="pt-5 mt-4 border-t border-gray-100 text-center">
+                    <p class="text-xs text-gray-300">
+                        Shared Intentionally · <span style="color: #f97316; font-weight: 600;">Zest</span> 🍊
+                    </p>
+                </div>
+            </div>
+        `;
+
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeRecipe() {
+        document.getElementById('recipeModal').classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+
+    function fmtTime(mins) {
+        if (!mins) return '';
+        if (mins >= 60) return Math.floor(mins/60) + 'h ' + (mins%60 > 0 ? mins%60 + ' min' : '');
+        return mins + ' min';
+    }
+
+    function fmtQty(q) {
+        if (Number.isInteger(q)) return String(q);
+        const frac = q % 1;
+        const whole = Math.floor(q);
+        const fracs = {0.25:'¼', 0.33:'⅓', 0.5:'½', 0.67:'⅔', 0.75:'¾'};
+        for (const [val, sym] of Object.entries(fracs)) {
+            if (Math.abs(frac - parseFloat(val)) < 0.05) return whole > 0 ? whole + ' ' + sym : sym;
+        }
+        return String(parseFloat(q.toFixed(2)));
+    }
+
+    function escHtml(str) {
+        if (!str) return '';
+        return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeRecipe(); });
+
+    init();
+</script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+# Zest Demo — docker-compose for demo.myzest.app
+# SSL handled by CloudPanel/Nginx reverse proxy on the host
+# Zest runs on port 8200 (host) → 8000 (container)
+
+services:
+  zest_demo:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    container_name: zest_demo
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8200:8000"
+    volumes:
+      - zest_demo_data:/app/data
+      - zest_demo_uploads:/app/app/static/uploads
+    environment:
+      - PYTHONUNBUFFERED=1
+      - ZEST_SECRET_KEY=${ZEST_SECRET_KEY:-zest-demo-myzest-app-2026}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  zest_demo_data:
+  zest_demo_uploads:

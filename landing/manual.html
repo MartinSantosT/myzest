@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zest — User Manual</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        :root {
+            --orange: #f97316;
+        }
+
+        code {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+        }
+
+        /* Smooth scrolling for TOC links */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Code block styling */
+        .code-block {
+            background-color: #1f2937;
+            color: #f3f4f6;
+            overflow-x: auto;
+        }
+
+        /* Table styling */
+        .table-container table {
+            border-collapse: collapse;
+        }
+
+        .table-container th {
+            background-color: #f97316;
+            color: white;
+            padding: 0.75rem;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .table-container td {
+            padding: 0.75rem;
+            border: 1px solid #e5e7eb;
+        }
+
+        .table-container tr:nth-child(even) {
+            background-color: #f9fafb;
+        }
+
+        /* Inline code styling */
+        .inline-code {
+            background-color: #f3f4f6;
+            color: #374151;
+            padding: 0.125rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.875em;
+        }
+
+        /* h2 left border */
+        .section-header {
+            border-left: 4px solid #f97316;
+            padding-left: 1rem;
+        }
+
+        /* TOC styling */
+        .toc-link {
+            transition: all 0.2s ease;
+        }
+
+        .toc-link:hover {
+            color: #f97316;
+            padding-left: 0.5rem;
+        }
+
+        .toc-link.active {
+            color: #f97316;
+            font-weight: 600;
+        }
+
+        /* Blockquote styling */
+        .blockquote {
+            border-left: 4px solid #f97316;
+            padding-left: 1.5rem;
+            font-style: italic;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body class="bg-white text-gray-900">
+    <!-- Fixed Navbar -->
+    <nav class="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 shadow-sm z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            <a href="index.html" class="text-2xl font-bold text-orange-500 flex items-center gap-2 hover:opacity-80 transition">
+                <span>🍊</span> <span>Zest</span>
+            </a>
+            <a href="index.html" class="text-gray-600 hover:text-orange-500 transition font-medium flex items-center gap-2">
+                <i class="ph ph-arrow-left"></i> Back to Home
+            </a>
+        </div>
+    </nav>
+
+    <div class="flex pt-16">
+        <!-- Sidebar TOC - Desktop only -->
+        <aside class="hidden lg:block fixed left-0 top-20 h-screen w-64 bg-gray-50 border-r border-gray-200 overflow-y-auto p-6">
+            <h3 class="text-sm font-bold text-gray-900 mb-4 uppercase tracking-wider">On this page</h3>
+            <nav class="space-y-2 text-sm">
+                <a href="#installation" class="toc-link text-gray-600 block">1. Installation</a>
+                <a href="#first-steps" class="toc-link text-gray-600 block">2. First Steps</a>
+                <a href="#recipes" class="toc-link text-gray-600 block">3. Recipes</a>
+                <a href="#categories-tags" class="toc-link text-gray-600 block">4. Categories & Tags</a>
+                <a href="#importing" class="toc-link text-gray-600 block">5. Importing from URLs</a>
+                <a href="#ingredients" class="toc-link text-gray-600 block">6. Ingredients & Portion Calculator</a>
+                <a href="#what-to-cook" class="toc-link text-gray-600 block">7. What to Cook?</a>
+                <a href="#shopping-list" class="toc-link text-gray-600 block">8. Shopping List</a>
+                <a href="#memories" class="toc-link text-gray-600 block">9. Memories</a>
+                <a href="#moment-cards" class="toc-link text-gray-600 block">10. Moment Cards</a>
+                <a href="#cookbooks" class="toc-link text-gray-600 block">11. Cookbooks</a>
+                <a href="#sharing" class="toc-link text-gray-600 block">12. Sharing</a>
+                <a href="#pdf-export" class="toc-link text-gray-600 block">13. PDF Export</a>
+                <a href="#settings" class="toc-link text-gray-600 block">14. Settings & Profile</a>
+                <a href="#backups" class="toc-link text-gray-600 block">15. Backups & Data</a>
+                <a href="#dark-mode" class="toc-link text-gray-600 block">16. Dark Mode</a>
+                <a href="#shortcuts" class="toc-link text-gray-600 block">17. Keyboard Shortcuts</a>
+                <a href="#troubleshooting" class="toc-link text-gray-600 block">18. Troubleshooting</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 lg:ml-64">
+            <article class="max-w-4xl mx-auto px-6 py-12 pb-24">
+
+                <!-- Header -->
+                <div class="mb-12">
+                    <h1 class="text-5xl font-bold text-gray-900 mb-6">Zest — User Manual</h1>
+                    <div class="blockquote">
+                        <p><strong>Zest</strong> is a self-hosted culinary diary that stores your recipes, memories, and the stories around the table. This manual covers everything you need to get started and make the most of every feature.</p>
+                    </div>
+                </div>
+
+                <hr class="my-12 border-gray-200">
+
+                <!-- Section 1: Installation -->
+                <section id="installation" class="mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-6 section-header">1. Installation</h2>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">Requirements</h3>
+                    <ul class="space-y-3 ml-6 text-gray-700">
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span>Docker and Docker Compose installed on your machine</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span>About 200 MB of disk space (image + dependencies)</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span>Any hardware: Raspberry Pi 4, NAS, old laptop, cloud VM — anything that runs Docker</span>
+                        </li>
+                    </ul>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">Quick Start</h3>
+                    <div class="bg-gray-900 text-gray-100 p-6 rounded-lg overflow-x-auto code-block mb-4">
+                        <pre><code>git clone https://github.com/YOUR_USERNAME/zest.git
+cd zest
+cp .env.example .env
+docker compose up -d</code></pre>
+                    </div>
+                    <p class="text-gray-700 mb-6">Open <strong>http://localhost:8000</strong> in your browser. That's it.</p>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">Secure Your Instance</h3>
+                    <ol class="space-y-6 ml-6 text-gray-700">
+                        <li>
+                            <p class="font-semibold mb-3"><strong>Change the secret key</strong> — Open <span class="inline-code">.env</span> and replace the default value:</p>
+                            <div class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto code-block mb-3">
+                                <pre><code># Generate a secure key:
+python -c "import secrets; print(secrets.token_urlsafe(32))"</code></pre>
+                            </div>
+                            <p class="mb-3">Paste the result as <span class="inline-code">ZEST_SECRET_KEY</span> in your <span class="inline-code">.env</span> file, then restart:</p>
+                            <div class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto code-block">
+                                <pre><code>docker compose down && docker compose up -d</code></pre>
+                            </div>
+                        </li>
+                        <li>
+                            <p><strong>Change the default password</strong> — Log in with <span class="inline-code">admin@zest.local</span> / <span class="inline-code">admin</span>, then go to <strong>Settings → Profile</strong> and update your password immediately.</p>
+                        </li>
+                    </ol>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">Custom Port</h3>
+                    <p class="text-gray-700 mb-4">Edit <span class="inline-code">docker-compose.yml</span> to change the port:</p>
+                    <div class="bg-gray-900 text-gray-100 p-6 rounded-lg overflow-x-auto code-block mb-4">
+                        <pre><code>ports:
+  - "3000:8000"   # Access Zest on port 3000</code></pre>
+                    </div>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">Reverse Proxy</h3>
+                    <p class="text-gray-700">If you're exposing Zest to your local network or the internet, place it behind a reverse proxy (Nginx, Caddy, Traefik, or Nginx Proxy Manager). See the README for an example Nginx configuration.</p>
+                </section>
+
+                <hr class="my-12 border-gray-200">
+
+                <!-- Section 2: First Steps -->
+                <section id="first-steps" class="mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-6 section-header">2. First Steps</h2>
+                    <p class="text-gray-700 mb-6">When you first log in, Zest shows a brief onboarding experience:</p>
+                    <ol class="space-y-3 ml-6 text-gray-700 mb-6">
+                        <li><strong>Welcome</strong> — Introduction to Zest's philosophy</li>
+                        <li><strong>Your recipes, your story</strong> — How to create or import your first recipe</li>
+                        <li><strong>Memories</strong> — What makes Zest different: connecting photos and moments to recipes</li>
+                    </ol>
+                    <p class="text-gray-700 mb-6">You can skip the onboarding at any time, or click <strong>"Create my first memory"</strong> to jump right in.</p>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">The Dashboard</h3>
+                    <p class="text-gray-700 mb-4">After onboarding, you'll see the main dashboard with:</p>
+                    <ul class="space-y-3 ml-6 text-gray-700">
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span><strong>Recipe grid</strong> — All your recipes displayed as cards with photos, ratings, and time estimates</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span><strong>Sidebar</strong> (left) — Navigation between Recipes, What to Cook, Shopping List, Cookbooks, Memories, and Settings</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span><strong>Search bar</strong> — Filter recipes by text, category, tag, or rating</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span><strong>+ New Recipe</strong> button — Create a new recipe from scratch</span>
+                        </li>
+                    </ul>
+                </section>
+
+                <hr class="my-12 border-gray-200">
+
+                <!-- Section 3: Recipes -->
+                <section id="recipes" class="mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-6 section-header">3. Recipes</h2>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">Creating a Recipe</h3>
+                    <ol class="space-y-4 ml-6 text-gray-700 mb-6">
+                        <li>Click <strong>+ New Recipe</strong> (or the orange button in the top right)</li>
+                        <li>
+                            Fill in the details:
+                            <ul class="space-y-2 ml-6 mt-2">
+                                <li class="flex gap-3">
+                                    <span class="text-orange-500 flex-shrink-0">◦</span>
+                                    <span><strong>Title</strong> (required)</span>
+                                </li>
+                                <li class="flex gap-3">
+                                    <span class="text-orange-500 flex-shrink-0">◦</span>
+                                    <span><strong>Description</strong> — A short intro or story about the dish</span>
+                                </li>
+                                <li class="flex gap-3">
+                                    <span class="text-orange-500 flex-shrink-0">◦</span>
+                                    <span><strong>Prep Time & Cook Time</strong> — In minutes</span>
+                                </li>
+                                <li class="flex gap-3">
+                                    <span class="text-orange-500 flex-shrink-0">◦</span>
+                                    <span><strong>Servings</strong> — How many portions the recipe makes</span>
+                                </li>
+                                <li class="flex gap-3">
+                                    <span class="text-orange-500 flex-shrink-0">◦</span>
+                                    <span><strong>Photo</strong> — Click the image area to upload a hero photo. You can add up to 4 photos total (1 hero + 3 additional)</span>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>Ingredients</strong> — Add one per row. Each ingredient has structured fields:
+                            <ul class="space-y-2 ml-6 mt-2">
+                                <li class="flex gap-3">
+                                    <span class="text-orange-500 flex-shrink-0">◦</span>
+                                    <span>Quantity (number)</span>
+                                </li>
+                                <li class="flex gap-3">
+                                    <span class="text-orange-500 flex-shrink-0">◦</span>
+                                    <span>Unit (cups, grams, tbsp, etc.)</span>
+                                </li>
+                                <li class="flex gap-3">
+                                    <span class="text-orange-500 flex-shrink-0">◦</span>
+                                    <span>Name (the ingredient itself)</span>
+                                </li>
+                                <li class="flex gap-3">
+                                    <span class="text-orange-500 flex-shrink-0">◦</span>
+                                    <span>Note (optional: "finely chopped", "room temperature")</span>
+                                </li>
+                            </ul>
+                        </li>
+                        <li><strong>Steps</strong> — Add preparation steps in order. Drag to reorder if needed.</li>
+                        <li><strong>Categories & Tags</strong> — Assign categories and color-coded tags (see section 4)</li>
+                        <li>Click <strong>Save</strong></li>
+                    </ol>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">Editing a Recipe</h3>
+                    <p class="text-gray-700 mb-6">Click any recipe card to open its detail view, then click the <strong>Edit</strong> (pencil) button. All fields are editable. Changes are saved when you click <strong>Save</strong>.</p>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">Deleting a Recipe</h3>
+                    <p class="text-gray-700 mb-6">In the recipe detail view, click <strong>Delete</strong> (trash icon). You'll be asked to confirm. Deletion removes the recipe, its ingredients, steps, images, and any associated cookbook entries. Linked memories are preserved but their recipe association is removed.</p>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">Rating & Favorites</h3>
+                    <ul class="space-y-3 ml-6 text-gray-700 mb-6">
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span><strong>Rating</strong> — Click the stars (1–5) on any recipe card or in the detail view</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span><strong>Favorites</strong> — Click the heart icon to toggle a recipe as favorite. Use the sidebar filter to view only favorites.</span>
+                        </li>
+                    </ul>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">Multi-Photo Support</h3>
+                    <p class="text-gray-700">Each recipe supports up to 4 photos: one hero image (displayed on the card) and 3 additional photos visible in the detail view. Click the "+" area below the hero image to add more photos.</p>
+                </section>
+
+                <hr class="my-12 border-gray-200">
+
+                <!-- Section 4: Categories & Tags -->
+                <section id="categories-tags" class="mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-6 section-header">4. Categories & Tags</h2>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">Categories</h3>
+                    <p class="text-gray-700 mb-4">Categories are broad classifications for your recipes (e.g., "Mexican", "Desserts", "Soups", "Quick Meals").</p>
+                    <ul class="space-y-3 ml-6 text-gray-700 mb-6">
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span><strong>Adding categories</strong> — In the recipe modal, type in the category field. If it doesn't exist, Zest creates it automatically.</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span><strong>Autocomplete</strong> — As you type, matching categories appear as suggestions.</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span><strong>Managing categories</strong> — Go to <strong>Settings → Categories</strong> to rename or delete categories.</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span>A recipe can belong to multiple categories.</span>
+                        </li>
+                    </ul>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">Tags</h3>
+                    <p class="text-gray-700 mb-4">Tags are flexible, color-coded labels for cross-cutting concerns (e.g., "Spicy", "Kid-friendly", "Date night", "Meal prep").</p>
+                    <ul class="space-y-3 ml-6 text-gray-700">
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span><strong>Adding tags</strong> — In the recipe modal, select existing tags or create new ones.</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span><strong>Custom colors</strong> — Each tag has a color. Click the color swatch to change it.</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span><strong>Filtering</strong> — Click any tag in the sidebar or recipe grid to filter by that tag. Multiple filters can be combined.</span>
+                        </li>
+                    </ul>
+                </section>
+
+                <hr class="my-12 border-gray-200">
+
+                <!-- Section 5: Importing -->
+                <section id="importing" class="mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-6 section-header">5. Importing Recipes from URLs</h2>
+                    <p class="text-gray-700 mb-6">Zest includes a powerful 4-tier scraping engine that can extract recipes from virtually any cooking website.</p>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">How to Import</h3>
+                    <ol class="space-y-3 ml-6 text-gray-700 mb-6">
+                        <li>Click the <strong>"Import from URL"</strong> option in the sidebar</li>
+                        <li>Paste the URL of the recipe page</li>
+                        <li>Click <strong>Scrape</strong></li>
+                        <li>Zest shows a preview with the extracted data: title, description, ingredients, steps, times, servings, and photo</li>
+                        <li>Review and edit anything before saving</li>
+                        <li>Click <strong>Save</strong> to add it to your collection</li>
+                    </ol>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">How the Scraper Works</h3>
+                    <p class="text-gray-700 mb-4">Zest tries four methods in order, using the first one that succeeds:</p>
+                    <ol class="space-y-3 ml-6 text-gray-700">
+                        <li><strong>recipe-scrapers</strong> library — Supports 400+ popular cooking sites with site-specific parsers</li>
+                        <li><strong>JSON-LD</strong> — Reads structured data embedded in the page (Schema.org Recipe format)</li>
+                        <li><strong>Microdata</strong> — Reads HTML microdata attributes</li>
+                        <li><strong>Heuristic analysis</strong> — Intelligent CSS selector matching for unstructured pages</li>
+                    </ol>
+                    <p class="text-gray-700 mt-4">Imported recipes are automatically tagged with the "Imported from Internet" category and a blue badge showing the source domain.</p>
+                </section>
+
+                <hr class="my-12 border-gray-200">
+
+                <!-- Section 6: Ingredients -->
+                <section id="ingredients" class="mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-6 section-header">6. Ingredients & Portion Calculator</h2>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">Structured Ingredients</h3>
+                    <p class="text-gray-700 mb-4">Each ingredient has four fields:</p>
+                    <ul class="space-y-3 ml-6 text-gray-700 mb-6">
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span><strong>Quantity</strong> — A number (supports decimals: 0.5, 1.25, etc.)</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span><strong>Unit</strong> — The measurement (cups, grams, ml, tbsp, tsp, oz, lb, etc.)</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span><strong>Name</strong> — The ingredient name</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span><strong>Note</strong> — Optional details ("diced", "at room temperature", "optional")</span>
+                        </li>
+                    </ul>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">Portion Calculator</h3>
+                    <p class="text-gray-700 mb-4">On any recipe detail view:</p>
+                    <ol class="space-y-3 ml-6 text-gray-700 mb-6">
+                        <li>Look for the <strong>servings</strong> indicator (e.g., "Serves 4")</li>
+                        <li>Use the <strong>+</strong> and <strong>−</strong> buttons to adjust the number of servings</li>
+                        <li>All ingredient quantities recalculate proportionally in real-time</li>
+                        <li>Fractions are displayed beautifully: ½, ⅓, ¼, ⅔, ¾</li>
+                    </ol>
+                    <p class="text-gray-700">For example, a recipe for 4 servings with "2 cups of flour" scaled to 6 servings shows "3 cups of flour".</p>
+                </section>
+
+                <hr class="my-12 border-gray-200">
+
+                <!-- Section 7: What to Cook -->
+                <section id="what-to-cook" class="mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-6 section-header">7. What to Cook?</h2>
+                    <p class="text-gray-700 mb-6">This is one of Zest's unique features. It answers the question: "I have chicken, rice, and onion — what can I make?"</p>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">How to Use</h3>
+                    <ol class="space-y-3 ml-6 text-gray-700 mb-6">
+                        <li>Click <strong>"What to Cook?"</strong> in the sidebar</li>
+                        <li>Start typing an ingredient name — suggestions appear from your recipe database</li>
+                        <li>Click to add ingredients to your list</li>
+                        <li>Zest instantly shows matching recipes, ranked by match percentage</li>
+                    </ol>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">Understanding the Results</h3>
+                    <p class="text-gray-700 mb-4">Each result shows:</p>
+                    <ul class="space-y-3 ml-6 text-gray-700">
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span><strong>Match percentage</strong> — How many of the recipe's ingredients you have (green = 75%+, orange = 50%+, gray = below 50%)</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span><strong>Missing ingredients</strong> — Highlighted in red so you know what you'd need to buy</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span><strong>Portion adjustment</strong> — Scale the recipe right from the results</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span><strong>"Add to Shopping List"</strong> — One click to add the missing ingredients to your shopping list</span>
+                        </li>
+                    </ul>
+                </section>
+
+                <hr class="my-12 border-gray-200">
+
+                <!-- Section 8: Shopping List -->
+                <section id="shopping-list" class="mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-6 section-header">8. Shopping List</h2>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">Adding Items</h3>
+                    <p class="text-gray-700 mb-4">There are several ways to add items to your shopping list:</p>
+                    <ul class="space-y-3 ml-6 text-gray-700 mb-6">
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span>From any recipe detail view, click <strong>"Add to Shopping List"</strong></span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span>From the "What to Cook?" results, click <strong>"Add missing items"</strong></span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span>Manually type items in the shopping list view</span>
+                        </li>
+                    </ul>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">Smart Combining</h3>
+                    <p class="text-gray-700 mb-6">When you add ingredients from multiple recipes, Zest combines them intelligently. If Recipe A needs 200g rice and Recipe B needs 100g rice, your shopping list shows 300g rice.</p>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">Using the List</h3>
+                    <ul class="space-y-3 ml-6 text-gray-700">
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span>Check off items as you shop</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span>The list persists between sessions</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span>Clear completed items or the entire list when done</span>
+                        </li>
+                    </ul>
+                </section>
+
+                <hr class="my-12 border-gray-200">
+
+                <!-- Section 9: Memories -->
+                <section id="memories" class="mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-6 section-header">9. Memories</h2>
+                    <p class="text-gray-700 mb-6">Memories are what makes Zest different from every other recipe manager. A Memory connects photos, dates, locations, and stories to a recipe — turning your recipe collection into a culinary diary.</p>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">Creating a Memory</h3>
+                    <ol class="space-y-4 ml-6 text-gray-700 mb-6">
+                        <li>Click <strong>Memories</strong> in the sidebar</li>
+                        <li>Click <strong>+ New Memory</strong></li>
+                        <li>
+                            Fill in the details:
+                            <ul class="space-y-2 ml-6 mt-2">
+                                <li class="flex gap-3">
+                                    <span class="text-orange-500 flex-shrink-0">◦</span>
+                                    <span><strong>Title</strong> — "Christmas dinner 2025", "First attempt at sourdough", etc.</span>
+                                </li>
+                                <li class="flex gap-3">
+                                    <span class="text-orange-500 flex-shrink-0">◦</span>
+                                    <span><strong>Photos</strong> — Upload up to 10 photos. JPEG photos with EXIF data will auto-fill the date and location.</span>
+                                </li>
+                                <li class="flex gap-3">
+                                    <span class="text-orange-500 flex-shrink-0">◦</span>
+                                    <span><strong>Date</strong> — When it happened (auto-detected from photo EXIF if available)</span>
+                                </li>
+                                <li class="flex gap-3">
+                                    <span class="text-orange-500 flex-shrink-0">◦</span>
+                                    <span><strong>Location</strong> — Where it happened (auto-detected from GPS coordinates via reverse geocoding)</span>
+                                </li>
+                                <li class="flex gap-3">
+                                    <span class="text-orange-500 flex-shrink-0">◦</span>
+                                    <span><strong>Story</strong> — The description of what happened, who was there, why it was special</span>
+                                </li>
+                                <li class="flex gap-3">
+                                    <span class="text-orange-500 flex-shrink-0">◦</span>
+                                    <span><strong>Linked Recipe</strong> — Associate this memory with a recipe from your collection</span>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>Click <strong>Save</strong></li>
+                    </ol>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">Photo Features</h3>
+                    <ul class="space-y-3 ml-6 text-gray-700 mb-6">
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span><strong>Multi-photo upload</strong> — Select multiple photos at once</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span><strong>EXIF auto-detection</strong> — Zest reads the date and GPS coordinates from JPEG photos automatically</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span><strong>Reverse geocoding</strong> — GPS coordinates are converted to readable place names (e.g., "Brooklyn, New York")</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span><strong>HEIC/HEIF support</strong> — iPhone photos work out of the box</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span><strong>Image optimization</strong> — Photos are automatically resized (max 1920px) and converted to JPEG for optimal storage</span>
+                        </li>
+                    </ul>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">Viewing Memories</h3>
+                    <ul class="space-y-3 ml-6 text-gray-700 mb-6">
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span><strong>Grid view</strong> — All memories displayed as cards with cover photo, date, location, and linked recipe</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span><strong>Detail view</strong> — Click any memory to see the full photo gallery, story, and metadata</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span><strong>From recipe view</strong> — Each recipe shows its associated memories in a dedicated section</span>
+                        </li>
+                    </ul>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">Editing & Deleting</h3>
+                    <ul class="space-y-3 ml-6 text-gray-700">
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span>Click the <strong>Edit</strong> button in the memory detail view to modify any field or add/remove photos</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span>Click <strong>Delete</strong> to permanently remove the memory and its photos</span>
+                        </li>
+                    </ul>
+                </section>
+
+                <hr class="my-12 border-gray-200">
+
+                <!-- Section 10: Moment Cards -->
+                <section id="moment-cards" class="mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-6 section-header">10. Moment Cards</h2>
+                    <p class="text-gray-700 mb-6">Moment Cards turn your memories into beautiful, shareable images designed for social media.</p>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">Generating a Card</h3>
+                    <ol class="space-y-4 ml-6 text-gray-700 mb-6">
+                        <li>Open any memory that has at least one photo</li>
+                        <li>Click the <strong>Share</strong> button (gradient orange button)</li>
+                        <li>
+                            Choose a template:
+                            <ul class="space-y-2 ml-6 mt-2">
+                                <li class="flex gap-3">
+                                    <span class="text-orange-500 flex-shrink-0">◦</span>
+                                    <span><strong>Story</strong> (1080×1920) — Instagram Stories, TikTok</span>
+                                </li>
+                                <li class="flex gap-3">
+                                    <span class="text-orange-500 flex-shrink-0">◦</span>
+                                    <span><strong>Square</strong> (1080×1080) — Instagram feed, WhatsApp</span>
+                                </li>
+                                <li class="flex gap-3">
+                                    <span class="text-orange-500 flex-shrink-0">◦</span>
+                                    <span><strong>Landscape</strong> (1200×630) — Facebook, Twitter/X</span>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>Preview updates in real-time</li>
+                        <li>Click <strong>Download</strong> or use the <strong>Share</strong> button (on mobile, uses the native share sheet)</li>
+                    </ol>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">Card Design</h3>
+                    <p class="text-gray-700 mb-4">Each card includes:</p>
+                    <ul class="space-y-3 ml-6 text-gray-700">
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span>Your photo as a full-bleed background with a dark gradient overlay</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span>The memory title in large, bold text</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span>Date and location</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span>Linked recipe name</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span>Subtle Zest branding (orange bar + "Zest" text)</span>
+                        </li>
+                    </ul>
+                </section>
+
+                <hr class="my-12 border-gray-200">
+
+                <!-- Section 11: Cookbooks -->
+                <section id="cookbooks" class="mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-6 section-header">11. Cookbooks</h2>
+                    <p class="text-gray-700 mb-6">Cookbooks are curated collections of recipes — perfect for organizing by theme, sharing with friends, or creating gift-worthy PDF exports.</p>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">Creating a Cookbook</h3>
+                    <ol class="space-y-4 ml-6 text-gray-700 mb-6">
+                        <li>Click <strong>Cookbooks</strong> in the sidebar</li>
+                        <li>Click <strong>+ New Cookbook</strong></li>
+                        <li>Add a name, description, and optionally an author's note</li>
+                        <li><strong>Cover photos</strong> — Upload up to 2 cover images. Use drag-to-reposition to frame them perfectly.</li>
+                        <li><strong>Add recipes</strong> — Select recipes from your collection to include</li>
+                        <li>Click <strong>Save</strong></li>
+                    </ol>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">Managing Cookbooks</h3>
+                    <ul class="space-y-3 ml-6 text-gray-700 mb-6">
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span><strong>Reorder recipes</strong> — Drag recipes within a cookbook to set the order</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span><strong>Edit</strong> — Change name, description, covers, or recipe selection at any time</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span><strong>Delete</strong> — Removes the cookbook but not the recipes themselves</span>
+                        </li>
+                    </ul>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">Author's Note</h3>
+                    <p class="text-gray-700">Each cookbook has an optional personal note that appears at the top when shared or exported. Use it for dedications, context, or a personal message ("Mom, here are our family recipes I've been collecting...").</p>
+                </section>
+
+                <hr class="my-12 border-gray-200">
+
+                <!-- Section 12: Sharing -->
+                <section id="sharing" class="mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-6 section-header">12. Sharing</h2>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">Public Share Links</h3>
+                    <ol class="space-y-3 ml-6 text-gray-700 mb-6">
+                        <li>Open a cookbook</li>
+                        <li>Click <strong>Share</strong></li>
+                        <li>Zest generates a unique public link (e.g., <span class="inline-code">http://yourserver/shared/abc123</span>)</li>
+                        <li>Anyone with the link can view the cookbook and all its recipes — no account needed</li>
+                        <li>You can revoke the link at any time</li>
+                    </ol>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">What Recipients See</h3>
+                    <p class="text-gray-700">The shared view is a beautiful, read-only presentation of your cookbook with cover photos, recipe cards, and full recipe details (ingredients, steps, photos). Your author's note is displayed at the top.</p>
+                </section>
+
+                <hr class="my-12 border-gray-200">
+
+                <!-- Section 13: PDF Export -->
+                <section id="pdf-export" class="mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-6 section-header">13. PDF Export</h2>
+                    <p class="text-gray-700 mb-6">Export cookbooks as professional PDFs suitable for printing or gifting.</p>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">How to Export</h3>
+                    <ol class="space-y-3 ml-6 text-gray-700 mb-6">
+                        <li>Open a cookbook</li>
+                        <li>Click the <strong>PDF</strong> button</li>
+                        <li>
+                            Zest generates a PDF with:
+                            <ul class="space-y-2 ml-6 mt-2">
+                                <li class="flex gap-3">
+                                    <span class="text-orange-500 flex-shrink-0">◦</span>
+                                    <span>Cover page with the cookbook name and date</span>
+                                </li>
+                                <li class="flex gap-3">
+                                    <span class="text-orange-500 flex-shrink-0">◦</span>
+                                    <span>Recipe cards with ingredients, steps, and metadata</span>
+                                </li>
+                                <li class="flex gap-3">
+                                    <span class="text-orange-500 flex-shrink-0">◦</span>
+                                    <span>Proper typography with DejaVu fonts (full Unicode support)</span>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>The PDF downloads automatically</li>
+                    </ol>
+                </section>
+
+                <hr class="my-12 border-gray-200">
+
+                <!-- Section 14: Settings -->
+                <section id="settings" class="mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-6 section-header">14. Settings & Profile</h2>
+                    <p class="text-gray-700 mb-6">Access settings by clicking your avatar or the gear icon in the sidebar.</p>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">Profile</h3>
+                    <ul class="space-y-3 ml-6 text-gray-700 mb-6">
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span><strong>Name</strong> — Your display name</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span><strong>Email</strong> — Your login email</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span><strong>Password</strong> — Change your password (requires current password)</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span><strong>Avatar</strong> — Upload a profile photo</span>
+                        </li>
+                    </ul>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">Categories & Tags</h3>
+                    <ul class="space-y-3 ml-6 text-gray-700">
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span>View, rename, or delete categories</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span>View, rename, change color, or delete tags</span>
+                        </li>
+                    </ul>
+                </section>
+
+                <hr class="my-12 border-gray-200">
+
+                <!-- Section 15: Backups -->
+                <section id="backups" class="mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-6 section-header">15. Backups & Data</h2>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">Automatic Backups</h3>
+                    <ol class="space-y-3 ml-6 text-gray-700 mb-6">
+                        <li>Go to <strong>Settings → Backups</strong></li>
+                        <li>Enable automatic backups</li>
+                        <li>
+                            Configure:
+                            <ul class="space-y-2 ml-6 mt-2">
+                                <li class="flex gap-3">
+                                    <span class="text-orange-500 flex-shrink-0">◦</span>
+                                    <span><strong>Frequency</strong> — Every 12 hours, 24 hours, or 7 days</span>
+                                </li>
+                                <li class="flex gap-3">
+                                    <span class="text-orange-500 flex-shrink-0">◦</span>
+                                    <span><strong>Retention</strong> — How many backups to keep (default: 7)</span>
+                                </li>
+                                <li class="flex gap-3">
+                                    <span class="text-orange-500 flex-shrink-0">◦</span>
+                                    <span><strong>Include images</strong> — Whether to include uploaded photos in backups</span>
+                                </li>
+                            </ul>
+                        </li>
+                    </ol>
+                    <p class="text-gray-700 mb-6">Backups are stored in the <span class="inline-code">./data/backups/</span> directory on your host machine.</p>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">Manual Export</h3>
+                    <ul class="space-y-3 ml-6 text-gray-700 mb-6">
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span><strong>Full backup</strong> (ZIP) — Exports the complete database + all images. Use this for disaster recovery or migrating to a new server.</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span><strong>JSON export</strong> — Exports recipes in a portable JSON format for interoperability.</span>
+                        </li>
+                    </ul>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">Import</h3>
+                    <ul class="space-y-3 ml-6 text-gray-700 mb-6">
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span><strong>Database import</strong> — Upload a full backup ZIP to restore your entire instance. Warning: this replaces the current database completely.</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span><strong>JSON import</strong> — Upload a JSON file to add recipes to your existing collection. Duplicates are detected and skipped.</span>
+                        </li>
+                    </ul>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">Migration Between Servers</h3>
+                    <ol class="space-y-3 ml-6 text-gray-700">
+                        <li>Export a full backup from the old server</li>
+                        <li>Set up a fresh Zest instance on the new server</li>
+                        <li>Import the backup</li>
+                        <li>Done — all recipes, memories, cookbooks, and images are restored</li>
+                    </ol>
+                </section>
+
+                <hr class="my-12 border-gray-200">
+
+                <!-- Section 16: Dark Mode -->
+                <section id="dark-mode" class="mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-6 section-header">16. Dark Mode</h2>
+                    <p class="text-gray-700">Click the moon/sun icon in the sidebar header to toggle between light and dark themes. Your preference is saved locally and persists across sessions.</p>
+                </section>
+
+                <hr class="my-12 border-gray-200">
+
+                <!-- Section 17: Keyboard Shortcuts -->
+                <section id="shortcuts" class="mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-6 section-header">17. Keyboard Shortcuts</h2>
+                    <div class="table-container overflow-x-auto mb-6">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr>
+                                    <th class="text-left">Shortcut</th>
+                                    <th class="text-left">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="inline-code">Esc</span></td>
+                                    <td>Close any open modal or overlay</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <hr class="my-12 border-gray-200">
+
+                <!-- Section 18: Troubleshooting -->
+                <section id="troubleshooting" class="mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-6 section-header">18. Troubleshooting</h2>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">"Port 8000 is already in use"</h3>
+                    <p class="text-gray-700 mb-4">Change the port in <span class="inline-code">docker-compose.yml</span>:</p>
+                    <div class="bg-gray-900 text-gray-100 p-6 rounded-lg overflow-x-auto code-block mb-4">
+                        <pre><code>ports:
+  - "9000:8000"</code></pre>
+                    </div>
+                    <p class="text-gray-700 mb-6">On Windows, ports 7681–8782 may be blocked by Hyper-V. Use port 9000 or higher.</p>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">Photos won't upload</h3>
+                    <ul class="space-y-3 ml-6 text-gray-700 mb-6">
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span>Check that the <span class="inline-code">./app/static/uploads</span> directory exists and is writable</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-orange-500 flex-shrink-0">•</span>
+                            <span>Maximum file size depends on your reverse proxy configuration. Add <span class="inline-code">client_max_body_size 20M;</span> to your Nginx config.</span>
+                        </li>
+                    </ul>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">Database migration errors</h3>
+                    <p class="text-gray-700 mb-4">Run the migration script manually:</p>
+                    <div class="bg-gray-900 text-gray-100 p-6 rounded-lg overflow-x-auto code-block mb-4">
+                        <pre><code>docker exec zest_backend python migrate.py</code></pre>
+                    </div>
+                    <p class="text-gray-700 mb-6">The script is idempotent (safe to run multiple times) and creates a backup before making changes.</p>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">HEIC photos not working</h3>
+                    <p class="text-gray-700 mb-4">HEIC support requires the <span class="inline-code">pillow-heif</span> package, which is included in the default Docker image. If you're running Zest outside Docker, install it separately:</p>
+                    <div class="bg-gray-900 text-gray-100 p-6 rounded-lg overflow-x-auto code-block mb-4">
+                        <pre><code>pip install pillow-heif</code></pre>
+                    </div>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">Forgot your password</h3>
+                    <p class="text-gray-700 mb-4">If you're locked out, you can reset via the database:</p>
+                    <div class="bg-gray-900 text-gray-100 p-6 rounded-lg overflow-x-auto code-block mb-4">
+                        <pre><code>docker exec -it zest_backend python -c "
+import bcrypt
+from app.database import SessionLocal
+from app.models import User
+db = SessionLocal()
+user = db.query(User).filter(User.email == 'your@email.com').first()
+user.password_hash = bcrypt.hashpw(b'newpassword', bcrypt.gensalt()).decode()
+db.commit()
+print('Password reset successfully')
+"</code></pre>
+                    </div>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">Health Check</h3>
+                    <p class="text-gray-700 mb-4">Verify your instance is running:</p>
+                    <div class="bg-gray-900 text-gray-100 p-6 rounded-lg overflow-x-auto code-block mb-4">
+                        <pre><code>curl http://localhost:8000/api/health
+# {"status": "healthy", "recipes": 42, "users": 1}</code></pre>
+                    </div>
+                    <p class="text-gray-700">Use this endpoint with Uptime Kuma, Healthchecks.io, or any monitoring tool.</p>
+                </section>
+
+                <hr class="my-12 border-gray-200">
+
+                <!-- Need Help Section -->
+                <section class="text-center py-12">
+                    <h2 class="text-2xl font-semibold text-gray-900 mb-4">Need Help?</h2>
+                    <p class="text-gray-700 mb-6">Open an issue on GitHub — we're happy to help.</p>
+                    <p class="text-center text-lg font-semibold text-orange-500">🍊 Zest — Because recipes deserve memories.</p>
+                </section>
+
+            </article>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-50 border-t border-gray-200 mt-12">
+        <div class="max-w-7xl mx-auto px-6 py-12 text-center">
+            <p class="text-gray-600 text-sm mb-4">
+                <a href="index.html" class="text-orange-500 hover:text-orange-600 font-medium">Back to Home</a>
+            </p>
+            <p class="text-gray-500 text-xs">
+                Zest — A self-hosted culinary diary. <a href="#" class="text-orange-500 hover:text-orange-600">Learn more</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth TOC highlighting on scroll
+        document.addEventListener('DOMContentLoaded', function() {
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('.toc-link');
+
+            window.addEventListener('scroll', function() {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    const sectionHeight = section.clientHeight;
+                    if (window.scrollY >= sectionTop - 200) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === '#' + current) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
