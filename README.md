@@ -63,7 +63,7 @@ Every recipe manager out there treats food like data: title, ingredients, steps,
 | 📄 | **PDF Export** | Professional cookbook PDFs with cover page, recipe cards, and proper typography. |
 | 💾 | **Automatic Backups** | Scheduled database + image backups. Manual export/import. Full disaster recovery. |
 | 🌙 | **Dark Mode** | Full dark theme. Respects your preference. |
-| 📱 | **Responsive** | Works great on phone, tablet, and desktop. |
+| 📱 | **Mobile Friendly** | Optimized for desktop with mobile support in progress. |
 | 🔒 | **Auth + Rate Limiting** | JWT auth, bcrypt passwords, rate-limited endpoints. |
 | 🍎 | **iPhone Photos** | HEIC/HEIF support out of the box. |
 
@@ -72,7 +72,7 @@ Every recipe manager out there treats food like data: title, ingredients, steps,
 ## Quickstart
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/zest.git
+git clone https://github.com/MartinSantosT/myzest.git
 cd zest
 cp .env.example .env
 docker compose up -d
@@ -80,13 +80,7 @@ docker compose up -d
 
 Open **http://localhost:8000** and that's it. First-time setup takes about 30 seconds.
 
-**Default login:**
-| | |
-|---|---|
-| Email | `admin@zest.local` |
-| Password | `admin` |
-
-> ⚠️ Change the default password immediately after first login.
+**First launch:** Register your account — the first user becomes admin and gets 12 example recipes with photos to explore.
 
 ### Generate a secure secret key
 

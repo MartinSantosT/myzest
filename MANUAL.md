@@ -38,7 +38,7 @@
 ### Quick Start
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/zest.git
+git clone https://github.com/MartinSantosT/myzest.git
 cd zest
 cp .env.example .env
 docker compose up -d
@@ -146,7 +146,6 @@ Categories are broad classifications for your recipes (e.g., "Mexican", "Dessert
 
 - **Adding categories** — In the recipe modal, type in the category field. If it doesn't exist, Zest creates it automatically.
 - **Autocomplete** — As you type, matching categories appear as suggestions.
-- **Managing categories** — Go to **Settings → Categories** to rename or delete categories.
 - A recipe can belong to multiple categories.
 
 ### Tags

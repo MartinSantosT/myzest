@@ -544,9 +544,12 @@ export function openMemoryModalForRecipe(recipeId) {
 function viewMemoryPhoto(imageUrl) {
     const viewer = document.createElement('div');
     viewer.className = 'fixed inset-0 bg-black/90 z-[100] flex items-center justify-center cursor-pointer';
+    viewer.tabIndex = 0;
     viewer.onclick = () => viewer.remove();
+    viewer.addEventListener('keydown', (e) => { if (e.key === 'Escape') viewer.remove(); });
     viewer.innerHTML = `<img src="${state.API_URL}${imageUrl}" class="max-w-[90vw] max-h-[90vh] object-contain rounded-lg shadow-2xl">`;
     document.body.appendChild(viewer);
+    viewer.focus();
 }
 
 // ============ UTILITIES ============

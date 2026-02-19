@@ -103,9 +103,13 @@ export function applyFilters() {
         );
     }
 
-    if (ratingValue) {
-        const minRating = parseInt(ratingValue);
-        filtered = filtered.filter(r => r.rating >= minRating);
+    if (ratingValue !== '' && ratingValue !== undefined && ratingValue !== null) {
+        const exactRating = parseInt(ratingValue);
+        if (exactRating === 0) {
+            filtered = filtered.filter(r => !r.rating || r.rating === 0);
+        } else {
+            filtered = filtered.filter(r => r.rating === exactRating);
+        }
     }
 
     renderRecipes(filtered, search);

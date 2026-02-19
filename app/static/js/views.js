@@ -9,6 +9,17 @@ import { loadCookbooks } from './cookbooks.js';
 import { loadMemories } from './memories.js';
 
 export function showView(view) {
+    // Auto-close sidebar on mobile when switching views
+    if (window.innerWidth < 768) {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        if (sidebar && sidebar.classList.contains('sidebar-expanded')) {
+            sidebar.classList.remove('sidebar-expanded');
+            sidebar.classList.add('sidebar-collapsed');
+            if (overlay) overlay.classList.add('hidden');
+        }
+    }
+
     // Hide all views
     document.getElementById('viewRecipes').classList.add('hidden');
     document.getElementById('viewCalculator').classList.add('hidden');

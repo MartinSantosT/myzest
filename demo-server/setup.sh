@@ -25,7 +25,7 @@ echo "   Docker: $(docker --version | head -1)"
 # 2. Clone repo if needed
 if [ ! -d "$DEMO_DIR" ]; then
     echo "2. Cloning repository..."
-    git clone https://github.com/YOUR_USERNAME/zest.git "$DEMO_DIR"
+    git clone https://github.com/MartinSantosT/myzest.git "$DEMO_DIR"
 else
     echo "2. Repository exists at $DEMO_DIR — pulling latest..."
     cd "$DEMO_DIR" && git pull

@@ -1,6 +1,6 @@
 #!/bin/bash
-# reset_demo.sh — Reset Zest demo instance every 6 hours
-# Cron: 0 */6 * * * /opt/zest-demo/reset_demo.sh >> /var/log/zest-demo-reset.log 2>&1
+# reset_demo.sh — Reset Zest demo instance every hour
+# Cron: 0 * * * * /opt/zest-demo/reset_demo.sh >> /var/log/zest-demo-reset.log 2>&1
 
 set -e
 

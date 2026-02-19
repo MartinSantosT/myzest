@@ -17,6 +17,7 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
       - ZEST_SECRET_KEY=${ZEST_SECRET_KEY:-zest-demo-myzest-app-2026}
+      - ZEST_DEMO_EMAIL=demo@myzest.app
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"]
       interval: 30s

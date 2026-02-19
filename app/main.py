@@ -1,6 +1,8 @@
 from fastapi import FastAPI, Depends, HTTPException, File, UploadFile, Header, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.responses import JSONResponse
 from sqlalchemy.orm import Session, joinedload, subqueryload
 from sqlalchemy import text
 from typing import List, Optional
@@ -65,6 +67,8 @@ try:
 except Exception as e:
     print(f"Auto-migrate note: {e}")
 
+DEMO_EMAIL = os.environ.get("ZEST_DEMO_EMAIL", "")
+
 app = FastAPI(title="Zest Recipe Manager", version="2.0.0")
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
@@ -73,6 +77,37 @@ app.add_middleware(
     CORSMiddleware, allow_origins=["*"], allow_credentials=True,
     allow_methods=["*"], allow_headers=["*"],
 )
+
+# Demo read-only middleware: blocks write operations for the demo user
+class DemoReadOnlyMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        if not DEMO_EMAIL:
+            return await call_next(request)
+        if request.method in ("GET", "HEAD", "OPTIONS"):
+            return await call_next(request)
+        # Allow login (POST /auth/login) so demo user can log in
+        if request.url.path == "/auth/login":
+            return await call_next(request)
+        # Check if request has a token belonging to demo user
+        auth = request.headers.get("authorization", "")
+        if auth:
+            token = auth.replace("Bearer ", "") if auth.startswith("Bearer ") else auth
+            payload = decode_token(token) if token else None
+            if payload:
+                db = database.SessionLocal()
+                try:
+                    user = db.query(models.User).filter(models.User.id == payload["user_id"]).first()
+                    if user and user.email == DEMO_EMAIL:
+                        return JSONResponse(
+                            status_code=403,
+                            content={"detail": "Demo mode: modifications are disabled. Install Zest on your own server to get full access!"}
+                        )
+                finally:
+                    db.close()
+        return await call_next(request)
+
+if DEMO_EMAIL:
+    app.add_middleware(DemoReadOnlyMiddleware)
 
 os.makedirs("app/static", exist_ok=True)
 os.makedirs("app/static/uploads", exist_ok=True)
@@ -195,21 +230,9 @@ def get_optional_user(authorization: Optional[str] = Header(None), db: Session =
         return None
 
 
+
 # --- STARTUP ---
-@app.on_event("startup")
-def ensure_default_user():
-    db = database.SessionLocal()
-    user = db.query(models.User).filter(models.User.id == 1).first()
-    if not user:
-        db.add(models.User(
-            email="admin@zest.local",
-            name="Chef",
-            username="admin",
-            password_hash=hash_password("admin"),
-            is_admin=True
-        ))
-        db.commit()
-    db.close()
+# Note: No default user created on startup. First registered user becomes admin and gets example data.
 
 @app.on_event("startup")
 def ensure_imported_category():
@@ -353,18 +376,21 @@ def register(request: Request, data: schemas.UserRegister, db: Session = Depends
     if len(data.password) < 4:
         raise HTTPException(400, "Password must be at least 4 characters")
 
+    # First user becomes admin
+    is_first_user = db.query(models.User).count() == 0
+
     user = models.User(
         email=data.email,
         name=data.name,
         password_hash=hash_password(data.password),
+        is_admin=is_first_user,
     )
     db.add(user)
     db.commit()
     db.refresh(user)
 
     # Auto-seed example data for the first user
-    user_count = db.query(models.User).count()
-    if user_count == 1:
+    if is_first_user:
         try:
             from .seed_examples import seed_user_examples
             result = seed_user_examples(db, user.id)
