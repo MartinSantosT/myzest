@@ -65,6 +65,7 @@ class Recipe(Base):
     is_favorite = Column(Boolean, default=False)
     source_url = Column(String, default="")
     source_type = Column(String, default="original")   # "original", "imported", "adapted"
+    is_example = Column(Boolean, default=False)          # True for seed/example data
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, onupdate=datetime.utcnow)
 
@@ -157,6 +158,7 @@ class Cookbook(Base):
     cover_position_1 = Column(String, default="50% 50%")     # object-position foto 1
     cover_position_2 = Column(String, default="50% 50%")     # object-position foto 2
     note = Column(Text, default="")                           # Nota personal del autor
+    is_example = Column(Boolean, default=False)                  # True for seed/example data
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, onupdate=datetime.utcnow)
 
@@ -192,6 +194,7 @@ class Memory(Base):
     description = Column(Text, default="")
     event_date = Column(Date, nullable=True)
     location = Column(String, default="")              # Lugar del recuerdo
+    is_example = Column(Boolean, default=False)          # True for seed/example data
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, onupdate=datetime.utcnow)
 

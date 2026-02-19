@@ -55,6 +55,13 @@ try:
         except Exception:
             conn.execute(text("ALTER TABLE share_links ADD COLUMN memory_id INTEGER REFERENCES memories(id) ON DELETE CASCADE"))
             conn.commit()
+        # is_example columns (added for seed/example data)
+        for table in ["recipes", "memories", "cookbooks"]:
+            try:
+                conn.execute(text(f"SELECT is_example FROM {table} LIMIT 1"))
+            except Exception:
+                conn.execute(text(f"ALTER TABLE {table} ADD COLUMN is_example BOOLEAN DEFAULT 0"))
+                conn.commit()
 except Exception as e:
     print(f"Auto-migrate note: {e}")
 
@@ -354,6 +361,17 @@ def register(request: Request, data: schemas.UserRegister, db: Session = Depends
     db.add(user)
     db.commit()
     db.refresh(user)
+
+    # Auto-seed example data for the first user
+    user_count = db.query(models.User).count()
+    if user_count == 1:
+        try:
+            from .seed_examples import seed_user_examples
+            result = seed_user_examples(db, user.id)
+            db.commit()
+            print(f"Example data seeded: {result}")
+        except Exception as e:
+            print(f"Warning: Failed to seed examples: {e}")
 
     token = create_token(user.id, user.email)
     return schemas.TokenResponse(
@@ -2048,6 +2066,49 @@ async def _backup_scheduler():
 async def start_backup_scheduler():
     """Start backup scheduler on app startup."""
     asyncio.create_task(_backup_scheduler())
+
+
+# --- Example data management ---
+
+@app.delete("/api/examples")
+def delete_all_examples(db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    """Delete all example/seed data for the current user."""
+    # Delete recipes (cascade deletes ingredients, steps, images, recipe_tags, recipe_categories)
+    deleted_recipes = db.query(models.Recipe).filter(
+        models.Recipe.user_id == current_user.id,
+        models.Recipe.is_example == True
+    ).delete(synchronize_session='fetch')
+
+    # Delete memories (cascade deletes memory_photos)
+    deleted_memories = db.query(models.Memory).filter(
+        models.Memory.user_id == current_user.id,
+        models.Memory.is_example == True
+    ).delete(synchronize_session='fetch')
+
+    # Delete cookbooks
+    deleted_cookbooks = db.query(models.Cookbook).filter(
+        models.Cookbook.user_id == current_user.id,
+        models.Cookbook.is_example == True
+    ).delete(synchronize_session='fetch')
+
+    # Clean up seed photos from uploads
+    uploads_dir = "app/static/uploads"
+    if os.path.exists(uploads_dir):
+        for f in os.listdir(uploads_dir):
+            if f.startswith("seed_"):
+                try:
+                    os.remove(os.path.join(uploads_dir, f))
+                except Exception:
+                    pass
+
+    db.commit()
+
+    return {
+        "message": "Example data deleted",
+        "recipes_deleted": deleted_recipes,
+        "memories_deleted": deleted_memories,
+        "cookbooks_deleted": deleted_cookbooks,
+    }
 
 
 # --- Backup endpoints ---
