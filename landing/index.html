@@ -6,6 +6,7 @@
     <title>MyZest — The Recipe Manager That Actually Cares About Your Memories</title>
     <meta name="description" content="A self-hosted culinary diary. Recipes + memories + beautiful shareable cards, all on your own hardware. No cloud, no subscriptions.">
     <link rel="canonical" href="https://myzest.app">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍊</text></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.0.3/src/bold/style.css">
     <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.0.3/src/fill/style.css">
@@ -337,6 +338,7 @@
             <div class="text-center mb-12">
                 <h2 class="text-4xl md:text-5xl font-black mb-4">Running in 30 seconds.</h2>
                 <p class="text-gray-500">Seriously. One command.</p>
+                <p class="text-sm text-gray-400 mt-2">Requires <a href="https://git-scm.com" target="_blank" class="text-orange-400 hover:text-orange-500">Git</a> and <a href="https://docs.docker.com/get-docker/" target="_blank" class="text-orange-400 hover:text-orange-500">Docker</a> installed on your machine.</p>
             </div>
 
             <div class="bg-gray-900 rounded-3xl p-4 sm:p-8 text-white glow overflow-hidden">
@@ -347,7 +349,7 @@
                     <span class="text-gray-500 text-xs ml-2 font-mono">terminal</span>
                 </div>
                 <pre class="font-mono text-sm leading-loose overflow-x-auto"><code><span class="text-gray-500">$</span> <span class="text-green-400">git clone</span> https://github.com/MartinSantosT/myzest.git
-<span class="text-gray-500">$</span> <span class="text-green-400">cd</span> zest
+<span class="text-gray-500">$</span> <span class="text-green-400">cd</span> myzest
 <span class="text-gray-500">$</span> <span class="text-green-400">cp</span> .env.example .env
 <span class="text-gray-500">$</span> <span class="text-green-400">docker compose up</span> -d
 

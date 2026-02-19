@@ -73,7 +73,7 @@ Every recipe manager out there treats food like data: title, ingredients, steps,
 
 ```bash
 git clone https://github.com/MartinSantosT/myzest.git
-cd zest
+cd myzest
 cp .env.example .env
 docker compose up -d
 ```
@@ -163,7 +163,7 @@ ports:
 ## Updating
 
 ```bash
-cd zest
+cd myzest
 git pull
 docker compose build
 docker compose down && docker compose up -d
