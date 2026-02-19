@@ -68,8 +68,9 @@ except Exception as e:
     print(f"Auto-migrate note: {e}")
 
 DEMO_EMAIL = os.environ.get("ZEST_DEMO_EMAIL", "")
+APP_VERSION = "2.1.0"
 
-app = FastAPI(title="Zest Recipe Manager", version="2.0.0")
+app = FastAPI(title="Zest Recipe Manager", version=APP_VERSION)
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
@@ -356,7 +357,10 @@ def _parse_unit(text):
 def read_root(): return RedirectResponse(url="/static/index.html")
 
 @app.get("/api/health")
-def health_check(): return {"message": "Zest API Online", "version": "2.0.0"}
+def health_check(): return {"message": "Zest API Online", "version": APP_VERSION}
+
+@app.get("/api/version")
+def get_version(): return {"version": APP_VERSION}
 
 
 # --- AUTH ENDPOINTS ---

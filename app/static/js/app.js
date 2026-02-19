@@ -74,3 +74,37 @@ initCoverDragListeners();
 if (window.tryAutoLogin) {
     window.tryAutoLogin();
 }
+
+// ============================================
+// VERSION CHECK — Notify user of updates
+// ============================================
+(async function checkVersion() {
+    try {
+        const res = await fetch(`${window.API_URL || ''}/api/version`);
+        if (!res.ok) return;
+        const data = await res.json();
+        const serverVersion = data.version;
+        const localVersion = localStorage.getItem('zest_app_version');
+
+        if (!localVersion) {
+            // First visit — store current version silently
+            localStorage.setItem('zest_app_version', serverVersion);
+            return;
+        }
+
+        if (localVersion !== serverVersion) {
+            // Show update banner
+            const banner = document.createElement('div');
+            banner.id = 'update-banner';
+            banner.className = 'fixed bottom-4 right-4 z-[200] bg-orange-500 text-white px-5 py-3 rounded-2xl shadow-lg flex items-center gap-3 text-sm font-medium animate-pulse';
+            banner.innerHTML = `
+                <span>🍊 New version available (v${serverVersion})</span>
+                <button onclick="localStorage.setItem('zest_app_version','${serverVersion}');location.reload()" class="bg-white text-orange-500 px-3 py-1 rounded-lg font-bold hover:bg-orange-100 transition-colors">Reload</button>
+                <button onclick="this.parentElement.remove()" class="text-white/70 hover:text-white ml-1">✕</button>
+            `;
+            document.body.appendChild(banner);
+        }
+    } catch (e) {
+        // Silently ignore version check failures
+    }
+})();
