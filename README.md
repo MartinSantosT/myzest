@@ -29,6 +29,38 @@
 
 ---
 
+<p align="center">
+  <img src="screenshots/zest-demo.gif" width="720" alt="Zest Demo — Recipes, Memories, Moment Cards">
+</p>
+
+<p align="center">
+  <img src="screenshots/grid.png" width="720" alt="Recipe Collection — Dark Mode">
+</p>
+
+<p align="center">
+  <img src="screenshots/detail.png" width="350" alt="Recipe Detail">
+  &nbsp;
+  <img src="screenshots/cooking.png" width="350" alt="Cooking Mode">
+</p>
+
+<p align="center">
+  <img src="screenshots/memories.png" width="350" alt="Memories Timeline">
+  &nbsp;
+  <img src="screenshots/card.png" width="350" alt="Moment Card">
+</p>
+
+<p align="center">
+  <img src="screenshots/cookbook.png" width="350" alt="Cookbooks">
+  &nbsp;
+  <img src="screenshots/whattocook.png" width="350" alt="What to Cook">
+</p>
+
+<p align="center">
+  <img src="screenshots/light.png" width="720" alt="Light Mode">
+</p>
+
+---
+
 ## Why Zest?
 
 Every recipe manager out there treats food like data: title, ingredients, steps, done. But cooking is more than that. It's the Sunday your daughter helped you make pasta for the first time. The improvised dinner that became a family legend. The photo your partner took while you weren't looking.
