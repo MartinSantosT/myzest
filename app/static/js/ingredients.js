@@ -74,7 +74,7 @@ export function getIngredientsFromRows() {
         let text = '';
         if (qty) text += qty;
         if (unit) text += (text ? ' ' : '') + unit;
-        if (name) text += (text ? ' de ' : '') + name;
+        if (name) text += (text ? '  ' : '') + name;
         if (!text) text = name;
 
         ingredients.push({
