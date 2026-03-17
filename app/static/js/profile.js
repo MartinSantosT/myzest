@@ -16,6 +16,8 @@ export function openSettingsModal() {
     }, 10);
     // Load backup config when opening
     if (window.loadBackupConfig) window.loadBackupConfig();
+    // Sync dark mode toggle state
+    if (window.updateThemeButton) window.updateThemeButton();
 }
 
 export function closeSettingsModal() {

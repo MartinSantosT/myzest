@@ -11,7 +11,7 @@
     <div id="settingsModal" class="hidden fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4 opacity-0 transition-opacity duration-200">
         <div id="settingsModalContent" class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col scale-95 transition-transform duration-200">
 
-            <div class="bg-gradient-to-r from-orange-500 to-red-500 p-6 flex justify-between items-center">
+            <div class="bg-gradient-to-r from-orange-500 to-red-500 p-6 flex justify-between items-center shrink-0">
                 <div class="flex items-center gap-3">
                     <div class="text-white text-2xl"><i class="ph-bold ph-gear"></i></div>
                     <h2 class="text-2xl font-black text-white">Settings</h2>
@@ -21,176 +21,217 @@
                 </button>
             </div>
 
-            <div class="flex-1 overflow-y-auto p-6">
+            <div class="flex-1 overflow-y-auto p-6 space-y-3">
 
-                <!-- SECTION: AUTOMATIC BACKUP -->
-                <div class="mb-8">
-                    <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
-                        <i class="ph-bold ph-shield-check text-orange-500"></i>
-                        Automatic Backup
-                    </h3>
-
-                    <!-- Status of last backup -->
-                    <div id="backupLastStatus" class="hidden mb-4 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg text-sm text-gray-600 dark:text-gray-300"></div>
-
-                    <!-- Toggle activation -->
-                    <div class="flex items-center justify-between mb-4 p-4 bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl">
+                <!-- ═══ 1. DARK MODE (inline toggle — no expand) ═══ -->
+                <div class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl p-4 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 bg-gray-100 dark:bg-gray-600 rounded-lg">
+                            <i id="settingsThemeIcon" class="ph-fill ph-moon text-xl text-orange-500"></i>
+                        </div>
                         <div>
-                            <h4 class="font-bold text-gray-800 dark:text-white">Enable automatic backup</h4>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">Protect your recipes with periodic backups</p>
+                            <h4 class="font-bold text-gray-800 dark:text-white text-sm">Dark Mode</h4>
+                            <p id="settingsThemeLabel" class="text-xs text-gray-500 dark:text-gray-400">Off</p>
                         </div>
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" id="backupEnabled" class="sr-only peer">
-                            <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-500"></div>
-                        </label>
                     </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="settingsDarkToggle" onchange="toggleTheme()" class="sr-only peer">
+                        <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-500"></div>
+                    </label>
+                </div>
 
-                    <!-- Options (fade if disabled) -->
-                    <div id="backupOptions" class="space-y-3 opacity-50 pointer-events-none">
-                        <!-- Frequency -->
-                        <div class="flex items-center justify-between p-3 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg">
-                            <div class="flex items-center gap-2">
-                                <i class="ph-bold ph-clock text-gray-400"></i>
-                                <span class="text-sm text-gray-700 dark:text-gray-300">Frequency</span>
-                            </div>
-                            <select id="backupFrequency" class="text-sm bg-gray-50 dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-lg px-3 py-1.5 text-gray-700 dark:text-gray-200">
-                                <option value="12">Every 12 hours</option>
-                                <option value="24" selected>Daily</option>
-                                <option value="168">Weekly</option>
-                            </select>
+                <!-- ═══ 2. LANGUAGE (inline toggle — no expand) ═══ -->
+                <div class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl p-4 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 bg-gray-100 dark:bg-gray-600 rounded-lg">
+                            <i class="ph-bold ph-translate text-xl text-orange-500"></i>
                         </div>
-
-                        <!-- Retention -->
-                        <div class="flex items-center justify-between p-3 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg">
-                            <div class="flex items-center gap-2">
-                                <i class="ph-bold ph-stack text-gray-400"></i>
-                                <span class="text-sm text-gray-700 dark:text-gray-300">Keep latest</span>
-                            </div>
-                            <select id="backupMaxKeep" class="text-sm bg-gray-50 dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-lg px-3 py-1.5 text-gray-700 dark:text-gray-200">
-                                <option value="3">3 backups</option>
-                                <option value="7" selected>7 backups</option>
-                                <option value="14">14 backups</option>
-                                <option value="30">30 backups</option>
-                            </select>
+                        <div>
+                            <h4 class="font-bold text-gray-800 dark:text-white text-sm">Language</h4>
+                            <p id="settingsLangLabel" class="text-xs text-gray-500 dark:text-gray-400">English</p>
                         </div>
+                    </div>
+                    <button onclick="toggleSettingsLang()" id="settingsLangBtn"
+                        class="px-4 py-1.5 bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold rounded-lg transition-colors">
+                        ES
+                    </button>
+                </div>
 
-                        <!-- Include images -->
-                        <div class="flex items-center justify-between p-3 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg">
-                            <div class="flex items-center gap-2">
-                                <i class="ph-bold ph-image text-gray-400"></i>
-                                <span class="text-sm text-gray-700 dark:text-gray-300">Include images</span>
+                <!-- ═══ 3. BACKUP (collapsible) ═══ -->
+                <div class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl overflow-hidden">
+                    <button onclick="toggleSettingsSection('backup')" class="w-full p-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-600/50 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2 bg-gray-100 dark:bg-gray-600 rounded-lg">
+                                <i class="ph-bold ph-shield-check text-xl text-orange-500"></i>
+                            </div>
+                            <div class="text-left">
+                                <h4 class="font-bold text-gray-800 dark:text-white text-sm">Automatic Backup</h4>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Protect your recipes with periodic backups</p>
+                            </div>
+                        </div>
+                        <i id="settingsChevronBackup" class="ph-bold ph-caret-down text-gray-400 transition-transform duration-200"></i>
+                    </button>
+                    <div id="settingsPanelBackup" class="hidden border-t border-gray-200 dark:border-gray-600 p-4 space-y-4">
+                        <!-- Status of last backup -->
+                        <div id="backupLastStatus" class="hidden p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg text-sm text-gray-600 dark:text-gray-300"></div>
+
+                        <!-- Toggle activation -->
+                        <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl">
+                            <div>
+                                <h4 class="font-bold text-gray-800 dark:text-white text-sm">Enable automatic backup</h4>
                             </div>
                             <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" id="backupIncludeImages" checked class="sr-only peer">
-                                <div class="w-9 h-5 bg-gray-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-orange-500"></div>
+                                <input type="checkbox" id="backupEnabled" class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-500"></div>
                             </label>
                         </div>
-                    </div>
 
-                    <!-- Action buttons -->
-                    <div class="flex gap-2 mt-4">
-                        <button id="backupSaveBtn" onclick="saveBackupConfig()"
-                            class="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-bold py-2.5 px-4 rounded-lg transition-colors text-sm">
-                            Save configuration
-                        </button>
-                        <button id="backupNowBtn" onclick="backupNow()"
-                            class="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-bold py-2.5 px-4 rounded-lg transition-colors text-sm flex items-center justify-center gap-2">
-                            <i class="ph-bold ph-download-simple"></i> Backup now
-                        </button>
-                    </div>
+                        <!-- Options (fade if disabled) -->
+                        <div id="backupOptions" class="space-y-3 opacity-50 pointer-events-none">
+                            <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg">
+                                <div class="flex items-center gap-2">
+                                    <i class="ph-bold ph-clock text-gray-400"></i>
+                                    <span class="text-sm text-gray-700 dark:text-gray-300">Frequency</span>
+                                </div>
+                                <select id="backupFrequency" class="text-sm bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-lg px-3 py-1.5 text-gray-700 dark:text-gray-200">
+                                    <option value="12">Every 12 hours</option>
+                                    <option value="24" selected>Daily</option>
+                                    <option value="168">Weekly</option>
+                                </select>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg">
+                                <div class="flex items-center gap-2">
+                                    <i class="ph-bold ph-stack text-gray-400"></i>
+                                    <span class="text-sm text-gray-700 dark:text-gray-300">Keep latest</span>
+                                </div>
+                                <select id="backupMaxKeep" class="text-sm bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-lg px-3 py-1.5 text-gray-700 dark:text-gray-200">
+                                    <option value="3">3 backups</option>
+                                    <option value="7" selected>7 backups</option>
+                                    <option value="14">14 backups</option>
+                                    <option value="30">30 backups</option>
+                                </select>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg">
+                                <div class="flex items-center gap-2">
+                                    <i class="ph-bold ph-image text-gray-400"></i>
+                                    <span class="text-sm text-gray-700 dark:text-gray-300">Include images</span>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="backupIncludeImages" checked class="sr-only peer">
+                                    <div class="w-9 h-5 bg-gray-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-orange-500"></div>
+                                </label>
+                            </div>
+                        </div>
 
-                    <!-- List of existing backups -->
-                    <div class="mt-4">
-                        <h4 class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">Saved backups</h4>
-                        <div id="backupList" class="space-y-1.5 max-h-40 overflow-y-auto">
-                            <p class="text-sm text-gray-400 italic">Loading...</p>
+                        <!-- Action buttons -->
+                        <div class="flex gap-2">
+                            <button id="backupSaveBtn" onclick="saveBackupConfig()"
+                                class="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-bold py-2.5 px-4 rounded-lg transition-colors text-sm">
+                                Save configuration
+                            </button>
+                            <button id="backupNowBtn" onclick="backupNow()"
+                                class="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-bold py-2.5 px-4 rounded-lg transition-colors text-sm flex items-center justify-center gap-2">
+                                <i class="ph-bold ph-download-simple"></i> Backup now
+                            </button>
+                        </div>
+
+                        <!-- List of existing backups -->
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">Saved backups</h4>
+                            <div id="backupList" class="space-y-1.5 max-h-40 overflow-y-auto">
+                                <p class="text-sm text-gray-400 italic">Loading...</p>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <hr class="border-gray-200 dark:border-gray-700 mb-8">
-
-                <!-- SECTION: EXPORT -->
-                <div class="mb-8">
-                    <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
-                        <i class="ph-bold ph-upload-simple text-orange-500"></i>
-                        Export Data
-                    </h3>
-
-                    <div class="space-y-3">
-                        <!-- Export Full Database -->
-                        <button onclick="exportDatabase()" class="w-full bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl p-4 hover:border-orange-500 transition-all text-left group">
+                <!-- ═══ 4. EXPORT (collapsible) ═══ -->
+                <div class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl overflow-hidden">
+                    <button onclick="toggleSettingsSection('export')" class="w-full p-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-600/50 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2 bg-gray-100 dark:bg-gray-600 rounded-lg">
+                                <i class="ph-bold ph-upload-simple text-xl text-orange-500"></i>
+                            </div>
+                            <div class="text-left">
+                                <h4 class="font-bold text-gray-800 dark:text-white text-sm">Export Data</h4>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Download your recipes and database</p>
+                            </div>
+                        </div>
+                        <i id="settingsChevronExport" class="ph-bold ph-caret-down text-gray-400 transition-transform duration-200"></i>
+                    </button>
+                    <div id="settingsPanelExport" class="hidden border-t border-gray-200 dark:border-gray-600 p-4 space-y-3">
+                        <button onclick="exportDatabase()" class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl p-4 hover:border-orange-500 transition-all text-left group">
                             <div class="flex items-start gap-4">
                                 <div class="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg group-hover:bg-blue-200 transition-colors">
                                     <i class="ph-bold ph-database text-2xl text-blue-600 dark:text-blue-400"></i>
                                 </div>
                                 <div class="flex-1">
-                                    <h4 class="font-bold text-gray-800 dark:text-white mb-1">Complete Database + Images</h4>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400">Export everything in one ZIP file: SQLite database and all images</p>
-                                    <p class="text-xs text-orange-600 dark:text-orange-400 mt-2">✓ Recommended for complete migration</p>
+                                    <h4 class="font-bold text-gray-800 dark:text-white mb-1 text-sm">Complete Database + Images</h4>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">Export everything in one ZIP file</p>
+                                    <p class="text-xs text-orange-600 dark:text-orange-400 mt-1">✓ Recommended for complete migration</p>
                                 </div>
                             </div>
                         </button>
-
-                        <!-- Export JSON -->
-                        <button onclick="exportJSON()" class="w-full bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl p-4 hover:border-orange-500 transition-all text-left group">
+                        <button onclick="exportJSON()" class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl p-4 hover:border-orange-500 transition-all text-left group">
                             <div class="flex items-start gap-4">
                                 <div class="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg group-hover:bg-green-200 transition-colors">
                                     <i class="ph-bold ph-file-text text-2xl text-green-600 dark:text-green-400"></i>
                                 </div>
                                 <div class="flex-1">
-                                    <h4 class="font-bold text-gray-800 dark:text-white mb-1">Recipes in JSON (Portable)</h4>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400">Export only recipes in JSON format. Does not include images</p>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">Useful for sharing or portable backup</p>
+                                    <h4 class="font-bold text-gray-800 dark:text-white mb-1 text-sm">Recipes in JSON (Portable)</h4>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">Export only recipes in JSON format</p>
                                 </div>
                             </div>
                         </button>
                     </div>
                 </div>
 
-                <!-- SECTION: IMPORT -->
-                <div>
-                    <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
-                        <i class="ph-bold ph-download-simple text-orange-500"></i>
-                        Import Data
-                    </h3>
-
-                    <div class="space-y-3">
-                        <!-- Import Database -->
-                        <div class="w-full bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl p-4">
+                <!-- ═══ 5. IMPORT (collapsible) ═══ -->
+                <div class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl overflow-hidden">
+                    <button onclick="toggleSettingsSection('import')" class="w-full p-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-600/50 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2 bg-gray-100 dark:bg-gray-600 rounded-lg">
+                                <i class="ph-bold ph-download-simple text-xl text-orange-500"></i>
+                            </div>
+                            <div class="text-left">
+                                <h4 class="font-bold text-gray-800 dark:text-white text-sm">Import Data</h4>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Restore from backup or add recipes</p>
+                            </div>
+                        </div>
+                        <i id="settingsChevronImport" class="ph-bold ph-caret-down text-gray-400 transition-transform duration-200"></i>
+                    </button>
+                    <div id="settingsPanelImport" class="hidden border-t border-gray-200 dark:border-gray-600 p-4 space-y-3">
+                        <div class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl p-4">
                             <div class="flex items-start gap-4 mb-3">
                                 <div class="p-3 bg-red-100 dark:bg-red-900/30 rounded-lg">
                                     <i class="ph-bold ph-database text-2xl text-red-600 dark:text-red-400"></i>
                                 </div>
                                 <div class="flex-1">
-                                    <h4 class="font-bold text-gray-800 dark:text-white mb-1">Import Complete ZIP</h4>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400">Replaces entire database and images</p>
-                                    <p class="text-xs text-red-600 dark:text-red-400 mt-2">⚠️ This will delete all current data</p>
+                                    <h4 class="font-bold text-gray-800 dark:text-white mb-1 text-sm">Import Complete ZIP</h4>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">Replaces entire database and images</p>
+                                    <p class="text-xs text-red-600 dark:text-red-400 mt-1">⚠️ This will delete all current data</p>
                                 </div>
                             </div>
                             <label class="block">
                                 <input type="file" id="importDatabaseFile" accept=".zip" class="hidden" onchange="importDatabase(this)">
-                                <span class="block w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg text-center cursor-pointer transition-colors">
+                                <span class="block w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg text-center cursor-pointer transition-colors text-sm">
                                     Select ZIP file
                                 </span>
                             </label>
                         </div>
-
-                        <!-- Import JSON -->
-                        <div class="w-full bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl p-4">
+                        <div class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl p-4">
                             <div class="flex items-start gap-4 mb-3">
                                 <div class="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
                                     <i class="ph-bold ph-file-text text-2xl text-purple-600 dark:text-purple-400"></i>
                                 </div>
                                 <div class="flex-1">
-                                    <h4 class="font-bold text-gray-800 dark:text-white mb-1">Import Recipes JSON</h4>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400">Adds recipes from JSON to existing ones</p>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">Recipes will merge with current ones</p>
+                                    <h4 class="font-bold text-gray-800 dark:text-white mb-1 text-sm">Import Recipes JSON</h4>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">Adds recipes from JSON to existing ones</p>
                                 </div>
                             </div>
                             <label class="block">
                                 <input type="file" id="importJSONFile" accept=".json" class="hidden" onchange="importJSON(this)">
-                                <span class="block w-full bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-lg text-center cursor-pointer transition-colors">
+                                <span class="block w-full bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-lg text-center cursor-pointer transition-colors text-sm">
                                     Select JSON file
                                 </span>
                             </label>
@@ -199,7 +240,7 @@
                 </div>
 
                 <!-- Progress bar for operations -->
-                <div id="importProgress" class="hidden mt-6">
+                <div id="importProgress" class="hidden mt-3">
                     <div class="bg-gray-200 dark:bg-gray-700 rounded-full h-4 overflow-hidden">
                         <div id="importProgressBar" class="bg-orange-500 h-full transition-all duration-300" style="width: 0%"></div>
                     </div>
@@ -540,11 +581,6 @@
             <button onclick="openHelpModal()" class="w-full flex items-center justify-center gap-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 transition-colors text-sm">
                 <i class="ph-bold ph-question"></i>
                 <span>Help</span>
-            </button>
-
-            <button onclick="toggleTheme()" id="themeToggleBtn" class="w-full flex items-center justify-center gap-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 transition-colors text-sm">
-                <i id="themeIcon" class="ph-fill ph-moon"></i>
-                <span id="themeText">Dark Mode</span>
             </button>
 
             <button onclick="doLogout()" class="w-full flex items-center justify-center gap-2 p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-400 hover:text-red-500 transition-colors text-sm">
