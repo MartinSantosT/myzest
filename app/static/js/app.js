@@ -10,6 +10,9 @@
 import './state.js';
 import './api.js';
 
+// --- i18n (must load early) ---
+import { translatePage, initLangButton } from './i18n.js';
+
 // --- Leaf Modules ---
 import { updateThemeButton } from './theme.js';
 import './rating.js';
@@ -66,6 +69,10 @@ window.addEventListener('DOMContentLoaded', () => {
 
 // Init theme button state
 updateThemeButton();
+
+// Init i18n — translate all data-i18n elements and set language button
+translatePage();
+initLangButton();
 
 // Init cover drag-to-reposition
 initCoverDragListeners();

@@ -36,53 +36,55 @@ export function showView(view) {
     // Clear active nav
     document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
 
-    // Show/hide filter header based on view
-    const header = document.querySelector('#mainContent > header');
+    // Header: always visible (has hamburger on mobile)
+    // Filters: only visible in recipe views
+    const header = document.getElementById('appHeader');
+    const filters = document.getElementById('headerFilters');
 
     if (view === 'calculator') {
         document.getElementById('viewCalculator').classList.remove('hidden');
         document.getElementById('navCalculator').classList.add('active');
-        header.classList.add('hidden');
+        filters.classList.add('hidden');
     } else if (view === 'whatToCook') {
         document.getElementById('viewWhatToCook').classList.remove('hidden');
         document.getElementById('navWhatToCook').classList.add('active');
-        header.classList.add('hidden');
+        filters.classList.add('hidden');
     } else if (view === 'shoppingList') {
         document.getElementById('viewShoppingList').classList.remove('hidden');
         document.getElementById('navShoppingList').classList.add('active');
-        header.classList.add('hidden');
+        filters.classList.add('hidden');
         renderShoppingList();
     } else if (view === 'cookbooks') {
         document.getElementById('viewCookbooks').classList.remove('hidden');
         document.getElementById('navCookbooks').classList.add('active');
-        header.classList.add('hidden');
+        filters.classList.add('hidden');
         loadCookbooks();
     } else if (view === 'cookbookDetail') {
         document.getElementById('viewCookbookDetail').classList.remove('hidden');
         document.getElementById('navCookbooks').classList.add('active');
-        header.classList.add('hidden');
+        filters.classList.add('hidden');
     } else if (view === 'memories') {
         document.getElementById('viewMemories').classList.remove('hidden');
         document.getElementById('navMemories').classList.add('active');
-        header.classList.add('hidden');
+        filters.classList.add('hidden');
         loadMemories();
     } else if (view === 'memoryDetail') {
         document.getElementById('viewMemoryDetail').classList.remove('hidden');
         document.getElementById('navMemories').classList.add('active');
-        header.classList.add('hidden');
+        filters.classList.add('hidden');
     } else if (view === 'scraper') {
         document.getElementById('viewScraper').classList.remove('hidden');
         document.getElementById('navScraper').classList.add('active');
-        header.classList.add('hidden');
+        filters.classList.add('hidden');
     } else if (view === 'planner') {
         document.getElementById('viewPlanner').classList.remove('hidden');
-        header.classList.add('hidden');
+        filters.classList.add('hidden');
     } else if (view === 'recipeDetail') {
         document.getElementById('viewRecipeDetail').classList.remove('hidden');
-        header.classList.add('hidden');
+        filters.classList.add('hidden');
     } else {
         document.getElementById('viewRecipes').classList.remove('hidden');
-        header.classList.remove('hidden');
+        filters.classList.remove('hidden');
 
         if (view === 'favorites') {
             document.getElementById('navFavorites').classList.add('active');

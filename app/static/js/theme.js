@@ -2,6 +2,8 @@
 // THEME.JS — Dark/Light Mode Toggle
 // ============================================
 
+import { T } from './i18n.js';
+
 export function toggleTheme() {
     document.documentElement.classList.toggle('dark');
     updateThemeButton();
@@ -31,22 +33,6 @@ window.toggleSettingsSection = function(name) {
     panel.classList.toggle('hidden');
     if (chevron) {
         chevron.style.transform = isOpen ? '' : 'rotate(180deg)';
-    }
-};
-
-// --- Language toggle placeholder (will be wired with i18n later) ---
-window.toggleSettingsLang = function() {
-    // Placeholder — will be replaced when i18n is implemented
-    const btn = document.getElementById('settingsLangBtn');
-    const label = document.getElementById('settingsLangLabel');
-    if (!btn || !label) return;
-
-    if (btn.textContent.trim() === 'ES') {
-        btn.textContent = 'EN';
-        label.textContent = 'Español';
-    } else {
-        btn.textContent = 'ES';
-        label.textContent = 'English';
     }
 };
 

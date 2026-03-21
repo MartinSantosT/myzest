@@ -51,9 +51,9 @@
                             <p id="settingsLangLabel" class="text-xs text-gray-500 dark:text-gray-400">English</p>
                         </div>
                     </div>
-                    <button onclick="toggleSettingsLang()" id="settingsLangBtn"
+                    <button onclick="toggleAppLang()" id="settingsLangBtn"
                         class="px-4 py-1.5 bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold rounded-lg transition-colors">
-                        ES
+                        <span id="langToggleBtnText">ES</span>
                     </button>
                 </div>
 
@@ -488,7 +488,7 @@
             </button>
         </div>
 
-        <div class="sidebar-content transition-opacity duration-300">
+        <div class="sidebar-content transition-opacity duration-300 flex flex-col flex-1 overflow-hidden">
         <div class="p-6 border-b border-gray-100 dark:border-gray-700 flex items-center gap-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors" onclick="openProfileModal()">
             <div id="userAvatar" class="w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center text-white font-bold text-lg shadow-lg overflow-hidden">
                 <span id="userInitial">?</span>
@@ -503,50 +503,51 @@
         </div>
 
         <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-3">
-            <p class="px-2 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Main Menu</p>
+            <p class="px-2 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2" data-i18n="nav.mainMenu">Main Menu</p>
 
             <div class="nav-item active p-3 rounded-xl cursor-pointer flex items-center gap-4 group" onclick="filterByView('all')">
                 <div class="bg-orange-100 dark:bg-orange-900/30 p-2 rounded-lg text-orange-600 dark:text-orange-400 group-hover:text-orange-700">
                     <i class="ph-bold ph-cooking-pot text-xl"></i>
                 </div>
-                <span class="font-semibold text-sm">All Recipes</span>
+                <span class="font-semibold text-sm" data-i18n="nav.allRecipes">All Recipes</span>
             </div>
 
             <div id="navFavorites" class="nav-item p-3 rounded-xl cursor-pointer flex items-center gap-4 group" onclick="filterByView('favorites')">
                 <div class="bg-white border border-gray-200 dark:bg-gray-700 dark:border-gray-600 p-2 rounded-lg text-orange-500 shadow-sm">
                     <i class="ph-fill ph-heart text-xl"></i>
                 </div>
-                <span class="font-medium text-sm text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white">Favorites</span>
+                <span class="font-medium text-sm text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white" data-i18n="nav.favorites">Favorites</span>
             </div>
 
             <div id="navCookbooks" class="nav-item p-3 rounded-xl cursor-pointer flex items-center gap-4 group" onclick="showView('cookbooks')">
                 <div class="bg-white border border-gray-200 dark:bg-gray-700 dark:border-gray-600 p-2 rounded-lg text-orange-500 shadow-sm">
                     <i class="ph-bold ph-book-open text-xl"></i>
                 </div>
-                <span class="font-medium text-sm text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white">Cookbooks</span>
+                <span class="font-medium text-sm text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white" data-i18n="nav.cookbooks">Cookbooks</span>
             </div>
 
             <div id="navMemories" class="nav-item p-3 rounded-xl cursor-pointer flex items-center gap-4 group" onclick="showView('memories')">
                 <div class="bg-white border border-gray-200 dark:bg-gray-700 dark:border-gray-600 p-2 rounded-lg text-orange-500 shadow-sm">
                     <i class="ph-bold ph-camera text-xl"></i>
                 </div>
-                <span class="font-medium text-sm text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white">Memories</span>
+                <span class="font-medium text-sm text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white" data-i18n="nav.memories">Memories</span>
             </div>
 
-            <p class="px-2 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 mt-6">Tools</p>
+            <div class="mt-4 mb-4 border-t border-gray-200 dark:border-gray-700"></div>
+            <p class="px-2 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2" data-i18n="nav.tools">Tools</p>
 
             <div id="navWhatToCook" class="nav-item p-3 rounded-xl cursor-pointer flex items-center gap-4 group" onclick="showView('whatToCook')">
                 <div class="bg-white border border-gray-200 dark:bg-gray-700 dark:border-gray-600 p-2 rounded-lg text-orange-500 shadow-sm">
                     <i class="ph-bold ph-basket text-xl"></i>
                 </div>
-                <span class="font-medium text-sm text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white">What to Cook?</span>
+                <span class="font-medium text-sm text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white" data-i18n="nav.whatToCook">What to Cook?</span>
             </div>
 
             <div id="navCalculator" class="nav-item p-3 rounded-xl cursor-pointer flex items-center gap-4 group" onclick="showView('calculator')">
                 <div class="bg-white border border-gray-200 dark:bg-gray-700 dark:border-gray-600 p-2 rounded-lg text-orange-500 shadow-sm">
                     <i class="ph-bold ph-calculator text-xl"></i>
                 </div>
-                <span class="font-medium text-sm text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white">Calculator</span>
+                <span class="font-medium text-sm text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white" data-i18n="nav.calculator">Calculate Portions</span>
             </div>
 
             <div id="navShoppingList" class="nav-item p-3 rounded-xl cursor-pointer flex items-center gap-4 group" onclick="showView('shoppingList')">
@@ -554,38 +555,38 @@
                     <i class="ph-bold ph-shopping-cart text-xl"></i>
                     <span id="shoppingBadge" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center"></span>
                 </div>
-                <span class="font-medium text-sm text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white">Shopping List</span>
+                <span class="font-medium text-sm text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white" data-i18n="nav.shoppingList">Shopping List</span>
             </div>
 
             <div id="navScraper" class="nav-item p-3 rounded-xl cursor-pointer flex items-center gap-4 group" onclick="showView('scraper')">
                 <div class="bg-white border border-gray-200 dark:bg-gray-700 dark:border-gray-600 p-2 rounded-lg text-orange-500 shadow-sm">
                     <i class="ph-bold ph-globe text-xl"></i>
                 </div>
-                <span class="font-medium text-sm text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white">Import from URL</span>
+                <span class="font-medium text-sm text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white" data-i18n="nav.importUrl">Import from URL</span>
             </div>
 
             <div class="nav-item p-3 rounded-xl cursor-pointer flex items-center gap-4 group" onclick="showView('planner')">
                 <div class="bg-white border border-gray-200 dark:bg-gray-700 dark:border-gray-600 p-2 rounded-lg text-orange-500 shadow-sm">
                     <i class="ph-bold ph-calendar-blank text-xl"></i>
                 </div>
-                <span class="font-medium text-sm text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white">Planner</span>
+                <span class="font-medium text-sm text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white" data-i18n="nav.planner">Planner</span>
             </div>
         </nav>
 
         <div class="p-4 border-t border-gray-200 dark:border-gray-700 space-y-2">
             <button onclick="openSettingsModal()" class="w-full flex items-center justify-center gap-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 transition-colors text-sm">
                 <i class="ph-bold ph-gear"></i>
-                <span>Settings</span>
+                <span data-i18n="nav.settings">Settings</span>
             </button>
 
             <button onclick="openHelpModal()" class="w-full flex items-center justify-center gap-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 transition-colors text-sm">
                 <i class="ph-bold ph-question"></i>
-                <span>Help</span>
+                <span data-i18n="nav.help">Help</span>
             </button>
 
             <button onclick="doLogout()" class="w-full flex items-center justify-center gap-2 p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-400 hover:text-red-500 transition-colors text-sm">
                 <i class="ph-bold ph-sign-out"></i>
-                <span>Log Out</span>
+                <span data-i18n="nav.logOut">Log Out</span>
             </button>
         </div>
         </div><!-- end sidebar-content -->
@@ -600,18 +601,25 @@
 
     <div id="mainContent" class="flex-1 flex flex-col h-full overflow-hidden relative w-full content-expanded">
 
-        <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 min-h-[4rem] flex items-center justify-between px-4 md:px-6 shrink-0 z-20 gap-2 md:gap-4 overflow-x-auto">
+        <header id="appHeader" class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 min-h-[4rem] flex items-center px-4 md:px-6 shrink-0 z-20 gap-2 md:gap-3">
 
+            <!-- Left: Hamburger (mobile) + New Recipe button -->
             <button onclick="toggleSidebar()" class="md:hidden p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none shrink-0">
                 <i class="ph-bold ph-list text-2xl"></i>
             </button>
 
-            <div class="flex-1 max-w-5xl flex gap-2 md:gap-3">
+            <button onclick="openModal(true)" class="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-3 py-2 rounded-lg font-bold transition-colors shadow-lg text-sm shrink-0">
+                <i class="ph-bold ph-plus"></i>
+                <span class="hidden md:inline" data-i18n="filter.newRecipe">New Recipe</span>
+            </button>
+
+            <!-- Center: Filters (scrollable) -->
+            <div id="headerFilters" class="flex-1 flex items-center gap-2 md:gap-3 overflow-x-auto">
                 <div class="relative w-40 sm:w-52 shrink-0">
                     <i class="ph-bold ph-tag absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
                     <select id="categoryFilter" onchange="applyFilters()"
                         class="w-full bg-gray-100 dark:bg-gray-700 border-none rounded-xl py-2 pl-10 pr-8 appearance-none cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors focus:ring-2 focus:ring-orange-500 outline-none text-sm font-medium truncate">
-                        <option value="">All Categories</option>
+                        <option value="" data-i18n="filter.allCategories">All Categories</option>
                     </select>
                 </div>
 
@@ -619,7 +627,7 @@
                     <i class="ph-bold ph-hash absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
                     <select id="tagFilter" onchange="applyFilters()"
                         class="w-full bg-gray-100 dark:bg-gray-700 border-none rounded-xl py-2 pl-10 pr-8 appearance-none cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors focus:ring-2 focus:ring-orange-500 outline-none text-sm font-medium truncate">
-                        <option value="">All Tags</option>
+                        <option value="" data-i18n="filter.allTags">All Tags</option>
                         <!-- Filled dynamically -->
                     </select>
                 </div>
@@ -628,33 +636,28 @@
                     <i class="ph-bold ph-star absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
                     <select id="ratingFilter" onchange="applyFilters()"
                         class="w-full bg-gray-100 dark:bg-gray-700 border-none rounded-xl py-2 pl-10 pr-8 appearance-none cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors focus:ring-2 focus:ring-orange-500 outline-none text-sm font-medium truncate">
-                        <option value="">All Ratings</option>
-                        <option value="5">⭐⭐⭐⭐⭐ (5 stars)</option>
-                        <option value="4">⭐⭐⭐⭐ (4 stars)</option>
-                        <option value="3">⭐⭐⭐ (3 stars)</option>
-                        <option value="2">⭐⭐ (2 stars)</option>
-                        <option value="1">⭐ (1 star)</option>
-                        <option value="0">Unrated</option>
+                        <option value="" data-i18n="filter.allRatings">All Ratings</option>
+                        <option value="5">⭐⭐⭐⭐⭐ (5)</option>
+                        <option value="4">⭐⭐⭐⭐ (4)</option>
+                        <option value="3">⭐⭐⭐ (3)</option>
+                        <option value="2">⭐⭐ (2)</option>
+                        <option value="1">⭐ (1)</option>
+                        <option value="0" data-i18n="filter.unrated">Unrated</option>
                     </select>
                 </div>
 
                 <div class="relative flex-1 min-w-[180px] max-w-md group">
                     <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-orange-500"></i>
-                    <input type="text" id="searchInput" placeholder="Search by name or ingredient..." oninput="applyFilters()"
+                    <input type="text" id="searchInput" placeholder="Search by name or ingredient..." oninput="applyFilters()" data-i18n-placeholder="filter.searchPlaceholder"
                         class="w-full bg-gray-100 dark:bg-gray-700 border-none rounded-xl py-2 pl-10 pr-10 focus:ring-2 focus:ring-orange-500 transition-all outline-none text-sm">
                     <button onclick="document.getElementById('searchInput').value=''; applyFilters();" title="Clear search" class="hidden group-hover:flex absolute right-3 top-1/2 -translate-y-1/2 items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
                         <i class="ph-bold ph-x text-lg"></i>
                     </button>
                 </div>
             </div>
-
-            <button onclick="openModal(true)" class="flex items-center gap-2 bg-gray-900 hover:bg-gray-700 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200 text-white px-4 py-2 rounded-lg font-bold transition-colors shadow-lg text-sm">
-                <i class="ph-bold ph-plus"></i>
-                <span class="hidden md:inline">New Recipe</span>
-            </button>
         </header>
 
-        <main class="flex-1 overflow-y-auto p-6" id="mainContainer">
+        <main class="flex-1 overflow-y-auto overflow-x-hidden p-4 md:p-6 pb-24 md:pb-6" id="mainContainer">
 
             <!-- VIEW: RECIPES -->
             <div id="viewRecipes">
@@ -662,7 +665,7 @@
                     <div class="flex items-center gap-3 bg-white dark:bg-gray-800 px-5 py-3 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm min-w-[200px]">
                         <div class="p-2 bg-orange-100 text-orange-600 rounded-lg"><i class="ph-bold ph-notebook text-xl"></i></div>
                         <div>
-                            <p class="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Total Recipes</p>
+                            <p class="text-[10px] text-gray-400 uppercase font-bold tracking-wider" data-i18n="stats.totalRecipes">Total Recipes</p>
                             <p class="text-xl font-black text-gray-800 dark:text-white" id="statTotal">0</p>
                         </div>
                     </div>
@@ -670,7 +673,7 @@
                     <div class="flex items-center gap-3 bg-white dark:bg-gray-800 px-5 py-3 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm min-w-[200px]">
                         <div class="p-2 bg-purple-100 text-purple-600 rounded-lg"><i class="ph-bold ph-tag text-xl"></i></div>
                         <div>
-                            <p class="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Categories</p>
+                            <p class="text-[10px] text-gray-400 uppercase font-bold tracking-wider" data-i18n="stats.categories">Categories</p>
                             <p class="text-xl font-black text-gray-800 dark:text-white" id="statFolders">0</p>
                         </div>
                     </div>
@@ -678,7 +681,7 @@
                     <div class="flex items-center gap-3 bg-white dark:bg-gray-800 px-5 py-3 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm min-w-[200px]">
                         <div class="p-2 bg-indigo-100 text-indigo-600 rounded-lg"><i class="ph-bold ph-hash text-xl"></i></div>
                         <div>
-                            <p class="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Tags</p>
+                            <p class="text-[10px] text-gray-400 uppercase font-bold tracking-wider" data-i18n="stats.tags">Tags</p>
                             <p class="text-xl font-black text-gray-800 dark:text-white" id="statTags">0</p>
                         </div>
                     </div>
@@ -686,7 +689,7 @@
                     <div class="flex items-center gap-3 bg-white dark:bg-gray-800 px-5 py-3 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm min-w-[200px]">
                         <div class="p-2 bg-red-100 text-red-600 rounded-lg"><i class="ph-fill ph-heart text-xl"></i></div>
                         <div>
-                            <p class="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Favorites</p>
+                            <p class="text-[10px] text-gray-400 uppercase font-bold tracking-wider" data-i18n="stats.favorites">Favorites</p>
                             <p class="text-xl font-black text-gray-800 dark:text-white" id="statFavorites">0</p>
                         </div>
                     </div>
@@ -694,7 +697,7 @@
                     <div class="flex items-center gap-3 bg-white dark:bg-gray-800 px-5 py-3 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm min-w-[200px]">
                         <div class="p-2 bg-yellow-100 text-yellow-600 rounded-lg"><i class="ph-fill ph-star text-xl"></i></div>
                         <div>
-                            <p class="text-[10px] text-gray-400 uppercase font-bold tracking-wider">5 Star Rated</p>
+                            <p class="text-[10px] text-gray-400 uppercase font-bold tracking-wider" data-i18n="stats.fiveStarRated">5 Star Rated</p>
                             <p class="text-xl font-black text-gray-800 dark:text-white" id="statFiveStars">0</p>
                         </div>
                     </div>
@@ -1429,14 +1432,14 @@
                         <div class="lg:col-span-2 space-y-6">
 
                             <div>
-                                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Title</label>
+                                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2" data-i18n="recipe.title">Title</label>
                                 <input type="text" id="inputTitle" required
                                     class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 focus:ring-2 focus:ring-orange-500 outline-none transition-all text-lg font-semibold">
                             </div>
 
                             <div>
                                 <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
-                                    <i class="ph-bold ph-folder"></i> Categories
+                                    <i class="ph-bold ph-folder"></i> <span data-i18n="recipe.categories">Categories</span>
                                 </label>
 
                                 <!-- Selected categories -->
@@ -1464,7 +1467,7 @@
                             <!-- Tags -->
                             <div>
                                 <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
-                                    <i class="ph-bold ph-tag"></i> Tags
+                                    <i class="ph-bold ph-tag"></i> <span data-i18n="recipe.tags">Tags</span>
                                 </label>
 
                                 <!-- Selected tags -->
@@ -1513,7 +1516,7 @@
                             <!-- Rating with stars -->
                             <div>
                                 <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
-                                    <i class="ph-bold ph-star"></i> Rating
+                                    <i class="ph-bold ph-star"></i> <span data-i18n="recipe.rating">Rating</span>
                                 </label>
                                 <div class="flex items-center gap-2">
                                     <div id="ratingStars" class="flex gap-1">
@@ -1541,7 +1544,7 @@
                             <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                                 <div>
                                     <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
-                                        <i class="ph-bold ph-knife"></i> Prep (min)
+                                        <i class="ph-bold ph-knife"></i> <span data-i18n="recipe.prepMin">Prep (min)</span>
                                     </label>
                                     <input type="number" id="inputTime" value="0" min="0"
                                         oninput="updateTotalTime()"
@@ -1549,7 +1552,7 @@
                                 </div>
                                 <div>
                                     <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
-                                        <i class="ph-bold ph-fire"></i> Cook (min)
+                                        <i class="ph-bold ph-fire"></i> <span data-i18n="recipe.cookMin">Cook (min)</span>
                                     </label>
                                     <input type="number" id="inputCookTime" value="0" min="0"
                                         oninput="updateTotalTime()"
@@ -1557,7 +1560,7 @@
                                 </div>
                                 <div>
                                     <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
-                                        <i class="ph-bold ph-clock"></i> Total
+                                        <i class="ph-bold ph-clock"></i> <span data-i18n="recipe.total">Total</span>
                                     </label>
                                     <div id="totalTimeDisplay" class="w-full bg-gray-100 dark:bg-gray-600 border border-gray-200 dark:border-gray-500 rounded-xl px-4 py-3 text-sm font-bold text-orange-600 dark:text-orange-400 text-center">
                                         0 min
@@ -1565,7 +1568,7 @@
                                 </div>
                                 <div>
                                     <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
-                                        <i class="ph-bold ph-users"></i> Servings
+                                        <i class="ph-bold ph-users"></i> <span data-i18n="recipe.servings">Servings</span>
                                     </label>
                                     <input type="number" id="inputServings" placeholder="e.g. 4"
                                         class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 focus:ring-2 focus:ring-orange-500 outline-none">
@@ -1574,7 +1577,7 @@
 
                             <div>
                                 <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
-                                    <i class="ph-bold ph-list-bullets"></i> Ingredients
+                                    <i class="ph-bold ph-list-bullets"></i> <span data-i18n="recipe.ingredients">Ingredients</span>
                                 </label>
 
                                 <!-- Read mode: formatted list -->
@@ -1589,23 +1592,23 @@
                                     </div>
                                     <button type="button" onclick="addIngredientRow()"
                                         class="w-full py-2.5 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl text-sm text-gray-500 hover:border-orange-400 hover:text-orange-500 transition-colors flex items-center justify-center gap-2">
-                                        <i class="ph-bold ph-plus"></i> Add ingredient
+                                        <i class="ph-bold ph-plus"></i> <span data-i18n="recipe.addIngredient">Add ingredient</span>
                                     </button>
                                 </div>
                             </div>
 
                             <div>
                                 <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
-                                    <i class="ph-bold ph-steps"></i> Steps
+                                    <i class="ph-bold ph-steps"></i> <span data-i18n="recipe.steps">Steps</span>
                                 </label>
-                                <textarea id="inputSteps" rows="10" placeholder="One step per line..."
+                                <textarea id="inputSteps" rows="10" placeholder="One step per line..." data-i18n-placeholder="recipe.stepsPlaceholder"
                                     class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 focus:ring-2 focus:ring-orange-500 outline-none resize-none"></textarea>
                             </div>
                         </div>
 
                         <div class="space-y-6">
                             <div>
-                                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Image</label>
+                                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2" data-i18n="recipe.image">Image</label>
                                 <div class="relative aspect-square bg-gray-100 dark:bg-gray-700 rounded-xl overflow-hidden border-2 border-dashed border-gray-300 dark:border-gray-600">
                                     <img id="imagePreview" src="" class="w-full h-full object-cover hidden">
                                     <div id="imagePlaceholder" class="absolute inset-0 flex flex-col items-center justify-center text-gray-400">
@@ -1644,19 +1647,19 @@
                 <button id="btnEdit" onclick="enableEditMode()"
                     class="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-xl transition-colors flex items-center justify-center gap-2">
                     <i class="ph-bold ph-pencil-simple"></i>
-                    Edit
+                    <span data-i18n="recipe.edit">Edit</span>
                 </button>
 
                 <button id="btnSave" onclick="saveRecipe()"
                     class="hidden flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-xl transition-colors flex items-center justify-center gap-2">
                     <i class="ph-bold ph-floppy-disk"></i>
-                    Save
+                    <span data-i18n="recipe.save">Save</span>
                 </button>
 
                 <button id="btnDelete" onclick="confirmDelete()"
                     class="hidden bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-6 rounded-xl transition-colors flex items-center justify-center gap-2">
                     <i class="ph-bold ph-trash"></i>
-                    Delete
+                    <span data-i18n="recipe.delete">Delete</span>
                 </button>
             </div>
         </div>
