@@ -20,7 +20,7 @@ h<p align="center">
 </p>
 
 <p align="center">
-    <a href="https://myzest.app"><strong>Try Zest live &rarr;</strong>strong></a>a>
+      <a href="https://myzest.app"><strong>Try Zest live &rarr;</strong></a>
   &nbsp;&middot;&nbsp;
   <a href="https://myzest.app">Website</a>
   &nbsp;&middot;&nbsp;
