@@ -1,4 +1,4 @@
-h<p align="center">
+<p align="center">
   <img src="https://em-content.zobj.net/source/apple/391/tangerine_1f34a.png" width="80" alt="Zest Logo">
 </p>
 
