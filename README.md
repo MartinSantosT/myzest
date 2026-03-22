@@ -20,7 +20,7 @@
 </p>
 
 <p align="center">
-      <a href="https://myzest.app/app"><strong>Try Zest live &rarr;</strong></a>
+  <a href="https://myzest.app/app"><strong>Try Zest live &rarr;</strong></a>
   &nbsp;&middot;&nbsp;
   <a href="https://myzest.app">Website</a>
   &nbsp;&middot;&nbsp;
@@ -36,6 +36,7 @@
 <p align="center">
   <img src="screenshots/grid.png" width="720" alt="Recipe Collection — Dark Mode">
 </p>
+
 ---
 
 ## Why Zest?
@@ -51,7 +52,7 @@ Every recipe manager out there treats food like data: title, ingredients, steps,
 - **Cookbooks** — Curate collections and share them via public links or export as beautiful PDFs.
 - **"What to Cook?"** — Tell Zest what ingredients you have, it tells you what you can make.
 - **4-Tier Recipe Scraper** — Paste any URL. Zest tries recipe-scrapers, JSON-LD, Microdata, then HTML heuristics. It *will* find the recipe.
-- **Stupid simple to run** — One `docker compose up`. SQLite. No Postgres, no Redis, no external services.
+- **Dead simple to run** — One `docker compose up`. SQLite. No Postgres, no Redis, no external services.
 
 ---
 
@@ -72,7 +73,7 @@ Every recipe manager out there treats food like data: title, ingredients, steps,
 | 📄 | **PDF Export** | Professional cookbook PDFs with cover page, recipe cards, and proper typography. |
 | 💾 | **Automatic Backups** | Scheduled database + image backups. Manual export/import. Full disaster recovery. |
 | 🌙 | **Dark Mode** | Full dark theme. Respects your preference. |
-| 📱 | **Mobile Friendly** | Optimized for desktop with mobile support in progress. |
+| 📱 | **Mobile Friendly** | Responsive design for desktop and mobile. |
 | 🔒 | **Auth + Rate Limiting** | JWT auth, bcrypt passwords, rate-limited endpoints. |
 | 🍎 | **iPhone Photos** | HEIC/HEIF support out of the box. |
 
@@ -253,35 +254,9 @@ Perfect for **Uptime Kuma**, **Healthchecks.io**, or any monitoring tool.
 
 ---
 
-## Roadmap
+## Contributing
 
-- [x] Cooking mode (full-screen step-by-step with auto-detected timers and Wake Lock)
-- [ ] Meal planner with drag-and-drop weekly view
-- [ ] Multi-user family accounts
-- [ ] PWA with offline support
-- [ ] AI recipe import from video (Whisper + LLM)
-
-Want to help? Open an issue or submit a PR.
-
----
-
-## Compared to alternatives
-
-| | Zest | Mealie | Tandoor | Paprika |
-|---|---|---|---|---|
-| Docker single container | ✅ | ❌ (needs Postgres) | ❌ (needs Postgres) | ❌ (not self-hosted) |
-| Memories / food diary | ✅ | ❌ | ❌ | ❌ |
-| Shareable moment cards | ✅ | ❌ | ❌ | ❌ |
-| Cooking mode (timers + Wake Lock) | ✅ | ❌ | ❌ | ❌ |
-| Cookbook PDF export | ✅ | ✅ | ✅ | ✅ |
-| URL recipe scraping | ✅ (4-tier) | ✅ | ✅ | ✅ |
-| Shopping list | ✅ | ✅ | ✅ | ✅ |
-| Portion calculator | ✅ | ✅ | ✅ | ✅ |
-| "What to cook?" search | ✅ | ❌ | ❌ | ❌ |
-| HEIC/iPhone support | ✅ | ❌ | ❌ | ❌ |
-| No external database | ✅ (SQLite) | ❌ | ❌ | — |
-| Auto backups | ✅ | ✅ | ✅ | ❌ |
-| Zero build tools | ✅ | ❌ | ❌ | — |
+Found a bug or have a feature idea? Open an issue or submit a PR — contributions are welcome.
 
 ---
 
