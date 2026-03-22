@@ -1,4 +1,4 @@
-<p align="center">
+h<p align="center">
   <img src="https://em-content.zobj.net/source/apple/391/tangerine_1f34a.png" width="80" alt="Zest Logo">
 </p>
 
@@ -20,7 +20,7 @@
 </p>
 
 <p align="center">
-  <a href="https://demo.myzest.app"><strong>Try the live demo &rarr;</strong></a>
+    <a href="https://myzest.app"><strong>Try Zest live &rarr;</strong>strong></a>a>
   &nbsp;&middot;&nbsp;
   <a href="https://myzest.app">Website</a>
   &nbsp;&middot;&nbsp;
