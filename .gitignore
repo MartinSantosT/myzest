@@ -43,3 +43,12 @@ docker-data/
 
 # --- Environment ---
 .env
+
+# --- Temporary data exports ---
+*.csv
+*.tsv
+*.txt
+!requirements.txt
+
+# --- Local-only docs (not for public repo) ---
+STRUCTURE.md
