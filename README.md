@@ -13,6 +13,8 @@
   <img src="https://img.shields.io/badge/license-MIT-green?style=for-the-badge" alt="License">
   <img src="https://img.shields.io/badge/python-3.11-blue?style=for-the-badge&logo=python&logoColor=white" alt="Python">
   <img src="https://img.shields.io/badge/SQLite-lightgrey?style=for-the-badge&logo=sqlite&logoColor=blue" alt="SQLite">
+  <a href="https://github.com/MartinSantosT/myzest/stargazers"><img src="https://img.shields.io/github/stars/MartinSantosT/myzest?style=for-the-badge&logo=github" alt="Stars"></a>
+  <a href="https://github.com/MartinSantosT/myzest/issues"><img src="https://img.shields.io/github/issues/MartinSantosT/myzest?style=for-the-badge" alt="Issues"></a>
 </p>
 
 <p align="center">
@@ -25,6 +27,10 @@
   <a href="https://myzest.app">Website</a>
   &nbsp;&middot;&nbsp;
   <a href="https://myzest.app/manual.html">Documentation</a>
+</p>
+
+<p align="center">
+  <em>Built for homelab users, privacy-focused cooks, and anyone who believes their recipes &mdash; and the stories behind them &mdash; should live on their own hardware.</em>
 </p>
 
 ---
@@ -43,7 +49,7 @@
 
 Every recipe manager out there treats food like data: title, ingredients, steps, done. But cooking is more than that. It's the Sunday your daughter helped you make pasta for the first time. The improvised dinner that became a family legend. The photo your partner took while you weren't looking.
 
-**Zest is a culinary diary** — recipes + memories + beautiful shareable cards, all running on your own hardware in a single container. No cloud, no subscriptions, no telemetry. Just your food story, owned by you.
+**Zest is a self-hosted culinary diary** — recipes + memories + beautiful shareable cards, all running on your own hardware in a single container. Deploy on a Raspberry Pi, Proxmox LXC, NAS, or any Linux VPS with one `docker compose up`. No cloud, no subscriptions, no telemetry. Just your food story, owned by you.
 
 ### What makes it different
 
