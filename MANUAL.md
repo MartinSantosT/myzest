@@ -182,6 +182,37 @@ Zest tries four methods in order, using the first one that succeeds:
 
 Imported recipes are automatically tagged with the "Imported from Internet" category and a blue badge showing the source domain.
 
+### Security: SSRF protection
+
+Because the scraper makes HTTP requests on behalf of any logged-in user, it could be abused to probe services on the network where Zest runs (your router, NAS, Proxmox, cloud metadata endpoints, etc.). To prevent this, Zest validates every URL before fetching it and **blocks requests that resolve to internal IP ranges**.
+
+**Blocked by default:**
+
+- Loopback (`127.0.0.0/8`, `::1`) — your own container
+- Link-local / cloud metadata (`169.254.0.0/16`, `fe80::/10`) — AWS/GCP/Azure credentials endpoints
+- Private networks (`10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`, `fc00::/7`) — your LAN
+- Other reserved ranges (CGN, multicast, benchmarking)
+
+When a blocked URL is submitted (whether the recipe page itself or an image embedded in the scraped HTML), the scraper returns the error *"URL bloqueada: no se permiten direcciones internas"* and never makes the request.
+
+#### Allowing private networks (advanced)
+
+If you intentionally want to scrape recipes from another service running in your own LAN — for example, a Mealie or Tandoor instance at `192.168.x.x`, or your own recipe blog on a separate machine — you can opt out of the private-network block by setting:
+
+```env
+ALLOW_PRIVATE_NETWORKS=true
+```
+
+in your `.env` file, then restarting:
+
+```bash
+docker compose down && docker compose up -d
+```
+
+**Important:** even with this flag enabled, loopback (`127.x`) and cloud metadata (`169.254.x`) remain blocked. There is no legitimate reason for the scraper to fetch its own container or to query a cloud provider's metadata service.
+
+This setting is **only safe** if you are the only user of your Zest instance, or if you fully trust every user that can register on it. In a multi-user setup exposed to untrusted users, leave the default (`false`).
+
 ---
 
 ## 6. Ingredients & Portion Calculator

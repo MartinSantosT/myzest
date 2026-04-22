@@ -3,9 +3,12 @@
 # ============================================
 # 4-tier fallback: recipe-scrapers → JSON-LD → Microdata → Heuristics
 
+import os
 import re
 import json
+import socket
 import logging
+from ipaddress import ip_address, ip_network
 from typing import Optional, Dict, Any, List
 from urllib.parse import urlparse, urljoin
 
@@ -13,6 +16,94 @@ import requests
 from bs4 import BeautifulSoup
 
 logger = logging.getLogger(__name__)
+
+# --- SSRF Protection ---
+#
+# El scraper hace requests.get() sobre URLs provistas por el usuario.
+# Sin protección, un usuario malicioso (o cualquier usuario en una instancia
+# multi-usuario) puede usar el servidor como puente para escanear/leer
+# servicios internos de la red donde corre Zest.
+#
+# Por defecto bloqueamos:
+#   - loopback (127.0.0.0/8, ::1)
+#   - link-local / metadata cloud (169.254.0.0/16, fe80::/10)
+#   - redes privadas (10.x, 172.16.x, 192.168.x, fc00::/7)
+#   - rangos especiales (0.0.0.0/8, CGN, multicast, reservado)
+#
+# Para usuarios self-hosted que quieran scrapear deliberadamente otros
+# servicios de su propia LAN (ej: un Mealie viejo en 192.168.x.x), se puede
+# activar la flag ALLOW_PRIVATE_NETWORKS=true en el entorno. Esto desbloquea
+# las redes privadas pero MANTIENE el bloqueo de loopback y metadata cloud
+# (no hay caso legítimo para scrapear localhost del propio container ni
+# golpear un endpoint de metadata de cloud provider).
+
+ALLOW_PRIVATE_NETWORKS = os.environ.get("ALLOW_PRIVATE_NETWORKS", "false").lower() == "true"
+
+_ALWAYS_BLOCKED_NETWORKS = [
+    ip_network('127.0.0.0/8'),       # Loopback
+    ip_network('169.254.0.0/16'),    # Link-local (metadata cloud: AWS/GCP/Azure)
+    ip_network('0.0.0.0/8'),         # "Esta" red
+    ip_network('100.64.0.0/10'),     # Carrier-grade NAT
+    ip_network('198.18.0.0/15'),     # Benchmarking
+    ip_network('224.0.0.0/4'),       # Multicast
+    ip_network('240.0.0.0/4'),       # Reservado
+    ip_network('::1/128'),           # IPv6 loopback
+    ip_network('fe80::/10'),         # IPv6 link-local
+]
+
+_PRIVATE_NETWORKS = [
+    ip_network('10.0.0.0/8'),        # Privada Clase A
+    ip_network('172.16.0.0/12'),     # Privada Clase B
+    ip_network('192.168.0.0/16'),    # Privada Clase C
+    ip_network('fc00::/7'),          # IPv6 privada (ULA)
+]
+
+_BLOCKED_NETWORKS = _ALWAYS_BLOCKED_NETWORKS if ALLOW_PRIVATE_NETWORKS else _ALWAYS_BLOCKED_NETWORKS + _PRIVATE_NETWORKS
+
+if ALLOW_PRIVATE_NETWORKS:
+    logger.warning(
+        "ALLOW_PRIVATE_NETWORKS=true — el scraper puede acceder a redes privadas "
+        "(10.x, 172.16.x, 192.168.x). Loopback y metadata cloud siguen bloqueados."
+    )
+
+
+def _validate_url_ssrf(url: str) -> Optional[str]:
+    """
+    Valida una URL contra ataques SSRF.
+    Resuelve el hostname a IP(s) y compara cada una contra rangos bloqueados.
+    Devuelve mensaje de error si está bloqueada, o None si es segura.
+    """
+    parsed = urlparse(url)
+    hostname = parsed.hostname
+
+    if not hostname:
+        return "URL inválida: falta el dominio"
+
+    # Bloquear variantes obvias de localhost por nombre (antes del DNS lookup)
+    if hostname in ('localhost', '0.0.0.0', '[::]'):
+        return "URL bloqueada: no se permiten direcciones internas"
+
+    # Resolver hostname a IP(s) y verificar cada una.
+    # Esto cubre el caso de hostnames que parecen externos pero resuelven a IP interna
+    # (DNS rebinding básico) y hostnames de red interna (mDNS, /etc/hosts, etc.).
+    try:
+        addr_infos = socket.getaddrinfo(hostname, parsed.port or 443, proto=socket.IPPROTO_TCP)
+    except socket.gaierror:
+        return "No se pudo resolver el dominio"
+
+    for family, _, _, _, sockaddr in addr_infos:
+        ip_str = sockaddr[0]
+        try:
+            ip = ip_address(ip_str)
+        except ValueError:
+            continue
+        for network in _BLOCKED_NETWORKS:
+            if ip in network:
+                logger.warning(f"SSRF blocked: {url} resolved to {ip_str} (in {network})")
+                return "URL bloqueada: no se permiten direcciones internas"
+
+    return None  # Seguro
+
 
 # --- ISO 8601 Duration Parser ---
 
@@ -498,6 +589,11 @@ def scrape_recipe(url: str, timeout: int = 15) -> ScrapeResult:
     if not parsed.netloc:
         return ScrapeResult(False, error="URL inválida: falta el dominio")
 
+    # SSRF check — bloquear URLs que resuelvan a IPs internas
+    ssrf_error = _validate_url_ssrf(url)
+    if ssrf_error:
+        return ScrapeResult(False, error=ssrf_error)
+
     # Fetch the page
     try:
         response = requests.get(url, headers=_HEADERS, timeout=timeout, allow_redirects=True)
@@ -546,6 +642,12 @@ def download_recipe_image(image_url: str, upload_dir: str = "app/static/uploads"
     Returns the local URL path or None on failure.
     """
     if not image_url:
+        return None
+
+    # SSRF check — la URL de imagen también viene de input no confiable
+    # (puede venir embebida en el HTML scrapeado de un sitio comprometido)
+    if _validate_url_ssrf(image_url):
+        logger.warning(f"SSRF blocked image download: {image_url}")
         return None
 
     try:

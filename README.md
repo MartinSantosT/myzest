@@ -157,6 +157,7 @@ All configuration is done through environment variables in `.env`:
 | Variable | Default | Description |
 |---|---|---|
 | `ZEST_SECRET_KEY` | `zest-change-this-secret-in-production` | JWT signing key. **Change this.** |
+| `ALLOW_PRIVATE_NETWORKS` | `false` | Allow the recipe scraper to fetch URLs that resolve to private IP ranges (10.x, 172.16.x, 192.168.x). Disabled by default to prevent SSRF attacks. Enable only if you intentionally want to scrape recipes from another service in your own LAN. Loopback (127.x) and cloud metadata endpoints (169.254.x) remain blocked even when this is enabled. See MANUAL.md for details. |
 
 ### Volumes
 

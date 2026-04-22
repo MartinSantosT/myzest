@@ -68,7 +68,7 @@ except Exception as e:
     print(f"Auto-migrate note: {e}")
 
 DEMO_EMAIL = os.environ.get("ZEST_DEMO_EMAIL", "")
-APP_VERSION = "2.1.0"
+APP_VERSION = "2.1.1"
 
 app = FastAPI(title="Zest Recipe Manager", version=APP_VERSION)
 app.state.limiter = limiter

@@ -6,6 +6,7 @@
 import * as state from './state.js';
 import { authFetch } from './api.js';
 import { readExifData, reverseGeocode } from './exif.js';
+import { T } from './i18n.js';
 
 // Pending photos to upload (creation mode, before saving)
 let pendingPhotos = []; // Array of { file: File, preview: string, exif: {...} }
@@ -103,19 +104,19 @@ function renderMemoryDetail() {
         <div class="flex items-center justify-between mb-6">
             <button onclick="showView('memories')" class="flex items-center gap-2 text-gray-500 hover:text-orange-500 transition-colors">
                 <i class="ph-bold ph-arrow-left text-xl"></i>
-                <span class="text-sm font-medium">Back to Memories</span>
+                <span class="text-sm font-medium">${T('memory.back')}</span>
             </button>
             <div class="flex gap-2">
                 ${m.photos && m.photos.length > 0 ? `
                 <button onclick="openShareCardModal(${m.id})" class="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 transition-all shadow-md hover:shadow-lg">
-                    <i class="ph-bold ph-share-network"></i> Share
+                    <i class="ph-bold ph-share-network"></i> ${T('detail.share')}
                 </button>
                 ` : ''}
                 <button onclick="openMemoryModal(${m.id})" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 transition-colors">
-                    <i class="ph-bold ph-pencil-simple"></i> Edit
+                    <i class="ph-bold ph-pencil-simple"></i> ${T('memory.edit')}
                 </button>
                 <button onclick="deleteMemory(${m.id})" class="bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/40 text-red-500 px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 transition-colors">
-                    <i class="ph-bold ph-trash"></i> Delete
+                    <i class="ph-bold ph-trash"></i> ${T('common.delete')}
                 </button>
             </div>
         </div>
@@ -135,7 +136,7 @@ function renderMemoryDetail() {
         ${m.description ? `
             <div class="bg-orange-50 dark:bg-orange-900/10 border border-orange-200 dark:border-orange-800/30 rounded-2xl p-6">
                 <h3 class="font-bold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
-                    <i class="ph-bold ph-book-open-text text-orange-500"></i> The story
+                    <i class="ph-bold ph-book-open-text text-orange-500"></i> ${T('memory.theStory')}
                 </h3>
                 <p class="text-gray-600 dark:text-gray-400 leading-relaxed whitespace-pre-line">${m.description}</p>
             </div>
@@ -182,13 +183,13 @@ export async function openMemoryModal(id = null) {
         }
     } catch (e) { console.warn('Error loading recipes for dropdown:', e); }
 
-    const options = ['<option value="">No linked recipe</option>'];
+    const options = [`<option value="">${T('memory.noLinkedRecipe')}</option>`];
     state.allRecipes.forEach(r => { options.push(`<option value="${r.id}">${r.title}</option>`); });
     recipeSelect.innerHTML = options.join('');
 
     if (id) {
         // Edit mode — load data BEFORE showing
-        document.getElementById('memoryModalTitle').textContent = 'Edit Memory';
+        document.getElementById('memoryModalTitle').textContent = T('memory.edit');
         try {
             const res = await authFetch(`${state.API_URL}/memories/${id}`);
             if (res.ok) {
@@ -204,7 +205,7 @@ export async function openMemoryModal(id = null) {
         showModal();
     } else {
         // Creation mode — show immediately with photo area ready
-        document.getElementById('memoryModalTitle').textContent = 'New Memory';
+        document.getElementById('memoryModalTitle').textContent = T('memory.new');
         document.getElementById('memoryTitle').value = '';
         document.getElementById('memoryEventDate').value = '';
         document.getElementById('memoryRecipeId').value = '';
@@ -320,7 +321,7 @@ function applyExifToFields(exifData) {
     const dateField = document.getElementById('memoryEventDate');
     if (exifData.date && dateField && !dateField.value) {
         dateField.value = exifData.date;
-        showExifNotification('Date detected from photo');
+        showExifNotification(T('memory.dateDetected'));
     }
 
     // Auto-fill location
@@ -330,7 +331,7 @@ function applyExifToFields(exifData) {
         reverseGeocode(exifData.lat, exifData.lon).then(place => {
             if (place) {
                 locationField.value = place;
-                showExifNotification('Location detected from photo');
+                showExifNotification(T('memory.locationDetected'));
             } else {
                 locationField.value = `${exifData.lat.toFixed(4)}, ${exifData.lon.toFixed(4)}`;
             }
@@ -350,7 +351,7 @@ function removePendingPhoto(index) {
 
 export async function saveMemory() {
     const title = document.getElementById('memoryTitle').value.trim();
-    if (!title) return alert('Title is required');
+    if (!title) return alert(T('memory.titleRequired'));
 
     const payload = {
         title,
@@ -368,7 +369,7 @@ export async function saveMemory() {
     const saveBtn = document.querySelector('#memoryModal button[onclick="saveMemory()"]');
     const originalHtml = saveBtn?.innerHTML;
     if (saveBtn) {
-        saveBtn.innerHTML = '<i class="ph-bold ph-spinner animate-spin"></i> Saving...';
+        saveBtn.innerHTML = `<i class="ph-bold ph-spinner animate-spin"></i> ${T('memory.saving')}`;
         saveBtn.disabled = true;
     }
 
@@ -384,10 +385,10 @@ export async function saveMemory() {
 
             // If there are pending photos (creation mode), upload them now
             if (!id && pendingPhotos.length > 0) {
-                if (saveBtn) saveBtn.innerHTML = `<i class="ph-bold ph-spinner animate-spin"></i> Uploading photos (0/${pendingPhotos.length})...`;
+                if (saveBtn) saveBtn.innerHTML = `<i class="ph-bold ph-spinner animate-spin"></i> ${T('memory.uploadingPhotos')}`;
 
                 for (let i = 0; i < pendingPhotos.length; i++) {
-                    if (saveBtn) saveBtn.innerHTML = `<i class="ph-bold ph-spinner animate-spin"></i> Uploading photos (${i + 1}/${pendingPhotos.length})...`;
+                    if (saveBtn) saveBtn.innerHTML = `<i class="ph-bold ph-spinner animate-spin"></i> ${T('memory.uploadingPhotos')} (${i + 1}/${pendingPhotos.length})`;
                     const formData = new FormData();
                     formData.append('file', pendingPhotos[i].file);
                     try {
@@ -419,7 +420,7 @@ export async function saveMemory() {
         }
     } catch (e) {
         console.error('Error saving memory:', e);
-        alert('Connection error');
+        alert(T('auth.connectionError'));
     } finally {
         if (saveBtn) {
             saveBtn.innerHTML = originalHtml;
@@ -429,7 +430,7 @@ export async function saveMemory() {
 }
 
 export async function deleteMemory(id) {
-    if (!confirm('Delete this memory and all its photos?')) return;
+    if (!confirm(T('memory.deleteConfirm'))) return;
 
     try {
         const res = await authFetch(`${state.API_URL}/memories/${id}`, { method: 'DELETE' });
@@ -443,7 +444,7 @@ export async function deleteMemory(id) {
         }
     } catch (e) {
         console.error('Error deleting memory:', e);
-        alert('Connection error');
+        alert(T('auth.connectionError'));
     }
 }
 
@@ -491,9 +492,9 @@ export async function loadRecipeMemories(recipeId) {
             container.innerHTML = `
                 <div class="text-center py-6">
                     <i class="ph-bold ph-camera text-4xl text-gray-300 dark:text-gray-600 mb-2"></i>
-                    <p class="text-sm text-gray-400">No memories of this recipe</p>
+                    <p class="text-sm text-gray-400">${T('memory.noMemoriesRecipe')}</p>
                     <button onclick="openMemoryModalForRecipe(${recipeId})" class="mt-3 text-sm text-orange-500 hover:text-orange-600 font-bold flex items-center gap-1 mx-auto">
-                        <i class="ph-bold ph-plus"></i> Create a memory
+                        <i class="ph-bold ph-plus"></i> ${T('memory.addMemory')}
                     </button>
                 </div>`;
             container.classList.remove('hidden');
@@ -524,7 +525,7 @@ export async function loadRecipeMemories(recipeId) {
                 }).join('')}
             </div>
             <button onclick="openMemoryModalForRecipe(${recipeId})" class="mt-3 text-sm text-orange-500 hover:text-orange-600 font-bold flex items-center gap-1">
-                <i class="ph-bold ph-plus"></i> Add memory
+                <i class="ph-bold ph-plus"></i> ${T('memory.addMemory')}
             </button>
         `;
         container.classList.remove('hidden');
@@ -783,7 +784,7 @@ async function loadCardPreview() {
     const loading = document.getElementById('cardLoading');
 
     preview.classList.add('hidden');
-    loading.innerHTML = '<i class="ph-bold ph-spinner animate-spin text-3xl text-orange-400"></i><p class="text-sm text-gray-400 mt-2">Generating card...</p>';
+    loading.innerHTML = `<i class="ph-bold ph-spinner animate-spin text-3xl text-orange-400"></i><p class="text-sm text-gray-400 mt-2">${T('memory.generatingCard')}</p>`;
     loading.classList.remove('hidden');
 
     try {
@@ -801,11 +802,11 @@ async function loadCardPreview() {
                 preview.classList.remove('hidden');
             };
         } else {
-            loading.innerHTML = '<i class="ph-bold ph-warning text-3xl text-red-400"></i><p class="text-sm text-red-400 mt-2">Error generating card</p>';
+            loading.innerHTML = `<i class="ph-bold ph-warning text-3xl text-red-400"></i><p class="text-sm text-red-400 mt-2">${T('memory.errorGenerating')}</p>`;
         }
     } catch (e) {
         console.error('Error loading preview:', e);
-        loading.innerHTML = '<i class="ph-bold ph-warning text-3xl text-red-400"></i><p class="text-sm text-red-400 mt-2">Connection error</p>';
+        loading.innerHTML = `<i class="ph-bold ph-warning text-3xl text-red-400"></i><p class="text-sm text-red-400 mt-2">${T('auth.connectionError')}</p>`;
     }
 }
 
@@ -956,7 +957,7 @@ async function shareToInstagram() {
     if (!shared) {
         // Fallback: download the image for user to manually upload
         await downloadCard();
-        _showToast('Image downloaded — open it in Instagram to share');
+        _showToast(T('memory.imageDownloaded'));
     }
 }
 
@@ -968,7 +969,7 @@ async function copyCardImage() {
             const item = new ClipboardItem({ 'image/png': file });
             await navigator.clipboard.write([item]);
             _showCopyFeedback();
-            _showToast('Image copied to clipboard');
+            _showToast(T('memory.imageCopied'));
             return;
         }
     } catch (e) {
@@ -977,7 +978,7 @@ async function copyCardImage() {
     // Fallback: download
     await downloadCard();
     _showCopyFeedback();
-    _showToast('Image downloaded');
+    _showToast(T('memory.imageDownloaded'));
 }
 
 function _showCopyFeedback() {
