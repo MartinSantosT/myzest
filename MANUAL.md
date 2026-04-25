@@ -564,4 +564,6 @@ Open an issue on GitHub — we're happy to help.
 
 ---
 
-<p align="center"
+<p align="center">
+  <strong>🍊 Zest</strong> — Because recipes deserve memories.
+</p>

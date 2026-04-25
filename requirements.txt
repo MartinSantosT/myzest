@@ -3,3 +3,15 @@
 # Test/dev dependencies live in requirements-dev.txt.
 
 fastapi==0.115.6
+uvicorn[standard]==0.34.0
+sqlalchemy==2.0.36
+python-slugify==8.0.4
+python-multipart==0.0.20
+reportlab==4.2.5
+recipe-scrapers==15.5.0
+beautifulsoup4==4.12.3
+requests==2.32.3
+Pillow==11.0.0
+pillow-heif==0.21.0
+bcrypt==4.2.1
+slowapi==0.1.9
