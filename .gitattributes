@@ -1,0 +1,15 @@
+# Force LF line endings for all text files in this repo, regardless of OS.
+# Prevents Windows checkouts from rewriting CRLF on save.
+* text=auto eol=lf
+
+# Binary files (no text conversion)
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.gz binary
+*.db binary

@@ -22,11 +22,11 @@
 </p>
 
 <p align="center">
-  <a href="https://myzest.app/app"><strong>Try Zest live &rarr;</strong></a>
+  <a href="#quickstart"><strong>Quickstart &rarr;</strong></a>
   &nbsp;&middot;&nbsp;
-  <a href="https://myzest.app">Website</a>
+  <a href="MANUAL.md">User Manual</a>
   &nbsp;&middot;&nbsp;
-  <a href="https://myzest.app/manual.html">Documentation</a>
+  <a href="https://github.com/MartinSantosT/myzest/issues">Issues</a>
 </p>
 
 <p align="center">
@@ -115,7 +115,7 @@ ZEST_SECRET_KEY=your-generated-secret-here
 ## Architecture
 
 ```
-zest/
+myzest/
 ├── app/
 │   ├── main.py              # FastAPI application (all endpoints)
 │   ├── models.py             # SQLAlchemy models
@@ -126,6 +126,7 @@ zest/
 │   └── static/
 │       ├── index.html        # SPA frontend
 │       ├── shared.html       # Public cookbook viewer
+│       ├── uploads/          # User photos (volume-mounted)
 │       └── js/               # 26 ES modules
 │           ├── app.js        # Module orchestrator
 │           ├── api.js         # API client
@@ -138,10 +139,15 @@ zest/
 │           └── ...           # 18 more modules
 ├── tests/                    # pytest test suite
 ├── data/                     # SQLite database + backups (volume-mounted)
+├── screenshots/              # Repo screenshots (excluded from Docker image)
 ├── Dockerfile
 ├── docker-compose.yml
-├── requirements.txt
-└── .env.example
+├── requirements.txt          # Runtime deps (pinned)
+├── requirements-dev.txt      # Test deps (pytest, httpx)
+├── .dockerignore
+├── .env.example
+├── MANUAL.md                 # User manual
+└── README.md
 ```
 
 **Stack:** FastAPI · SQLAlchemy · SQLite · Pillow · ReportLab · Vanilla JS (ES Modules) · Tailwind CSS
@@ -163,8 +169,10 @@ All configuration is done through environment variables in `.env`:
 
 | Path | Purpose |
 |---|---|
-| `./data:/app/data` | Database, backups, exports |
-| `./app:/app/app` | Application code (enables hot reload in dev) |
+| `./data:/app/data` | SQLite database, automatic backups, the `.secret_key` fallback file |
+| `./app/static/uploads:/app/app/static/uploads` | User-uploaded photos (recipes, memories, cookbook covers, avatars) |
+
+For a complete file-system backup, snapshot **both** paths. The in-app backup feature (Settings → Backups) packages them into a single ZIP automatically.
 
 ### Ports
 
@@ -182,11 +190,10 @@ ports:
 ```bash
 cd myzest
 git pull
-docker compose build
-docker compose down && docker compose up -d
+docker compose down && docker compose up -d --build
 ```
 
-Zest handles database migrations automatically on startup.
+Zest handles database migrations automatically on startup. There is no manual migration script to invoke.
 
 ---
 
@@ -205,8 +212,17 @@ Backups are stored in `./data/backups/` on the host.
 
 ## Running tests
 
+Tests are not shipped in the production image. Run them locally with the dev requirements:
+
 ```bash
-docker exec zest_backend pytest tests/ -v
+pip install -r requirements-dev.txt
+pytest tests/ -v
+```
+
+Or, against the running container (the test suite is mounted from the repo, not from the image):
+
+```bash
+docker run --rm -v "$PWD":/app -w /app python:3.11-slim sh -c "pip install -r requirements-dev.txt && pytest tests/ -v"
 ```
 
 ---
@@ -251,6 +267,7 @@ Perfect for **Uptime Kuma**, **Healthchecks.io**, or any monitoring tool.
 ---
 
 ## Tech details for the curious
+
 
 - **Recipe scraping** uses a 4-tier fallback: `recipe-scrapers` library (400+ sites) → JSON-LD structured data → Microdata attributes → CSS heuristic selectors. If a recipe exists on the page, Zest will find it.
 - **Moment Cards** are generated server-side with Pillow. No external APIs, no Canvas tricks. Pure Python image generation with gradient overlays, typography, and branding.

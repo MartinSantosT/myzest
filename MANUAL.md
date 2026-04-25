@@ -39,20 +39,25 @@
 
 ```bash
 git clone https://github.com/MartinSantosT/myzest.git
-cd zest
+cd myzest
 cp .env.example .env
 docker compose up -d
 ```
 
 Open **http://localhost:8000** in your browser. That's it.
 
+### First Launch — Register Your Account
+
+There is no default account. The **first user that registers** automatically becomes the admin and receives 12 example recipes (with photos) to explore the app. Create your account from the registration form on first visit.
+
 ### Secure Your Instance
 
-1. **Change the secret key** — Open `.env` and replace the default value:
+1. **Set a secret key** — Open `.env` and replace the placeholder for `ZEST_SECRET_KEY`. Generate one on your host with either:
 
 ```bash
-# Generate a secure key:
-python -c "import secrets; print(secrets.token_urlsafe(32))"
+python3 -c "import secrets; print(secrets.token_urlsafe(32))"
+# or, if you prefer not to depend on Python on the host:
+openssl rand -base64 32
 ```
 
 Paste the result as `ZEST_SECRET_KEY` in your `.env` file, then restart:
@@ -61,7 +66,9 @@ Paste the result as `ZEST_SECRET_KEY` in your `.env` file, then restart:
 docker compose down && docker compose up -d
 ```
 
-2. **Change the default password** — Log in with `admin@zest.local` / `admin`, then go to **Settings → Profile** and update your password immediately.
+> **Important:** if you leave `ZEST_SECRET_KEY` empty (or set to one of the known insecure defaults like `zest-change-this-secret-in-production`), Zest will generate a random key on first boot and persist it in `data/.secret_key`. The container will log a warning until you set the key explicitly. JWT tokens stay valid across restarts because the key is reused from the file.
+
+2. **Change your password whenever you want** — go to **Settings → Profile** in the app. The first user is the admin and there is no shared/default credential to rotate.
 
 ### Custom Port
 
@@ -443,8 +450,12 @@ Backups are stored in the `./data/backups/` directory on your host machine.
 
 ### Import
 
-- **Database import** — Upload a full backup ZIP to restore your entire instance. Warning: this replaces the current database completely.
-- **JSON import** — Upload a JSON file to add recipes to your existing collection. Duplicates are detected and skipped.
+- **Database import** — Upload a full backup ZIP to restore an entire instance. **This replaces the current database completely** with the contents of the ZIP. Recipes, memories, cookbooks, users and example data that exist in the running instance but not in the backup will be removed.
+- **JSON import** — Upload a JSON file to add recipes to your existing collection. Duplicates are detected and skipped. Use this when you want to *add* recipes without losing what you already have.
+
+> **Safety net:** Both Database Import and the in-app Restore button automatically create a snapshot of the current state right before overwriting. The snapshot lands in `data/backups/` (look for the most recent file with the timestamp of the moment you triggered the restore). If you ever import the wrong backup, you can recover from that snapshot.
+
+> **Heads up:** if you used the example seed (the 12 recipes the first user receives) and you import a backup that does NOT contain them, those examples will be gone after the import. The auto-snapshot still has them — you can restore the snapshot if you change your mind.
 
 ### Migration Between Servers
 
@@ -487,15 +498,25 @@ On Windows, ports 7681–8782 may be blocked by Hyper-V. Use port 9000 or higher
 - Check that the `./app/static/uploads` directory exists and is writable
 - Maximum file size depends on your reverse proxy configuration. Add `client_max_body_size 20M;` to your Nginx config.
 
-### Database migration errors
+### Reading the logs
 
-Run the migration script manually:
+When something does not behave as expected, the first place to look is the container log:
 
 ```bash
-docker exec zest_backend python migrate.py
+docker compose logs -f zest
 ```
 
-The script is idempotent (safe to run multiple times) and creates a backup before making changes.
+The `-f` flag follows the log live — useful while reproducing the issue. Press `Ctrl+C` to stop following. To see only the last lines without following:
+
+```bash
+docker compose logs --tail=100 zest
+```
+
+### Database migrations
+
+Migrations run **automatically** every time the container starts. There is no manual command to invoke. The startup routine creates any missing tables (`memories`, `memory_photos`, `backup_config`) and adds any missing columns (`share_links.recipe_id`, `share_links.memory_id`, `is_example`, `memories.location`) on existing databases. Schema work is idempotent — restarting an already-up-to-date database is a no-op.
+
+If you ever see startup errors mentioning the schema, share the log (above) when opening an issue.
 
 ### HEIC photos not working
 
@@ -507,10 +528,10 @@ pip install pillow-heif
 
 ### Forgot your password
 
-If you're locked out, you can reset via the database:
+If you're locked out, you can reset via the database from inside the container:
 
 ```bash
-docker exec -it zest_backend python -c "
+docker exec -it zest python -c "
 import bcrypt
 from app.database import SessionLocal
 from app.models import User
@@ -522,6 +543,8 @@ print('Password reset successfully')
 "
 ```
 
+Replace `your@email.com` and `newpassword` with your values. The container is named `zest` (matching `container_name` in `docker-compose.yml`).
+
 ### Health Check
 
 Verify your instance is running:
@@ -531,7 +554,7 @@ curl http://localhost:8000/api/health
 # {"status": "healthy", "recipes": 42, "users": 1}
 ```
 
-Use this endpoint with Uptime Kuma, Healthchecks.io, or any monitoring tool.
+Use this endpoint with Uptime Kuma, Healthchecks.io, or any monitoring tool. The Docker Compose health check uses this same endpoint, so `docker ps` will report `(healthy)` for the `zest` container once the app is responding.
 
 ---
 
@@ -541,6 +564,4 @@ Open an issue on GitHub — we're happy to help.
 
 ---
 
-<p align="center">
-  <strong>🍊 Zest</strong> — Because recipes deserve memories.
-</p>
+<p align="center"

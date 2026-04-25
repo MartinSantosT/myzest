@@ -1,8 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException, File, UploadFile, Header, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.responses import JSONResponse
 from sqlalchemy.orm import Session, joinedload, subqueryload
 from sqlalchemy import text
 from typing import List, Optional
@@ -21,6 +19,8 @@ import tempfile
 import hashlib
 import hmac
 import base64
+import secrets
+import logging
 import bcrypt as bcrypt_lib
 
 from . import models, schemas, database
@@ -42,33 +42,104 @@ except ImportError:
 # --- CONFIGURATION ---
 models.Base.metadata.create_all(bind=database.engine)
 
-# --- AUTO-MIGRATE: add missing columns ---
+# --- AUTO-MIGRATE: idempotent schema fixes that run on every startup ---
+# Adds missing tables/columns to databases created with older versions.
+# Safe to run multiple times. New installations are unaffected (create_all
+# already builds the latest schema).
 try:
     with database.engine.connect() as conn:
-        # ShareLink.recipe_id (added for individual recipe sharing)
+        # ---- Tables ----
+        # backup_config (Phase 5)
+        try:
+            conn.execute(text("SELECT 1 FROM backup_config LIMIT 1"))
+        except Exception:
+            conn.execute(text("""
+                CREATE TABLE backup_config (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    enabled BOOLEAN DEFAULT 0,
+                    frequency_hours INTEGER DEFAULT 24,
+                    max_backups INTEGER DEFAULT 7,
+                    include_images BOOLEAN DEFAULT 1,
+                    last_backup_at DATETIME,
+                    last_backup_size TEXT DEFAULT '',
+                    last_backup_status TEXT DEFAULT '',
+                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    updated_at DATETIME
+                )
+            """))
+            conn.execute(text("CREATE INDEX IF NOT EXISTS ix_backup_config_id ON backup_config (id)"))
+            conn.commit()
+
+        # memories (Phase 6)
+        try:
+            conn.execute(text("SELECT 1 FROM memories LIMIT 1"))
+        except Exception:
+            conn.execute(text("""
+                CREATE TABLE memories (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id INTEGER NOT NULL REFERENCES users(id),
+                    recipe_id INTEGER REFERENCES recipes(id) ON DELETE SET NULL,
+                    title TEXT NOT NULL,
+                    description TEXT DEFAULT '',
+                    event_date DATE,
+                    location TEXT DEFAULT '',
+                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    updated_at DATETIME
+                )
+            """))
+            conn.execute(text("CREATE INDEX IF NOT EXISTS ix_memories_id ON memories (id)"))
+            conn.execute(text("CREATE INDEX IF NOT EXISTS ix_memories_user_id ON memories (user_id)"))
+            conn.commit()
+
+        # memory_photos (Phase 6)
+        try:
+            conn.execute(text("SELECT 1 FROM memory_photos LIMIT 1"))
+        except Exception:
+            conn.execute(text("""
+                CREATE TABLE memory_photos (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    memory_id INTEGER NOT NULL REFERENCES memories(id) ON DELETE CASCADE,
+                    image_url TEXT NOT NULL,
+                    caption TEXT DEFAULT '',
+                    order_index INTEGER DEFAULT 0
+                )
+            """))
+            conn.execute(text("CREATE INDEX IF NOT EXISTS ix_memory_photos_id ON memory_photos (id)"))
+            conn.commit()
+
+        # ---- Columns ----
+        # ShareLink.recipe_id (individual recipe sharing)
         try:
             conn.execute(text("SELECT recipe_id FROM share_links LIMIT 1"))
         except Exception:
             conn.execute(text("ALTER TABLE share_links ADD COLUMN recipe_id INTEGER REFERENCES recipes(id) ON DELETE CASCADE"))
             conn.commit()
-        # ShareLink.memory_id (added for individual memory sharing)
+
+        # ShareLink.memory_id (individual memory sharing)
         try:
             conn.execute(text("SELECT memory_id FROM share_links LIMIT 1"))
         except Exception:
             conn.execute(text("ALTER TABLE share_links ADD COLUMN memory_id INTEGER REFERENCES memories(id) ON DELETE CASCADE"))
             conn.commit()
-        # is_example columns (added for seed/example data)
+
+        # is_example flag (seed/example data)
         for table in ["recipes", "memories", "cookbooks"]:
             try:
                 conn.execute(text(f"SELECT is_example FROM {table} LIMIT 1"))
             except Exception:
                 conn.execute(text(f"ALTER TABLE {table} ADD COLUMN is_example BOOLEAN DEFAULT 0"))
                 conn.commit()
+
+        # memories.location (Phase 6 retrofit for very old DBs)
+        try:
+            conn.execute(text("SELECT location FROM memories LIMIT 1"))
+        except Exception:
+            conn.execute(text("ALTER TABLE memories ADD COLUMN location TEXT DEFAULT ''"))
+            conn.commit()
 except Exception as e:
     print(f"Auto-migrate note: {e}")
 
-DEMO_EMAIL = os.environ.get("ZEST_DEMO_EMAIL", "")
-APP_VERSION = "2.1.1"
+APP_VERSION = "2.1.2"
 
 app = FastAPI(title="Zest Recipe Manager", version=APP_VERSION)
 app.state.limiter = limiter
@@ -79,44 +150,58 @@ app.add_middleware(
     allow_methods=["*"], allow_headers=["*"],
 )
 
-# Demo read-only middleware: blocks write operations for the demo user
-class DemoReadOnlyMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request: Request, call_next):
-        if not DEMO_EMAIL:
-            return await call_next(request)
-        if request.method in ("GET", "HEAD", "OPTIONS"):
-            return await call_next(request)
-        # Allow login (POST /auth/login) so demo user can log in
-        if request.url.path == "/auth/login":
-            return await call_next(request)
-        # Check if request has a token belonging to demo user
-        auth = request.headers.get("authorization", "")
-        if auth:
-            token = auth.replace("Bearer ", "") if auth.startswith("Bearer ") else auth
-            payload = decode_token(token) if token else None
-            if payload:
-                db = database.SessionLocal()
-                try:
-                    user = db.query(models.User).filter(models.User.id == payload["user_id"]).first()
-                    if user and user.email == DEMO_EMAIL:
-                        return JSONResponse(
-                            status_code=403,
-                            content={"detail": "Demo mode: modifications are disabled. Install Zest on your own server to get full access!"}
-                        )
-                finally:
-                    db.close()
-        return await call_next(request)
-
-if DEMO_EMAIL:
-    app.add_middleware(DemoReadOnlyMiddleware)
-
 os.makedirs("app/static", exist_ok=True)
 os.makedirs("app/static/uploads", exist_ok=True)
 os.makedirs("data", exist_ok=True)
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 # --- AUTH CONFIG ---
-SECRET_KEY = os.environ.get("ZEST_SECRET_KEY", "zest-dev-secret-change-in-production-2024")
+# Known insecure defaults that should never be used in production. If any of
+# these is the active SECRET_KEY, we generate a random one and persist it to
+# data/.secret_key so JWT tokens stay valid across restarts.
+_INSECURE_SECRET_DEFAULTS = {
+    "zest-change-this-secret-in-production",
+    "zest-dev-secret-change-in-production-2024",
+    "your-generated-secret-here",
+    "",
+}
+
+def _resolve_secret_key() -> str:
+    env_value = os.environ.get("ZEST_SECRET_KEY", "").strip()
+    if env_value and env_value not in _INSECURE_SECRET_DEFAULTS:
+        return env_value
+
+    # Fall back to a persisted random key. Generated once on first boot.
+    secret_path = Path("data/.secret_key")
+    if secret_path.exists():
+        stored = secret_path.read_text().strip()
+        if stored:
+            print(
+                "WARNING: ZEST_SECRET_KEY is unset or using a known insecure default. "
+                "Falling back to the random key in data/.secret_key. "
+                "For production, set ZEST_SECRET_KEY in your .env file."
+            )
+            return stored
+
+    generated = secrets.token_urlsafe(32)
+    try:
+        secret_path.parent.mkdir(parents=True, exist_ok=True)
+        secret_path.write_text(generated)
+        try:
+            os.chmod(secret_path, 0o600)
+        except Exception:
+            pass
+    except Exception as e:
+        print(f"WARNING: could not persist generated secret to data/.secret_key: {e}")
+    print(
+        "WARNING: ZEST_SECRET_KEY was not set (or was the default). "
+        "Generated a random key and saved it to data/.secret_key. "
+        "Set ZEST_SECRET_KEY in your .env to silence this warning and to "
+        "control the key explicitly."
+    )
+    return generated
+
+SECRET_KEY = _resolve_secret_key()
 TOKEN_EXPIRY_DAYS = 30
 
 def get_db():

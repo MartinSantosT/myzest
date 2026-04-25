@@ -1,0 +1,79 @@
+# Zest — .dockerignore
+# Excluye archivos del build context para que la imagen Docker quede ligera
+# y no incluya archivos que el runtime nunca usa.
+
+# --- Git ---
+.git
+.gitignore
+.gitattributes
+
+# --- Tests (no se corren en runtime) ---
+tests/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# --- Documentación (vive en GitHub, no en el container) ---
+*.md
+!LICENSE
+!LICENSE.md
+
+# --- Screenshots para README de GitHub (no se sirven desde el container) ---
+screenshots/
+
+# --- Datos del usuario y secretos (mounted via volumes) ---
+data/
+app/static/uploads/*
+!app/static/uploads/.gitkeep
+.env
+.env.*
+!.env.example
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+*.egg
+dist/
+build/
+.eggs/
+*.whl
+venv/
+.venv/
+env/
+ENV/
+
+# --- IDE / Editor ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# --- Docker ---
+docker-compose.override.yml
+.dockerignore
+Dockerfile
+*.dockerfile
+
+# --- Logs y temporales ---
+*.log
+logs/
+*.pid
+*.seed
+*.pid.lock
+
+# --- Local-only docs (no van al container) ---
+STRUCTURE.md
+CHANGELOG.local.md
+NOTES.md
+TODO.md
+
+# --- Dev tooling ---
+requirements-dev.txt
+.editorconfig
+.prettierrc
+.eslintrc*

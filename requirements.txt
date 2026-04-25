@@ -1,15 +1,5 @@
-fastapi
-uvicorn[standard]
-sqlalchemy
-python-slugify
-python-multipart
-reportlab
-recipe-scrapers
-beautifulsoup4
-requests
-Pillow
-pillow-heif
-bcrypt
-slowapi
-pytest
-httpx
+# Zest — runtime dependencies (production)
+# Versions pinned for reproducible builds. Upgrade deliberately.
+# Test/dev dependencies live in requirements-dev.txt.
+
+fastapi==0.115.6
