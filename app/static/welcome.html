@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Zest</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/favicon/apple-touch-icon.png">
+    <meta name="theme-color" content="#FF8C37">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        html, body { background: #1F2937; }
+        @media (prefers-color-scheme: light) { html, body { background: #F9FAFB; } }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-6">
+    <div class="w-full max-w-md">
+        <!-- Logo -->
+        <div class="flex justify-center mb-6">
+            <div class="w-16 h-16 bg-orange-500 rounded-2xl flex items-center justify-center shadow-lg">
+                <span class="text-white font-black leading-none tracking-tighter" style="font-size: 2.5rem; font-family: system-ui, -apple-system, 'Segoe UI', Inter, sans-serif;">Z</span>
+            </div>
+        </div>
+
+        <!-- Card -->
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-8">
+            <h1 class="text-2xl font-bold text-center text-gray-900 dark:text-white mb-1" data-i18n="onb.welcomeTitle">Welcome to Zest</h1>
+            <p class="text-sm text-gray-500 dark:text-gray-400 text-center mb-6 leading-relaxed" data-i18n="onb.welcomeSubtitle">Set up your instance — you'll be the admin of this Zest install.</p>
+
+            <form id="welcomeForm" onsubmit="event.preventDefault(); doWelcome();">
+                <div class="mb-3">
+                    <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1" data-i18n="onb.name">Your name</label>
+                    <input type="text" id="name" required autofocus class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 focus:ring-2 focus:ring-orange-500 outline-none text-sm">
+                </div>
+                <div class="mb-3">
+                    <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1" data-i18n="onb.email">Email</label>
+                    <input type="email" id="email" required placeholder="your@email.com" class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 focus:ring-2 focus:ring-orange-500 outline-none text-sm">
+                </div>
+                <div class="mb-3">
+                    <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1" data-i18n="onb.password">Password</label>
+                    <input type="password" id="password" required minlength="4" placeholder="••••••••" class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 focus:ring-2 focus:ring-orange-500 outline-none text-sm">
+                </div>
+                <div class="mb-5">
+                    <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1" data-i18n="onb.confirmPassword">Confirm password</label>
+                    <input type="password" id="password2" required minlength="4" placeholder="••••••••" class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 focus:ring-2 focus:ring-orange-500 outline-none text-sm">
+                </div>
+                <div id="error" class="hidden mb-4 text-red-500 dark:text-red-400 text-xs text-center"></div>
+                <button type="submit" id="submitBtn" class="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-all text-sm" data-i18n="onb.welcomeSubmit">Create your admin account</button>
+            </form>
+        </div>
+
+        <p class="text-xs text-gray-400 dark:text-gray-500 text-center mt-5 leading-relaxed" data-i18n="onb.welcomeFooter">After this, anyone who can reach this URL can register and start their own collection. To restrict signups, set ALLOW_PUBLIC_REGISTRATION=false in your .env after this admin is created.</p>
+    </div>
+
+    <script src="/static/js/auth-onboarding.js"></script>
+</body>
+</html>

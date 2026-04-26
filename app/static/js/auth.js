@@ -150,24 +150,22 @@ export function doLogout() {
         sessionStorage.removeItem('zest_token');
         localStorage.removeItem('zest_token');
     } catch(e) {}
-
-    document.getElementById('authScreen').classList.remove('hidden');
-    const appMain = document.getElementById('appMain');
-    appMain.classList.add('hidden');
-    appMain.classList.remove('contents');
-
-    document.getElementById('loginEmail').value = '';
-    document.getElementById('loginPassword').value = '';
-    document.getElementById('authError').classList.add('hidden');
+    window.location.href = '/login';
 }
 
 export async function tryAutoLogin() {
+    // /app is only ever reached by authenticated users. Auth flow lives
+    // in separate pages (/welcome, /login, /register). If we get here
+    // without a valid token, redirect to /login.
     let savedToken = null;
     try {
         savedToken = localStorage.getItem('zest_token') || sessionStorage.getItem('zest_token');
     } catch(e) {}
 
-    if (!savedToken) return false;
+    if (!savedToken) {
+        window.location.href = '/login';
+        return false;
+    }
 
     try {
         const res = await fetch(`${state.API_URL}/auth/me`, {
@@ -177,15 +175,17 @@ export async function tryAutoLogin() {
             state.setAuthToken(savedToken);
             state.setCurrentUser(await res.json());
             updateUserUI();
-            document.getElementById('authScreen').classList.add('hidden');
-            const appMain = document.getElementById('appMain');
-            appMain.classList.remove('hidden');
-            appMain.classList.add('contents');
             if (window.loadRecipes) window.loadRecipes();
             return true;
         }
     } catch(e) {}
 
+    // Token expired or invalid: clean up and redirect to /login.
+    try {
+        localStorage.removeItem('zest_token');
+        sessionStorage.removeItem('zest_token');
+    } catch(e) {}
+    window.location.href = '/login';
     return false;
 }
 

@@ -97,7 +97,7 @@ docker compose up -d
 
 Open **http://localhost:8000** and that's it. First-time setup takes about 30 seconds.
 
-**First launch:** Register your account — the first user becomes admin and gets 12 example recipes with photos to explore.
+**First launch:** when you visit a fresh Zest install, the server detects there are no users yet and redirects you to `/welcome` — a one-time setup screen. The first user that registers becomes admin and gets 12 example recipes with photos to explore.
 
 ### Generate a secure secret key
 
@@ -163,8 +163,9 @@ All configuration is done through environment variables in `.env`:
 
 | Variable | Default | Description |
 |---|---|---|
-| `ZEST_SECRET_KEY` | `zest-change-this-secret-in-production` | JWT signing key. **Change this.** |
-| `ALLOW_PRIVATE_NETWORKS` | `false` | Allow the recipe scraper to fetch URLs that resolve to private IP ranges (10.x, 172.16.x, 192.168.x). Disabled by default to prevent SSRF attacks. Enable only if you intentionally want to scrape recipes from another service in your own LAN. Loopback (127.x) and cloud metadata endpoints (169.254.x) remain blocked even when this is enabled. See MANUAL.md for details. |
+| `ZEST_SECRET_KEY` | _(empty)_ | JWT signing key. Generate a unique value with `python3 -c "import secrets; print(secrets.token_urlsafe(32))"` and put it in your `.env`. If left empty, Zest auto-generates one in `data/.secret_key` and logs a warning until you set it explicitly. See `MANUAL.md` → "Secure your instance" for details. |
+| `ALLOW_PUBLIC_REGISTRATION` | `true` | Whether new users can register after the first admin is created. Default `true` is suitable for a family or a homelab on a closed network. Set `false` if you expose Zest to the public internet — only the admin can register, additional users must be invited (feature coming soon). The very first user (initial setup) is always allowed regardless of this setting. See `MANUAL.md` → "Public registration". |
+| `ALLOW_PRIVATE_NETWORKS` | `false` | Allow the recipe scraper to fetch URLs that resolve to private IP ranges (10.x, 172.16.x, 192.168.x). Disabled by default to prevent SSRF attacks. Enable only if you intentionally want to scrape recipes from another service in your own LAN. Loopback (127.x) and cloud metadata endpoints (169.254.x) remain blocked even when this is enabled. See `MANUAL.md` for details. |
 
 ### Volumes
 

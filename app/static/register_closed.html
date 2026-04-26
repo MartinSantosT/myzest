@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration closed — Zest</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon/favicon.ico">
+    <meta name="theme-color" content="#FF8C37">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        html, body { background: #1F2937; }
+        @media (prefers-color-scheme: light) { html, body { background: #F9FAFB; } }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-6">
+    <div class="w-full max-w-md">
+        <div class="flex justify-center mb-6">
+            <div class="w-16 h-16 bg-orange-500 rounded-2xl flex items-center justify-center shadow-lg">
+                <span class="text-white font-black leading-none tracking-tighter" style="font-size: 2.5rem; font-family: system-ui, -apple-system, 'Segoe UI', Inter, sans-serif;">Z</span>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-8 text-center">
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-3" data-i18n="onb.closedTitle">Registration is closed</h1>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-2 leading-relaxed" data-i18n="onb.closedBody1">The administrator of this Zest instance has disabled public registration.</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-6 leading-relaxed" data-i18n="onb.closedBody2">If you should have access, contact the administrator to be invited.</p>
+            <a href="/login" class="inline-block bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold py-3 px-6 rounded-xl shadow-lg text-sm" data-i18n="onb.backToLogin">Back to sign in</a>
+        </div>
+    </div>
+
+    <script src="/static/js/auth-onboarding.js"></script>
+</body>
+</html>

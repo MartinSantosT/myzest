@@ -139,7 +139,7 @@ try:
 except Exception as e:
     print(f"Auto-migrate note: {e}")
 
-APP_VERSION = "2.1.2"
+APP_VERSION = "2.1.3"
 
 app = FastAPI(title="Zest Recipe Manager", version=APP_VERSION)
 app.state.limiter = limiter
@@ -203,6 +203,19 @@ def _resolve_secret_key() -> str:
 
 SECRET_KEY = _resolve_secret_key()
 TOKEN_EXPIRY_DAYS = 30
+
+
+# --- INSTANCE CONFIG ---
+# ALLOW_PUBLIC_REGISTRATION controls whether new users can register
+# accounts after the first admin is created. Default: true (suitable for
+# a family or a homelab on a closed network). Set to "false" if you
+# expose Zest to the public internet.
+#
+# The first user that registers always becomes admin regardless of this
+# setting (initial setup is never blocked).
+ALLOW_PUBLIC_REGISTRATION = os.environ.get(
+    "ALLOW_PUBLIC_REGISTRATION", "true"
+).strip().lower() in ("true", "1", "yes", "on")
 
 def get_db():
     db = database.SessionLocal()
@@ -439,7 +452,84 @@ def _parse_unit(text):
 # ============================================================
 
 @app.get("/")
-def read_root(): return RedirectResponse(url="/static/index.html")
+def read_root(db: Session = Depends(get_db)):
+    """Smart entry point.
+    
+    - If no users yet (first install) → /welcome
+    - If users exist → /login
+    
+    The state is decided server-side so there is no flash of the wrong
+    screen and no race condition.
+    """
+    has_users = db.query(models.User).count() > 0
+    if not has_users:
+        return RedirectResponse(url="/welcome")
+    return RedirectResponse(url="/login")
+
+
+@app.get("/welcome")
+def welcome_page(db: Session = Depends(get_db)):
+    """First-install welcome screen.
+    
+    Only accessible when there are zero users in the database. After the
+    first admin is created, this URL redirects back to /login.
+    """
+    has_users = db.query(models.User).count() > 0
+    if has_users:
+        return RedirectResponse(url="/login")
+    return FileResponse("app/static/welcome.html", media_type="text/html")
+
+
+@app.get("/login")
+def login_page(db: Session = Depends(get_db)):
+    """Login screen.
+    
+    If no users exist yet, redirect to /welcome (first-install path).
+    """
+    has_users = db.query(models.User).count() > 0
+    if not has_users:
+        return RedirectResponse(url="/welcome")
+    return FileResponse("app/static/login.html", media_type="text/html")
+
+
+@app.get("/register")
+def register_page(db: Session = Depends(get_db)):
+    """Register screen.
+    
+    Hidden behind the ALLOW_PUBLIC_REGISTRATION flag. If no users exist
+    yet, redirect to /welcome instead.
+    """
+    has_users = db.query(models.User).count() > 0
+    if not has_users:
+        return RedirectResponse(url="/welcome")
+    if not ALLOW_PUBLIC_REGISTRATION:
+        return FileResponse("app/static/register_closed.html", media_type="text/html")
+    return FileResponse("app/static/register.html", media_type="text/html")
+
+
+@app.get("/app")
+def app_spa():
+    """Serve the recipe SPA for authenticated users.
+    
+    Auth check happens client-side via JWT in localStorage; if there is
+    no valid token, the JS code redirects back to /login.
+    """
+    return FileResponse("app/static/index.html", media_type="text/html")
+
+
+@app.get("/api/instance-info")
+def instance_info(db: Session = Depends(get_db)):
+    """Public endpoint used by frontend pages to render conditionally.
+    
+    No auth required. Returns the bare minimum the auth screens need:
+    whether any user exists yet, whether new public registrations are
+    allowed, and the current app version.
+    """
+    return {
+        "has_users": db.query(models.User).count() > 0,
+        "allow_public_registration": ALLOW_PUBLIC_REGISTRATION,
+        "version": APP_VERSION,
+    }
 
 @app.get("/api/health")
 def health_check(): return {"message": "Zest API Online", "version": APP_VERSION}
@@ -467,6 +557,14 @@ def register(request: Request, data: schemas.UserRegister, db: Session = Depends
 
     # First user becomes admin
     is_first_user = db.query(models.User).count() == 0
+
+    # Public registration may be disabled by the admin. The very first
+    # user (initial setup) is always allowed regardless of this flag.
+    if not is_first_user and not ALLOW_PUBLIC_REGISTRATION:
+        raise HTTPException(
+            status_code=403,
+            detail="Public registration is disabled on this instance. Contact the administrator.",
+        )
 
     user = models.User(
         email=data.email,

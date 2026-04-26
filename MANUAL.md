@@ -46,13 +46,21 @@ docker compose up -d
 
 Open **http://localhost:8000** in your browser. That's it.
 
-### First Launch — Register Your Account
+### First launch — create your admin account
 
-There is no default account. The **first user that registers** automatically becomes the admin and receives 12 example recipes (with photos) to explore the app. Create your account from the registration form on first visit.
+There is no default account. When you open Zest for the first time at `http://localhost:8000`, the server detects that no users exist yet and redirects you to **`/welcome`** — a one-time setup screen where you create the admin user.
 
-### Secure Your Instance
+The very first user that registers automatically becomes the admin and receives 12 example recipes (with photos) to explore the app. After this, the URL `/welcome` is no longer reachable — visiting it redirects to `/login`.
 
-1. **Set a secret key** — Open `.env` and replace the placeholder for `ZEST_SECRET_KEY`. Generate one on your host with either:
+Subsequent users (family members, etc.) register from `/register`, accessible from a "Sign up" link on the login screen. See the **Public registration** section below if you want to disable that and keep your instance closed to additional users.
+
+### Secure your instance
+
+#### Set a unique secret key
+
+Zest signs every authentication token (JWT) with a secret key. Anyone who knows the key can forge a valid token and impersonate any user, so the key must be **unique to your instance and never shared**.
+
+Open your `.env` file and look for `ZEST_SECRET_KEY=`. Generate a fresh value with one of:
 
 ```bash
 python3 -c "import secrets; print(secrets.token_urlsafe(32))"
@@ -60,15 +68,42 @@ python3 -c "import secrets; print(secrets.token_urlsafe(32))"
 openssl rand -base64 32
 ```
 
-Paste the result as `ZEST_SECRET_KEY` in your `.env` file, then restart:
+Paste the result as the value of `ZEST_SECRET_KEY` (no quotes, no spaces) and restart:
 
 ```bash
 docker compose down && docker compose up -d
 ```
 
-> **Important:** if you leave `ZEST_SECRET_KEY` empty (or set to one of the known insecure defaults like `zest-change-this-secret-in-production`), Zest will generate a random key on first boot and persist it in `data/.secret_key`. The container will log a warning until you set the key explicitly. JWT tokens stay valid across restarts because the key is reused from the file.
+**What happens if I forget to set it?** Zest detects that you left it empty (or set to a known insecure default like `zest-change-this-secret-in-production`) and generates a random key on first boot, persisting it in `data/.secret_key`. The container will log a `WARNING` on every startup until you set the key explicitly in `.env`. JWT tokens stay valid across restarts because the key is reused from that file.
 
-2. **Change your password whenever you want** — go to **Settings → Profile** in the app. The first user is the admin and there is no shared/default credential to rotate.
+> **Important:** never commit your `.env` file or share its contents publicly. The default `.gitignore` already excludes it.
+
+#### Change your password whenever you want
+
+Go to **Settings → Profile** in the app. There is no default credential to rotate — the password you choose at registration is yours.
+
+### Public registration
+
+By default, **anyone who can reach your Zest URL can register an account**. The first user becomes the admin and gets the example recipes; subsequent users get clean accounts and become regular users. This is the right behaviour for a **family**, **homelab on a closed network**, or any environment where everyone reaching the URL is expected to use Zest.
+
+#### Closing registration after setup
+
+If you expose Zest to the public internet (with a domain and reverse proxy, or even just port-forwarding), this default is unsafe — strangers could create accounts on your server. Set:
+
+```env
+ALLOW_PUBLIC_REGISTRATION=false
+```
+
+in your `.env` and restart. After this:
+
+- The login screen no longer shows the "Sign up" link.
+- The `/register` URL displays a **"Registration is closed"** message instead of a form.
+- The `/auth/register` API endpoint rejects new registrations with a `403`.
+- The very first user can still register (initial setup is never blocked) — this only kicks in once at least one user exists.
+
+> **Best practice:** set `ALLOW_PUBLIC_REGISTRATION=false` immediately after creating your admin account if your Zest is reachable from outside your private network. You can always flip it back to `true` temporarily to invite a family member, then close it again.
+
+> **Coming soon:** an admin invite flow that lets you generate one-time signup links without flipping the global flag.
 
 ### Custom Port
 
