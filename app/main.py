@@ -139,7 +139,7 @@ try:
 except Exception as e:
     print(f"Auto-migrate note: {e}")
 
-APP_VERSION = "2.1.3"
+APP_VERSION = "2.1.4"
 
 app = FastAPI(title="Zest Recipe Manager", version=APP_VERSION)
 app.state.limiter = limiter
@@ -477,7 +477,7 @@ def welcome_page(db: Session = Depends(get_db)):
     has_users = db.query(models.User).count() > 0
     if has_users:
         return RedirectResponse(url="/login")
-    return FileResponse("app/static/welcome.html", media_type="text/html")
+    return FileResponse("app/static/welcome.html", media_type="text/html", headers={"Cache-Control": "no-cache, must-revalidate"})
 
 
 @app.get("/login")
@@ -489,7 +489,7 @@ def login_page(db: Session = Depends(get_db)):
     has_users = db.query(models.User).count() > 0
     if not has_users:
         return RedirectResponse(url="/welcome")
-    return FileResponse("app/static/login.html", media_type="text/html")
+    return FileResponse("app/static/login.html", media_type="text/html", headers={"Cache-Control": "no-cache, must-revalidate"})
 
 
 @app.get("/register")
@@ -503,8 +503,8 @@ def register_page(db: Session = Depends(get_db)):
     if not has_users:
         return RedirectResponse(url="/welcome")
     if not ALLOW_PUBLIC_REGISTRATION:
-        return FileResponse("app/static/register_closed.html", media_type="text/html")
-    return FileResponse("app/static/register.html", media_type="text/html")
+        return FileResponse("app/static/register_closed.html", media_type="text/html", headers={"Cache-Control": "no-cache, must-revalidate"})
+    return FileResponse("app/static/register.html", media_type="text/html", headers={"Cache-Control": "no-cache, must-revalidate"})
 
 
 @app.get("/app")
@@ -514,7 +514,7 @@ def app_spa():
     Auth check happens client-side via JWT in localStorage; if there is
     no valid token, the JS code redirects back to /login.
     """
-    return FileResponse("app/static/index.html", media_type="text/html")
+    return FileResponse("app/static/index.html", media_type="text/html", headers={"Cache-Control": "no-cache, must-revalidate"})
 
 
 @app.get("/api/instance-info")
@@ -529,6 +529,105 @@ def instance_info(db: Session = Depends(get_db)):
         "has_users": db.query(models.User).count() > 0,
         "allow_public_registration": ALLOW_PUBLIC_REGISTRATION,
         "version": APP_VERSION,
+    }
+
+
+# --- UPDATE CHECK -----------------------------------------------------------
+# Compares APP_VERSION against the latest GitHub release of MartinSantosT/myzest.
+# Cached in-memory for 1 hour to avoid hitting GitHub's 60 req/h unauth rate
+# limit when several admins log in within the same hour. Admin-only — regular
+# users never see update banners.
+
+import urllib.request as _urlreq
+import urllib.error as _urlerr
+
+_UPDATE_CHECK_CACHE = {"at": 0.0, "data": None}
+_UPDATE_CHECK_TTL = 3600  # 1 hour
+_UPDATE_CHECK_URL = "https://api.github.com/repos/MartinSantosT/myzest/releases/latest"
+
+
+def _normalize_version(tag: str) -> str:
+    """'v2.1.3' -> '2.1.3', '2.1.3' -> '2.1.3'."""
+    return (tag or "").lstrip("vV").strip()
+
+
+def _semver_tuple(v: str):
+    """Best-effort semver parse. Non-numeric segments fall back to 0."""
+    out = []
+    for part in _normalize_version(v).split("."):
+        try:
+            out.append(int(part.split("-")[0]))
+        except ValueError:
+            out.append(0)
+    while len(out) < 3:
+        out.append(0)
+    return tuple(out[:3])
+
+
+def _is_outdated(current: str, latest: str) -> bool:
+    return _semver_tuple(latest) > _semver_tuple(current)
+
+
+def _fetch_latest_release_from_github():
+    """Returns the parsed JSON from the latest release endpoint, or None
+    if GitHub is unreachable or the repo has no releases yet."""
+    import time as _t
+    now = _t.time()
+    cached = _UPDATE_CHECK_CACHE
+    if cached["data"] is not None and (now - cached["at"]) < _UPDATE_CHECK_TTL:
+        return cached["data"]
+
+    req = _urlreq.Request(
+        _UPDATE_CHECK_URL,
+        headers={
+            "Accept": "application/vnd.github+json",
+            "User-Agent": f"zest-self-hosted/{APP_VERSION}",
+        },
+    )
+    try:
+        with _urlreq.urlopen(req, timeout=5) as resp:
+            if resp.status != 200:
+                return None
+            payload = json.loads(resp.read().decode("utf-8"))
+    except (_urlerr.URLError, _urlerr.HTTPError, TimeoutError, json.JSONDecodeError, OSError):
+        return None
+
+    cached["data"] = payload
+    cached["at"] = now
+    return payload
+
+
+@app.get("/api/admin/check-update")
+def check_update(current_user: models.User = Depends(get_current_user)):
+    """Compare APP_VERSION against the latest GitHub release.
+    
+    Admin-only. Returns is_outdated=False (and no GitHub call) for
+    non-admins. Result is cached in-memory for 1 hour.
+    """
+    if not current_user.is_admin:
+        raise HTTPException(403, "Admin access required")
+
+    payload = _fetch_latest_release_from_github()
+    if payload is None:
+        # GitHub unreachable / no releases / network error: report current
+        # version as the latest so no banner is shown.
+        return {
+            "current": APP_VERSION,
+            "latest": APP_VERSION,
+            "is_outdated": False,
+            "release_url": None,
+            "release_published_at": None,
+            "source": "fallback",
+        }
+
+    tag = payload.get("tag_name") or APP_VERSION
+    return {
+        "current": APP_VERSION,
+        "latest": _normalize_version(tag),
+        "is_outdated": _is_outdated(APP_VERSION, tag),
+        "release_url": payload.get("html_url"),
+        "release_published_at": payload.get("published_at"),
+        "source": "github",
     }
 
 @app.get("/api/health")

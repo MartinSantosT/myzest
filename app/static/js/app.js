@@ -7,7 +7,7 @@
 // ============================================
 
 // --- Foundation ---
-import './state.js';
+import * as state from './state.js';
 import './api.js';
 
 // --- i18n (must load early) ---
@@ -83,35 +83,46 @@ if (window.tryAutoLogin) {
 }
 
 // ============================================
-// VERSION CHECK — Notify user of updates
+// UPDATE CHECK — admin only, fired after auto-login
 // ============================================
-(async function checkVersion() {
+// Calls /api/admin/check-update which compares APP_VERSION against the
+// latest GitHub release. Server-side caches the GitHub response for 1
+// hour to avoid rate limits. Banner only shown to admins; "Remind me
+// later" hides it for 24h via localStorage.
+async function maybeCheckForUpdate() {
     try {
-        const res = await fetch(`${window.API_URL || ''}/api/version`);
+        // Only admins see update notifications
+        const user = state.currentUser;
+        if (!user || !user.is_admin) return;
+        const token = state.authToken;
+        if (!token) return;
+
+        // Respect "remind me later" — 24h snooze
+        const snoozeUntil = parseInt(localStorage.getItem('zest_update_snooze_until') || '0', 10);
+        if (Date.now() < snoozeUntil) return;
+
+        const res = await fetch(`${state.API_URL || ''}/api/admin/check-update`, {
+            headers: { 'Authorization': `Bearer ${token}` },
+        });
         if (!res.ok) return;
         const data = await res.json();
-        const serverVersion = data.version;
-        const localVersion = localStorage.getItem('zest_app_version');
+        if (!data.is_outdated) return;
 
-        if (!localVersion) {
-            // First visit — store current version silently
-            localStorage.setItem('zest_app_version', serverVersion);
-            return;
-        }
-
-        if (localVersion !== serverVersion) {
-            // Show update banner
-            const banner = document.createElement('div');
-            banner.id = 'update-banner';
-            banner.className = 'fixed bottom-4 right-4 z-[200] bg-orange-500 text-white px-5 py-3 rounded-2xl shadow-lg flex items-center gap-3 text-sm font-medium animate-pulse';
-            banner.innerHTML = `
-                <span>🍊 New version available (v${serverVersion})</span>
-                <button onclick="localStorage.setItem('zest_app_version','${serverVersion}');location.reload()" class="bg-white text-orange-500 px-3 py-1 rounded-lg font-bold hover:bg-orange-100 transition-colors">Reload</button>
-                <button onclick="this.parentElement.remove()" class="text-white/70 hover:text-white ml-1">✕</button>
-            `;
-            document.body.appendChild(banner);
-        }
+        const banner = document.createElement('div');
+        banner.id = 'update-banner';
+        banner.className = 'fixed bottom-4 right-4 z-[200] bg-orange-500 text-white px-4 py-3 rounded-2xl shadow-lg flex items-center gap-2 text-sm font-medium max-w-md';
+        const releaseUrl = data.release_url || 'https://github.com/MartinSantosT/myzest/releases';
+        banner.innerHTML = `
+            <span>🍊 Zest <strong>${data.latest}</strong> is available (you are on ${data.current})</span>
+            <a href="${releaseUrl}" target="_blank" rel="noopener" class="bg-white text-orange-600 px-3 py-1 rounded-lg font-bold hover:bg-orange-100 whitespace-nowrap">Release notes</a>
+            <a href="https://github.com/MartinSantosT/myzest/blob/main/MANUAL.md#updating-zest-to-a-new-version" target="_blank" rel="noopener" class="bg-white/20 text-white px-3 py-1 rounded-lg font-medium hover:bg-white/30 whitespace-nowrap">How to update</a>
+            <button onclick="localStorage.setItem('zest_update_snooze_until', String(Date.now() + 24*60*60*1000)); this.parentElement.remove();" class="text-white/70 hover:text-white ml-1 text-xs whitespace-nowrap" title="Hide for 24 hours">Later</button>
+        `;
+        document.body.appendChild(banner);
     } catch (e) {
-        // Silently ignore version check failures
+        // Network error or GitHub unreachable: silently do nothing
     }
-})();
+}
+
+// Defer until after the auth state is settled (tryAutoLogin is async)
+setTimeout(maybeCheckForUpdate, 1500);
