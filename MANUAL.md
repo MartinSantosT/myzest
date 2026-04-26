@@ -118,6 +118,62 @@ ports:
 
 If you're exposing Zest to your local network or the internet, place it behind a reverse proxy (Nginx, Caddy, Traefik, or Nginx Proxy Manager). See the README for an example Nginx configuration.
 
+### Updating Zest to a new version
+
+When a new version of Zest is released, update your instance with:
+
+```bash
+cd myzest
+git pull
+docker compose down && docker compose up -d --build
+```
+
+**Your recipes, memories, photos and users are not touched.** All persistent data lives in two volume-mounted directories on your host:
+
+| Path on host | What it contains |
+|---|---|
+| `./data/` | SQLite database (`zest.db`), automatic backups, persisted `data/.secret_key` |
+| `./app/static/uploads/` | All photos you uploaded (recipes, memories, cookbook covers, avatars) |
+
+`docker compose down` stops and removes the running container — it never touches these directories. When the new container starts up against the same paths, your data is exactly where you left it. Database schema migrations run automatically (you may see lines like `Auto-migrate: ensured table memories` in the logs the first time you run a version that adds a table — that is expected and idempotent).
+
+#### Belt and suspenders for major upgrades
+
+Before a big update, a one-click full backup gives you peace of mind:
+
+1. Open Zest, go to **Settings → Backups**.
+2. Click **"Export full backup"**. You get a ZIP with the database + all images.
+3. Save it somewhere outside the Docker host (cloud, NAS, USB).
+
+If anything goes sideways, **Settings → Backups → Import** restores everything in one click.
+
+#### Pinning to a specific release
+
+If you prefer to update on your own schedule instead of tracking `main`, check out a released tag:
+
+```bash
+cd myzest
+git fetch --tags
+git checkout v2.1.3
+docker compose down && docker compose up -d --build
+```
+
+To return to the latest:
+
+```bash
+git checkout main
+git pull
+docker compose down && docker compose up -d --build
+```
+
+#### How do I know a new version is out?
+
+The running app reports its version at `/api/version`. The frontend remembers the version your browser last saw. The next time you open Zest after an update, the bottom-right of `/app` shows an orange banner saying:
+
+> **🍊 New version available (vX.Y.Z) — [Reload]**
+
+Clicking **Reload** refreshes the page so your browser picks up the new client assets, and the banner stops appearing until the next update. There is no automatic check against GitHub or any external service — Zest never phones home; the comparison is entirely between your running container and your local browser cache.
+
 ---
 
 ## 2. First Steps

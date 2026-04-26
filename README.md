@@ -195,7 +195,18 @@ git pull
 docker compose down && docker compose up -d --build
 ```
 
-Zest handles database migrations automatically on startup. There is no manual migration script to invoke.
+**Your data is preserved.** Zest stores everything in volume-mounted directories on your host:
+
+- `./data/` — SQLite database, automatic backups, the persisted secret key
+- `./app/static/uploads/` — your uploaded photos
+
+`docker compose down` only stops the container; it does not touch these directories. The new container starts back up against the same files. Database schema migrations run automatically on startup (`PRAGMA journal_mode=WAL` is also enabled for better multi-user concurrency).
+
+**Belt and suspenders:** Zest also creates an automatic backup before any in-app restore (Settings → Backups). For peace of mind on a major upgrade, you can manually export a full backup ZIP first via Settings → Backups → "Export full backup".
+
+**Pinning to a specific version** (optional): instead of `git pull`, run `git fetch --tags && git checkout v2.1.3` to lock to a known good release. Use `git checkout main && git pull` to come back to the latest.
+
+**How do I know there is a new version?** When the running app version differs from the version stored in your browser, Zest shows an orange banner in the bottom-right of `/app` saying *"New version available (vX.Y.Z) — Reload"*. Clicking Reload refreshes the page so the new client assets are loaded.
 
 ---
 
