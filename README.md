@@ -15,6 +15,7 @@
   <img src="https://img.shields.io/badge/SQLite-lightgrey?style=for-the-badge&logo=sqlite&logoColor=blue" alt="SQLite">
   <a href="https://github.com/MartinSantosT/myzest/stargazers"><img src="https://img.shields.io/github/stars/MartinSantosT/myzest?style=for-the-badge&logo=github" alt="Stars"></a>
   <a href="https://github.com/MartinSantosT/myzest/issues"><img src="https://img.shields.io/github/issues/MartinSantosT/myzest?style=for-the-badge" alt="Issues"></a>
+  <a href="https://deepwiki.com/MartinSantosT/myzest"><img src="https://img.shields.io/badge/DeepWiki-Ask%20about%20Zest-blue?style=for-the-badge&logo=readthedocs&logoColor=white" alt="Ask DeepWiki"></a>
 </p>
 
 <p align="center">
